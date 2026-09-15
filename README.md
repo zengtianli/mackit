@@ -4,9 +4,26 @@
 
 把 Mac 的终端、编辑器与桌面快捷键整理成一套找得到、改得明白、能恢复的配置。
 
-**一个 CLI，原生配置文件，没有新增常驻进程。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
+**原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-## 安装
+## 下载 App（推荐）
+
+[下载 MacKit 0.2.0 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.2.0/MacKit-0.2.0-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+
+需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
+
+1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。
+2. 从应用程序打开 App，在“安装配置”选择预设与组件，点击“预览配置变化”。
+3. 点击“安装缺失软件与依赖”；缺少 Homebrew 时，点“安装 Homebrew”并在系统安装器完成授权。
+4. 点击“备份并安装配置”，完成后重新打开终端和相关应用。
+
+App 提供快捷键搜索、配置文件编辑（保存前备份）、依赖检查与按记录恢复。已有 MacKit 安装会接管原配置源；首次安装将配置放在 `~/.local/share/mackit`。管理员密码只在系统安装器输入；辅助功能等权限按系统与各应用提示自行确认。yabai/skhd 仍是手动安装、启动的可选高级组件。
+
+App 快捷键：⌘1–4 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
+
+[App 操作与恢复说明](docs/macos-app.md) · [构建 App](docs/build-app.md)
+
+## 命令行方式
 
 需要 macOS、Python 3.11+、Git；Neovim 配置需要 0.11+。先安装你选择的应用。缺 Python 时用 `brew install python`；依赖清单由 `mackit deps` 输出。
 

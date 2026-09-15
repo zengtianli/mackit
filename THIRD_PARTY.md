@@ -9,4 +9,7 @@ Yazi plugins included in components/yazi/plugins retain their original notices a
 Hammerspoon modules originate in the author's MIT-licensed configuration repository. MacKit preserves that MIT notice under components/hammerspoon/LICENSE.
 
 The WeChatUnrevoke website is a design/workflow reference. No AGPL implementation files from that project are bundled with MacKit.
+# macOS App runtime
+
+The macOS application includes CPython 3.12, distributed under the Python Software Foundation license. The full license is included as `Contents/Resources/Python-LICENSE.txt`. The runtime is packaged with PyInstaller, whose bootloader exception permits distribution of bundled applications under their own license. The application UI uses Apple system frameworks.
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse, contextlib, fcntl, hashlib, json, os, shlex, shutil, subprocess, sys, tempfile, time, uuid
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(sys.executable).resolve().parents[1] if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[1]
 COMPONENTS = {
  "zsh": [("generated:zshrc", ".zshrc")],
  "nvim": [("nvim", ".config/nvim")],
@@ -31,7 +31,8 @@ EDIT = {
  "btop": "btop/btop.conf", "fd": "fd/ignore", "glow": "glow/glow.yml",
 }
 DEPS = {"zsh":["fzf","fd","ripgrep","zoxide","atuin","starship","eza"], "nvim":["neovim","git","ripgrep","fd"],
- "tmux":["tmux"],"yazi":["yazi"],"lazygit":["lazygit"],"atuin":["atuin"],"starship":["starship"]}
+ "tmux":["tmux"],"yazi":["yazi"],"lazygit":["lazygit"],"atuin":["atuin"],"starship":["starship"],
+ "btop":["btop"],"fd":["fd"],"glow":["glow"]}
 CASKS = {"ghostty":"ghostty","hammerspoon":"hammerspoon","karabiner":"karabiner-elements"}
 def dump(path, data):
  path.parent.mkdir(parents=True, exist_ok=True)
@@ -97,7 +98,7 @@ def write_generated(generation,home,p):
  generation.mkdir(parents=True,exist_ok=True)
  z= "export MACKIT_ROOT="+shlex.quote(str(ROOT))+"\nsource "+shlex.quote(str(ROOT/"components/zsh/zshrc"))+"\n"
  (generation/"zshrc").write_text(z)
- dump(generation/"profile.json",{"profile":p["profile"],"components":p.get("installed_components",p["components"]),"version":(ROOT/"VERSION").read_text().strip()})
+ dump(generation/"profile.json",{"profile":p["profile"],"components":p.get("installed_components",p["components"]),"version":(ROOT/"VERSION").read_text().strip(),"source_root":str(ROOT)})
  (generation/"profile.zsh").write_text("export MACKIT_PROFILE="+shlex.quote(p["profile"])+"\n")
  (generation/"mackit").write_text("#!/bin/sh\nexec "+shlex.quote(str(ROOT/"bin/mackit"))+' "$@"\n')
  (generation/"mackit").chmod(0o755)
@@ -228,8 +229,12 @@ def main(argv=None):
  s=subs.add_parser("action");s.add_argument("name");s.add_argument("args",nargs=argparse.REMAINDER)
  s=subs.add_parser("keys");s.add_argument("query",nargs="?");s.add_argument("--component",choices=list(COMPONENTS));s.add_argument("--profile",choices=["developer","tianli"]);s.add_argument("--json",action="store_true")
  subs.add_parser("update")
+ subs.add_parser("gui",help=argparse.SUPPRESS)
  args=parser.parse_args(argv);home=args.home.expanduser().absolute()
  try:
+  if args.command=="gui":
+   from mackit.gui import main as gui_main
+   return gui_main(home)
   if args.command=="plan":
    p=plan(args,home)
    if args.json:print(json.dumps(p,ensure_ascii=False,indent=2))

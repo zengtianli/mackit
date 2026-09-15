@@ -1,10 +1,11 @@
 name: mackit
 display_name: Tianli MacKit
-form: cli
+form: macos
 lifecycle: active
 origin: own
-description: Mac 配置套件：统一快捷键、配置入口、安装检查与恢复
+description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件与备份恢复
+bundle_id: cyou.tianli.mackit
 key_scripts:
   - bin/mackit
+  - scripts/build-app.sh
 homepage: https://mackit.tianli.cyou
-

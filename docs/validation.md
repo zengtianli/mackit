@@ -12,3 +12,12 @@ The 36-second tutorial replays real PTY output from a standalone archive in an i
 
 Fresh plugin downloads depend on GitHub connectivity. This development network returned proxy 503 errors during a fresh install; the offline/native editing path and startup against an existing plugin cache were verified. Do not treat those checks as a guarantee that every optional plugin service works without its dependencies or account setup.
 
+## macOS App 0.2.0
+
+17 automated tests pass, including the actual JSON bridge used by the app: prepare without replacing existing configuration, install and reload, save with a prior-file backup, stale preview rejection, concurrent editor rejection, preservation of unrelated source directories, and restoration with an exact receipt.
+
+The Developer ID signed app was installed in Applications. Its native UI was used to select zsh/Neovim, preview, confirm installation, search “编号”, edit a personal override and restore the installation in a disposable home. Filesystem checks independently confirmed the original shell file was restored and the personal override retained. The copied frozen CLI also ran with only system directories on PATH, without a user-installed Python requirement.
+
+An idle process sample on the development Apple Silicon Mac reported 0.0% CPU and about 42 MiB RSS after the representative UI flow. This is one process snapshot, not a competitor benchmark or a peak-memory guarantee. The app does not poll continuously and launches the engine only for requested operations.
+
+Full installation of Homebrew on a pristine Mac, privileged third-party installers, Accessibility/Input Monitoring authorization, Intel App binaries and complete fresh Neovim plugin downloads were not validated by this run. The App installer is arm64 and the dependency installer may require a system installer or network retry for particular packages. These limitations do not turn a configuration-only success into a claim of complete software provisioning.
