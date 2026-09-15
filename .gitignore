@@ -1,0 +1,11 @@
+local/
+handoffs/
+CLAUDE.md
+build/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
+components/nvim/tmp/
+components/karabiner/automatic_backups/
+components/hammerspoon/lib/hotkey_overrides.json

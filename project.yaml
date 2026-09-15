@@ -1,0 +1,10 @@
+name: mackit
+display_name: Tianli MacKit
+form: cli
+lifecycle: active
+origin: own
+description: Mac 配置套件：统一快捷键、配置入口、安装检查与恢复
+key_scripts:
+  - bin/mackit
+homepage: https://mackit.tianli.cyou
+

@@ -1,0 +1,22 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.000
+查键与配置：mackit keys 编号
+
+00:00:06.000 --> 00:00:10.000
+查键与配置：mackit edit nvim-keys --print
+
+00:00:10.000 --> 00:00:16.000
+预览与安装：mackit plan --components zsh,nvim
+
+00:00:16.000 --> 00:00:22.000
+预览与安装：mackit apply --components zsh,nvim
+
+00:00:22.000 --> 00:00:26.000
+预览与安装：mackit doctor --components zsh,nvim
+
+00:00:26.000 --> 00:00:32.000
+恢复旧配置：mackit restore
+
+00:00:32.000 --> 00:00:36.000
+恢复旧配置：cat ~/.zshrc

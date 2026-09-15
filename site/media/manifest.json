@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "recorded_at": "2026-09-15T06:23:11.037180+00:00",
+  "source": "Real CLI processes captured via PTY in a disposable HOME; replay uses presentation holds, not realtime desktop capture.",
+  "chapters": [
+    {
+      "title": "查键与配置",
+      "start": 0
+    },
+    {
+      "title": "预览与安装",
+      "start": 10
+    },
+    {
+      "title": "恢复旧配置",
+      "start": 26
+    }
+  ],
+  "duration": 36,
+  "coverage": [
+    "key lookup",
+    "config source",
+    "plan",
+    "apply",
+    "doctor",
+    "restore existing file"
+  ],
+  "not_covered": [
+    "physical global key delivery",
+    "fresh plugin download",
+    "GUI permission dialogs"
+  ]
+}

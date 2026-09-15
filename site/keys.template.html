@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>快捷键与配置入口 · Tianli MacKit</title><meta name="description" content="查找 zsh、Neovim、Hammerspoon 的快捷键与配置文件。由原生声明生成。"><link rel="stylesheet" href="style.css"></head>
+<body><nav><a class="brand" href="./">⌘ Tianli MacKit</a><a href="https://github.com/zengtianli/mackit">GitHub ↗</a></nav>
+<main><header class="compact"><p class="eyebrow">THE FIELD GUIDE / 配置手册</p><h1>忘了按什么？<br><span>来这里找。</span></h1><p>快捷键、适用模式、配置文件放在一起。从正在使用的原生声明生成。</p></header>
+<div class="grid three">
+<article class="card"><span class="step">01 / 找配置</span><h3>打开 Neovim 的配置</h3><pre>config nvim
+mackit edit nvim-keys</pre><p>前者打开 init.lua，后者打开统一键位表。终端的 config 命令是 mackit edit 的兼容入口。</p></article>
+<article class="card"><span class="step">02 / 行编号</span><h3>选中行 → 空格 n l</h3><pre>alpha       01_alpha
+beta    →   02_beta</pre><p>按 V 选行，j/k 扩大选区，再依次按空格、n、l。它修改文本内容。</p></article>
+<article class="card"><span class="step">03 / 屏幕行号</span><h3>number 是显示选项</h3><pre>:set number norelativenumber
+mackit edit number</pre><p>第一行显示绝对行号；加 relativenumber 可显示相对距离。空格 u n / u r 分别切换两种行号。</p></article></div>
+<section><div class="filterbar"><label>搜索<input id="q" type="search" placeholder="编号、保存、Ctrl、config…" autocomplete="off"></label><label>组件<select id="component"><option value="">全部组件</option>__OPTIONS__</select></label><label>预设<select id="profile"><option value="all">全部声明</option><option value="developer">Developer 通用</option><option value="tianli">Tianli 个人</option></select></label><label class="check"><input id="advanced" type="checkbox">显示编码跳行</label><output id="count"></output></div>
+<p class="muted">leader = 空格；C = Ctrl；M = Option；n/x/i/t/o = 普通/可视/插入/终端/操作。tmux 前缀为 Option+s。个人预设的全局键可在 Hammerspoon 菜单中单独开关。</p>
+<div class="table-wrap"><table><thead><tr><th>组件 / 预设</th><th>按键</th><th>用途 / 模式</th><th>配置来源</th></tr></thead><tbody>__ROWS__</tbody></table></div><p id="empty" hidden>没有找到。试试「编号」「文件」或组件名称。</p><p class="muted">声明手册不覆盖插件内建的所有键，也不能判断外部 App 是否抢键。完整原始数据可从 GitHub 的 data/keys.json 获取。</p></section>
+<footer><a href="./">← 返回产品主页</a><span>原生配置是唯一来源 · MIT</span></footer></main>
+<script>
+const q=document.querySelector('#q'),component=document.querySelector('#component'),profile=document.querySelector('#profile'),advanced=document.querySelector('#advanced'),rows=[...document.querySelectorAll('tbody tr')];
+function filter(){const query=q.value.trim().toLowerCase();let n=0;for(const row of rows){row.hidden=!(row.textContent.toLowerCase().includes(query)&&(!component.value||row.dataset.component===component.value)&&(profile.value!=='developer'||!row.dataset.profile)&&(!row.dataset.advanced||advanced.checked||query));if(!row.hidden)n++}document.querySelector('#count').textContent=n+' 条';document.querySelector('#empty').hidden=!!n}
+for(const el of [q,component,profile,advanced])el.addEventListener('input',filter);q.value=new URLSearchParams(location.search).get('q')||'';filter();
+</script></body></html>

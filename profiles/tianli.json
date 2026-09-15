@@ -1,0 +1,20 @@
+{
+  "name": "tianli",
+  "description": "S/Q, 15-line J/K, Space leader, Option+s tmux and personal Mac keyboard conventions. Business integrations stay local.",
+  "components": [
+    "zsh",
+    "nvim",
+    "ghostty",
+    "tmux",
+    "yazi",
+    "starship",
+    "lazygit",
+    "atuin",
+    "hammerspoon",
+    "karabiner",
+    "yabai",
+    "btop",
+    "fd",
+    "glow"
+  ]
+}

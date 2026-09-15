@@ -1,0 +1,22 @@
+# skhd 快捷键配置文件
+# 窗口定位快捷键
+
+
+# 上半屏四等分
+ctrl + shift - y : $HOME/.config/yabai/scripts/window/position.sh grid top 1
+ctrl + shift - u : $HOME/.config/yabai/scripts/window/position.sh grid top 2
+ctrl + shift - i : $HOME/.config/yabai/scripts/window/position.sh grid top 3
+ctrl + shift - o : $HOME/.config/yabai/scripts/window/position.sh grid top 4
+
+# 下半屏四等分
+ctrl + shift - h : $HOME/.config/yabai/scripts/window/position.sh grid bottom 1
+ctrl + shift - j : $HOME/.config/yabai/scripts/window/position.sh grid bottom 2
+ctrl + shift - k : $HOME/.config/yabai/scripts/window/position.sh grid bottom 3
+ctrl + shift - l : $HOME/.config/yabai/scripts/window/position.sh grid bottom 4
+
+# 左右分屏
+ctrl + shift - g : $HOME/.config/yabai/scripts/window/position.sh left
+ctrl + shift - 0x29 : $HOME/.config/yabai/scripts/window/position.sh right
+
+# 全屏
+ctrl + shift - space : $HOME/.config/yabai/scripts/window/position.sh full

@@ -1,0 +1,14 @@
+{
+  "name": "developer",
+  "description": "Portable developer defaults; native Neovim movement and window keys.",
+  "components": [
+    "zsh",
+    "nvim",
+    "ghostty",
+    "tmux",
+    "yazi",
+    "starship",
+    "lazygit",
+    "atuin"
+  ]
+}

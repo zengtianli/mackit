@@ -1,0 +1,22 @@
+# vim:fileencoding=utf-8:foldmethod=marker
+
+[flavor]
+use = ""
+
+
+[mgr]
+
+# Tab
+tab_width = 12
+
+# Border
+border_symbol = " "
+border_style  = { fg = "gray" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+mode_normal = { bg = "blue", bold = true }
+mode_select = { bg = "red", bold = true }
+mode_unset  = { bg = "yellow", bold = true }

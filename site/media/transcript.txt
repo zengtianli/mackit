@@ -1,0 +1,38 @@
+$ mackit keys 编号
+nvim         x        <leader>nl               选中行添加01_、02_编号  [components/nvim/lua/config/keymaps.lua]
+1 bindings. Native plugin defaults and external application shortcuts are outside this catalog.
+
+
+$ mackit edit nvim-keys --print
+/private/tmp/mackit-demo-43811/kit/components/nvim/lua/config/keymaps.lua
+
+
+$ mackit plan --components zsh,nvim
+MacKit · developer
+Source: /private/tmp/mackit-demo-43811/kit
+
+backup + install   zsh          /tmp/mackit-demo-43811/home/.zshrc
+install            nvim         /tmp/mackit-demo-43811/home/.config/nvim
+
+Also manages ~/.local/bin/mackit and profile metadata.
+Preview only. Run mackit apply to install with backups.
+
+
+$ mackit apply --components zsh,nvim
+{"transaction": "20260915-142310-d547a0", "changed": 5, "profile": "developer", "restore": "mackit restore 20260915-142310-d547a0"}
+
+
+$ mackit doctor --components zsh,nvim
+{
+  "profile": "developer",
+  "issues": [],
+  "note": "Checks managed sources, dependencies and declared key scope; physical delivery, plugin defaults and external app interception require runtime verification."
+}
+
+
+$ mackit restore
+Restored 20260915-142310-d547a0. Existing configuration and local overrides retained.
+
+
+$ cat ~/.zshrc
+# My original shell configuration

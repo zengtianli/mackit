@@ -1,0 +1,25 @@
+# MacKit shell entry: plugins -> options/actions -> private additions -> keys.
+# MACKIT_ROOT is set by the installer-generated ~/.zshrc.
+typeset -g MACKIT_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/mackit"
+typeset -g MACKIT_PROFILE="${MACKIT_PROFILE:-developer}"
+[[ -r "$MACKIT_CONFIG/profile.zsh" ]] && source "$MACKIT_CONFIG/profile.zsh"
+if [[ -r "${ZIM_HOME:-$HOME/.zim}/init.zsh" ]]; then
+  source "${ZIM_HOME:-$HOME/.zim}/init.zsh"
+else
+  mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}"
+  autoload -Uz compinit
+  compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/mackit-zcompdump"
+fi
+source "$MACKIT_ROOT/components/zsh/options.zsh"
+source "$MACKIT_ROOT/components/zsh/actions.zsh"
+for file in "$MACKIT_ROOT"/components/zsh/functions/*.zsh(N); do source "$file"; done
+[[ -r "$MACKIT_CONFIG/local.zsh" ]] && source "$MACKIT_CONFIG/local.zsh"
+source "$MACKIT_ROOT/components/zsh/aliases.zsh"
+(( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
+(( $+commands[atuin] )) && eval "$(atuin init zsh)"
+(( $+commands[starship] )) && eval "$(starship init zsh)"
+source "$MACKIT_ROOT/components/zsh/keymaps.zsh"
+[[ -r "$MACKIT_CONFIG/keymaps.zsh" ]] && source "$MACKIT_CONFIG/keymaps.zsh"
+if [[ -n "$GHOSTTY_RESOURCES_DIR" && -r "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration" ]]; then
+ source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi

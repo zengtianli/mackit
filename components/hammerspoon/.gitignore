@@ -1,0 +1,35 @@
+# 忽略 Python 虚拟环境
+venv/
+
+# 忽略 Python 缓存和编译文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# 忽略打包和分发目录
+build/
+dist/
+*.egg-info/
+
+# 忽略操作系统生成的文件 (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# 忽略 IDE 配置文件
+.vscode/
+.idea/
+
+# 忽略测试生成的文件
+/test/files/
+
+# 忽略日志文件
+*.log
+
+# Baseline (auto-added by /groom)
+*.py[cod]
+*$py.class
+.venv/
+.env
+*.swp
