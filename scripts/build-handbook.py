@@ -44,7 +44,7 @@ for profile in json.loads(p.read_text())["profiles"]:
   for mapping in rule.get("manipulators",[]):
    add("karabiner","global",json.dumps(mapping.get("from",{}),ensure_ascii=False),rule.get("description",""),str(p.relative_to(ROOT)),profile="tianli",condition=json.dumps(mapping.get("conditions",[]),ensure_ascii=False))
 rows.sort(key=lambda r:(r["component"],r["mode"],r["key"],r.get("profile","")))
-(ROOT/"data").mkdir(exist_ok=True);(ROOT/"data/keys.json").write_text(json.dumps(rows,ensure_ascii=False,indent=2)+"\n")
+(ROOT/"data").mkdir(exist_ok=True);(ROOT/"data/keys.json").write_text(json.dumps(rows,ensure_ascii=False,indent=2,sort_keys=True)+"\n")
 e=html.escape
 body=''.join('<tr data-component="'+e(r["component"])+ '" data-profile="'+e(r.get("profile",""))+'" data-advanced="'+("1" if r["description"].startswith("编码跳行") else "")+'"><td>'+e(r["component"])+'<small>'+e(r.get("profile","通用"))+'</small></td><td><kbd>'+e(r["key"])+ '</kbd></td><td>'+e(r["description"])+'<small>'+e(r["mode"])+'</small></td><td><a href="https://github.com/zengtianli/mackit/blob/main/'+e(r["source"])+'"><code>'+e(r["source"])+ '</code></a></td></tr>' for r in rows)
 page=(ROOT/"site/keys.template.html").read_text().replace("__ROWS__",body).replace("__OPTIONS__",''.join('<option>'+e(c)+'</option>' for c in sorted({r['component'] for r in rows})))
