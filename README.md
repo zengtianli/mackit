@@ -1,70 +1,63 @@
 # Tianli MacKit
 
-[中文](README_CN.md) · [Website](https://mackit.tianli.cyou) · [Shortcut handbook](https://mackit.tianli.cyou/keys.html)
+[English](README_EN.md) · [产品主页](https://mackit.tianli.cyou) · [快捷键手册](https://mackit.tianli.cyou/keys.html)
 
-A Mac configuration kit with one place to find your keys, edit native configuration, and restore what you had before.
+把 Mac 的终端、编辑器与桌面快捷键整理成一套找得到、改得明白、能恢复的配置。
 
-MacKit brings zsh, Neovim, Hammerspoon, Ghostty, tmux, Yazi, Karabiner and yabai/skhd into one maintained source. The CLI uses Python's standard library and adds no resident background process. Existing applications keep their own runtimes.
+**一个 CLI，原生配置文件，没有新增常驻进程。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-## Start
+## 安装
 
-Requires macOS, Python 3.11+, Git and the applications you choose. Neovim configuration requires 0.11+. Use Homebrew to install missing tools; `mackit deps` prints the selected dependency commands.
+需要 macOS、Python 3.11+、Git；Neovim 配置需要 0.11+。先安装你选择的应用。缺 Python 时用 `brew install python`；依赖清单由 `mackit deps` 输出。
 
 ```sh
 git clone https://github.com/zengtianli/mackit.git ~/.local/share/mackit
 cd ~/.local/share/mackit
 ./bin/mackit deps
-./install.sh                         # inspect changes
-./install.sh --apply                 # back up and install
+./install.sh
+./install.sh --apply
 ```
 
-Start a new terminal, then:
+第一条 install 只预览，第二条备份并安装。也可按需选组件：
 
 ```sh
-config nvim                         # editor entry
-mackit edit nvim-keys                # all custom editor keys
-mackit keys 编号                     # find the 01_, 02_ numbering action
-mackit doctor                       # sources, dependencies, declared key conflicts
-mackit restore                      # restore the most recent installation
+./install.sh --apply --components zsh,nvim,tmux
 ```
 
-Choose components: `./install.sh --apply --components zsh,nvim,tmux`. Existing files and symlinks are moved into a transaction backup, not discarded. If you replace an installed link with new content, restore refuses to erase that content. Local additions in `~/.config/mackit/` survive updates and restores.
-
-## Profiles
-
-- **developer**: native Neovim movement and Ctrl-W window commands; optional desktop integrations are not installed by default.
-- **tianli**: S/Q save/quit, J/K move 15 lines, Space leader, Option-S tmux prefix and right-side modifier conventions. Select with `--profile tianli`. Business commands, credentials, history, Git identity and device identifiers are excluded from the release.
-
-Hammerspoon starts with global shortcuts disabled in the developer profile. Enable individual shortcuts and keyboard rules through its menu bar. Installing configuration does not grant Accessibility/Input Monitoring permission or start background services.
-
-## Where to edit
-
-| Task | Command | Source |
-|---|---|---|
-| Neovim keys | `mackit edit nvim-keys` | `components/nvim/lua/config/keymaps.lua` |
-| Line numbers | `mackit edit number` | `components/nvim/lua/config/options.lua` |
-| zsh keys | `mackit edit zsh-keys` | `components/zsh/keymaps.zsh` |
-| Desktop keys | `mackit edit hs-keys` | `components/hammerspoon/keymaps.lua` |
-| tmux keys | `mackit edit tmux-keys` | `components/tmux/keymaps.conf` |
-| Personal shell | `mackit edit local` | `~/.config/mackit/local.zsh` |
-
-Key declarations and action implementations are separate. Plugin activation can still be lazy; the declaration stays in the keymaps owner. The handbook is generated from these native sources using `python3 scripts/build-handbook.py`.
-
-## Local additions and updates
-
-See [configuration and recovery](docs/configuration.md). Local hooks are opt-in and run only when explicitly invoked. Optional document tools and office automation are not bundled.
-
-For a Git checkout, `mackit update` accepts only a clean working tree and a fast-forward update. Keep your edits in Git or local overlays; review `mackit plan` and apply after an update. Archive users can install a new release beside the previous release and apply from it.
-
-## Verification
+重新打开终端：
 
 ```sh
-python3 -m unittest discover -s tests -v
-python3 scripts/build-handbook.py
-python3 scripts/package.py
+config nvim                 # 打开 nvim 主配置
+config zsh                  # 打开 zsh 主配置
+mackit edit nvim-keys        # 所有自定义 nvim 键位
+mackit edit number           # 行号、缩进、显示选项
+mackit keys 编号             # 找到“选中多行 → 空格 n l”
+mackit doctor               # 检查安装来源、依赖及声明冲突
+mackit restore              # 恢复最近一次安装前的配置
 ```
 
-Tests cover installation into isolated homes, idempotence, rollback, preservation of new user files and real headless Neovim numbering. Source checks do not prove which external application receives a physical key, nor do they verify macOS permissions. See [validation](docs/validation.md) for the release's tested scope.
+编号效果：`01_第一行`、`02_第二行`。配置绑定与文本处理实现在不同文件，查看按键不用再翻功能代码。
 
-MIT for MacKit's original code. Bundled third-party components retain their licenses; see [THIRD_PARTY.md](THIRD_PARTY.md).
+## 两种预设
 
+- **developer**：保留 Neovim 原生移动和 Ctrl-W 窗口键，默认只安装终端组件。
+- **tianli**：保留 S 保存、Q 退出、J/K 移动15行、空格 Leader，以及桌面的右侧修饰键习惯。使用 `--profile tianli` 选择。
+
+Hammerspoon 在 developer 预设下默认不开全局键，可从菜单栏逐项启用。配置安装不代替 macOS 权限授权，也不会自动启动窗口管理服务。
+
+个人目录、账号、历史、Git 身份与设备标识不随开源包分发。本机覆盖放在 `~/.config/mackit/`，更新时保留。安装会备份既有文件与软链；若安装后你换成了新的配置，恢复命令会先拒绝覆盖新内容。
+
+## 结构
+
+```text
+components/    每个应用的配置、keymaps、功能实现
+profiles/      developer / tianli 预设
+mackit/        安装、恢复、查询与检查
+data/          从键位声明生成的索引
+site/          产品主页与自动生成手册
+tests/         隔离安装和原生配置验证
+```
+
+详见[配置与恢复](docs/configuration.md)、[实际验证范围](docs/validation.md)。源码声明检查不能定位所有第三方 App 的抢键。
+
+MIT；第三方代码保留其原许可，见 [THIRD_PARTY.md](THIRD_PARTY.md)。
