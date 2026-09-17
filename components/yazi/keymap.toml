@@ -288,10 +288,6 @@ keymap = [
 	], run = "cd ~/Desktop", desc = "Go to the desktop directory" },
 	{ on = [
 		"g",
-		"i",
-	], run = "cd ~/Archives/scatter/Github", desc = "Go to the Github directory" },
-	{ on = [
-		"g",
 		"f",
 		"f",
 	], run = "cd ~/.config" },

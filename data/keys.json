@@ -6381,13 +6381,6 @@
   },
   {
     "component": "yazi",
-    "description": "Go to the Github directory",
-    "key": "g i",
-    "mode": "mgr",
-    "source": "components/yazi/keymap.toml"
-  },
-  {
-    "component": "yazi",
     "description": "Go to the root directory",
     "key": "g r",
     "mode": "mgr",
