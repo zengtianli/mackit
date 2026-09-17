@@ -305,7 +305,7 @@ keymap = [
 		"g",
 		"f",
 		"l",
-	], run = "cd ~/.config/jesseduffield/lazygit" },
+	], run = "cd ~/.config/lazygit" },
 	{ on = [
 		"g",
 		"<Space>",
