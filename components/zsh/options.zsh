@@ -1,6 +1,6 @@
 # Paths are deduplicated; no package installation at interactive startup.
 typeset -U path PATH
-path=("$HOME/.local/bin" /opt/homebrew/bin /usr/local/bin $path)
+path=("$HOME/.local/bin" /opt/homebrew/bin /opt/homebrew/sbin /usr/local/bin $path)
 export EDITOR=nvim
 export VISUAL=nvim
 HISTFILE="$HOME/.zsh_history"
