@@ -217,7 +217,7 @@
   },
   {
     "component": "hammerspoon",
-    "description": "切换 Cardinal",
+    "description": "切换 Sift",
     "key": "right-cmd+c",
     "mode": "global",
     "profile": "tianli",

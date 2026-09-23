@@ -243,7 +243,7 @@ M.right_command = {
 	f = "Finder",
 	t = "Ghostty",
 	s = "moomoo", -- s=stock 股票 (m 已让给 Music)
-	c = "Cardinal",
+	c = "Sift", -- c 原为 Cardinal；2026-09-23 换成替代它的 Sift，右⌘+C 习惯不变
 }
 M.ctrl_vim = {
 	[4]  = { {}, "left" },                -- h → 左
