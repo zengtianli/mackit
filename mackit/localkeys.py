@@ -14,7 +14,7 @@ from pathlib import Path
 
 MODS = {"cmd": "cmd", "command": "cmd", "⌘": "cmd", "ctrl": "ctrl", "control": "ctrl", "⌃": "ctrl",
         "alt": "alt", "opt": "alt", "option": "alt", "⌥": "alt", "shift": "shift", "⇧": "shift",
-        "right-cmd": "right-cmd", "hyper": "hyper"}
+        "right-cmd": "right-cmd", "left-cmd": "cmd", "hyper": "hyper"}
 # Carbon key codes (US layout) for the keys hot keys usually use.
 KEYCODES = {0:"a",11:"b",8:"c",2:"d",14:"e",3:"f",5:"g",4:"h",34:"i",38:"j",40:"k",37:"l",46:"m",45:"n",31:"o",
             35:"p",12:"q",15:"r",1:"s",17:"t",32:"u",9:"v",13:"w",7:"x",16:"y",6:"z",18:"1",19:"2",20:"3",21:"4",

@@ -18,6 +18,8 @@ class LocalKeysTests(unittest.TestCase):
   self.assertEqual(localkeys.normalize("cmd+ctrl+shift+h"), localkeys.normalize("shift+ctrl+cmd+H"))
   self.assertEqual(localkeys.normalize("right-cmd+c"), "right-cmd+c")
   self.assertNotEqual(localkeys.normalize("right-cmd+c"), localkeys.normalize("cmd+c"))
+  # Holding left ⌘ + C is the same key press as ⌘C, so it conflicts with app shortcuts.
+  self.assertEqual(localkeys.normalize("left-cmd+c"), localkeys.normalize("cmd+c"))
   self.assertEqual(localkeys.normalize("space"), "space")
   self.assertIsNone(localkeys.normalize("super+x"))
 
