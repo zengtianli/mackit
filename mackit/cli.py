@@ -2,6 +2,10 @@
 from __future__ import annotations
 import argparse, contextlib, fcntl, hashlib, json, os, shlex, shutil, subprocess, sys, tempfile, time, uuid
 from pathlib import Path
+try:
+ from mackit.localkeys import local_rows, conflicts
+except ImportError:  # run as a script from the repo
+ from localkeys import local_rows, conflicts
 
 ROOT = Path(sys.executable).resolve().parents[1] if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[1]
 COMPONENTS = {
@@ -204,17 +208,19 @@ def doctor(args,home):
    identity=(row["component"],mode,row["key"],row.get("condition","always"))
    if identity in seen:issues.append("duplicate declaration: "+" / ".join(identity[:3]))
    seen.add(identity)
- print(json.dumps({"profile":p["profile"],"issues":sorted(set(issues)),"note":"Checks managed sources, dependencies and declared key scope; physical delivery, plugin defaults and external app interception require runtime verification."},ensure_ascii=False,indent=2))
+ extra,extra_issues=local_rows(home);issues+=extra_issues
+ issues+=conflicts([r for r in key_data() if r.get("profile",p["profile"])==p["profile"]]+extra,home)
+ print(json.dumps({"profile":p["profile"],"issues":sorted(set(issues)),"note":"Checks managed sources, dependencies, declared key scope, and keys registered by apps (keys.d) or Keyboard Maestro; physical delivery, plugin defaults and undeclared app interception require runtime verification."},ensure_ascii=False,indent=2))
  return bool(issues)
 def key_data():
  p=ROOT/"data/keys.json"
  return read(p,[])
 def keys(args):
- rows=key_data();term=(args.query or "").lower()
+ rows=key_data()+local_rows(Path.home())[0];term=(args.query or "").lower()
  rows=[r for r in rows if (not args.component or r["component"]==args.component) and term in json.dumps(r,ensure_ascii=False).lower() and (not r.get("profile") or not args.profile or r["profile"]==args.profile)]
  if args.json:print(json.dumps(rows,ensure_ascii=False,indent=2));return
  for r in rows:print(f'{r["component"]:12} {r.get("mode",""):8} {r["key"]:24} {r["description"]}  [{r["source"]}]')
- print(f"{len(rows)} bindings. Native plugin defaults and external application shortcuts are outside this catalog.")
+ print(f"{len(rows)} bindings. Includes apps registered in ~/.config/mackit/keys.d and active Keyboard Maestro hot keys; native plugin defaults and unregistered apps are outside this catalog.")
 def main(argv=None):
  parser=argparse.ArgumentParser(prog="mackit",description="Mac configuration you can find, understand and restore.")
  parser.add_argument("--home",type=Path,default=Path.home(),help="Target HOME (isolated validation supported)")
@@ -227,7 +233,7 @@ def main(argv=None):
  s=subs.add_parser("restore");s.add_argument("transaction",nargs="?")
  s=subs.add_parser("edit");s.add_argument("component",nargs="?");s.add_argument("--print",dest="print_path",action="store_true")
  s=subs.add_parser("action");s.add_argument("name");s.add_argument("args",nargs=argparse.REMAINDER)
- s=subs.add_parser("keys");s.add_argument("query",nargs="?");s.add_argument("--component",choices=list(COMPONENTS));s.add_argument("--profile",choices=["developer","tianli"]);s.add_argument("--json",action="store_true")
+ s=subs.add_parser("keys");s.add_argument("query",nargs="?");s.add_argument("--component",help="e.g. nvim, hammerspoon, initials, keyboard-maestro");s.add_argument("--profile",choices=["developer","tianli"]);s.add_argument("--json",action="store_true")
  subs.add_parser("update")
  subs.add_parser("gui",help=argparse.SUPPRESS)
  args=parser.parse_args(argv);home=args.home.expanduser().absolute()

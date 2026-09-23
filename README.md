@@ -49,9 +49,11 @@ config zsh                  # 打开 zsh 主配置
 mackit edit nvim-keys        # 所有自定义 nvim 键位
 mackit edit number           # 行号、缩进、显示选项
 mackit keys 编号             # 找到“选中多行 → 空格 n l”
-mackit doctor               # 检查安装来源、依赖及声明冲突
+mackit doctor               # 检查安装来源、依赖及声明冲突（含 keys.d 登记的 app 与 Keyboard Maestro）
 mackit restore              # 恢复最近一次安装前的配置
 ```
+
+自建或第三方 app 可把快捷键写成 `~/.config/mackit/keys.d/<app>.json`（`[{"component","mode":"global|app:<名称>","key","description"}]`），`mackit keys` 会一并列出，`mackit doctor` 会报告两处抢同一全局键、或 app 内快捷键被全局键先截走。已启用的 Keyboard Maestro 快捷键宏会被只读读入。
 
 编号效果：`01_第一行`、`02_第二行`。配置绑定与文本处理实现在不同文件，查看按键不用再翻功能代码。
 
