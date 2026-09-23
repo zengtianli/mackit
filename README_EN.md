@@ -41,9 +41,11 @@ Start a new terminal, then:
 config nvim                         # editor entry
 mackit edit nvim-keys                # all custom editor keys
 mackit keys 编号                     # find the 01_, 02_ numbering action
-mackit doctor                       # sources, dependencies, declared key conflicts
+mackit doctor                       # sources, dependencies, key conflicts (incl. keys.d apps, Keyboard Maestro)
 mackit restore                      # restore the most recent installation
 ```
+
+Apps can register their shortcuts in `~/.config/mackit/keys.d/<app>.json` (`[{"component","mode":"global|app:<Name>","key","description"}]`). `mackit keys` lists them, and `mackit doctor` reports two tools claiming one global key, or an in-app key that a global key intercepts first. Active Keyboard Maestro hot-key macros are read in read-only.
 
 Choose components: `./install.sh --apply --components zsh,nvim,tmux`. Existing files and symlinks are moved into a transaction backup, not discarded. If you replace an installed link with new content, restore refuses to erase that content. Local additions in `~/.config/mackit/` survive updates and restores.
 
