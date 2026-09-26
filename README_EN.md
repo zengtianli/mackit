@@ -29,7 +29,7 @@ Native SwiftUI; the configuration engine runs only for an action and exits, with
 3. Use **安装缺失软件与依赖** to install missing tools. If Homebrew is missing, use **安装 Homebrew** and complete its system installer.
 4. Choose **备份并安装配置**, then reopen your terminal and the selected applications.
 
-The Chinese-language app includes shortcut search, configuration editing with backups, dependency checks, and restoration. Existing MacKit sources are reused; fresh installations use `~/.local/share/mackit`. Enter administrator passwords only in the system installer. Accessibility/Input Monitoring permissions remain user-controlled. Optional yabai/skhd installation and services are not automated.
+The Chinese-language app includes shortcut search, configuration editing with backups, dependency checks, and restoration. The Windows page (⌘5) turns yabai settings into an explained form, records skhd shortcuts by pressing them and flags clashes with other tools, adds app rules visually, and regenerates yabairc / skhdrc with backups, optionally applying them to running yabai/skhd. Existing MacKit sources are reused; fresh installations use `~/.local/share/mackit`. Enter administrator passwords only in the system installer. Accessibility/Input Monitoring permissions remain user-controlled. Install yabai/skhd from their official instructions; once installed, the Windows page can start or stop them.
 
 Keyboard navigation: ⌘1–4 switch pages, ⌘F search, ⌘R refresh, ⌘S save, ⌘Return preview. The app package is arm64; Intel users can use the CLI below.
 

@@ -1,0 +1,46 @@
+[
+  {
+    "key": "ctrl+shift+y",
+    "action": "grid-top-1"
+  },
+  {
+    "key": "ctrl+shift+u",
+    "action": "grid-top-2"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "action": "grid-top-3"
+  },
+  {
+    "key": "ctrl+shift+o",
+    "action": "grid-top-4"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "action": "grid-bottom-1"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "action": "grid-bottom-2"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "action": "grid-bottom-3"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "action": "grid-bottom-4"
+  },
+  {
+    "key": "ctrl+shift+g",
+    "action": "left"
+  },
+  {
+    "key": "ctrl+shift+;",
+    "action": "right"
+  },
+  {
+    "key": "ctrl+shift+space",
+    "action": "full"
+  }
+]

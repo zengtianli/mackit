@@ -22,6 +22,9 @@ import SwiftUI
     @Published var editor = ""
     @Published var confirmInstall = false
     @Published var confirmRestore = false
+    @Published var window: WindowSnapshot?
+    @Published var windowDraft = WindowDraft()
+    @Published var windowSaved = WindowDraft()
     let client: EngineClient
     let demo: Bool
     init(home: String = NSHomeDirectory()) {
@@ -33,6 +36,7 @@ import SwiftUI
     }
     private var launchSnapshot: Task<Snapshot, Error>?
     var dirty: Bool { file != nil && editor != file?.content }
+    var windowDirty: Bool { window != nil && windowDraft != windowSaved }
     var newest: Transaction? { snapshot?.transactions.first { ["applied", "installing"].contains($0.status) } }
     var filteredKeys: [KeyBinding] {
         (snapshot?.keys ?? []).filter {
@@ -123,6 +127,45 @@ import SwiftUI
         run("备份并保存文件…") {
             let value = try await self.client.call(["action":"saveFile","file":self.fileID,"content":self.editor,"digest":file.digest], as: FileResponse.self)
             self.file = value; self.editor = value.content; self.message = value.message ?? "已保存"
+        }
+    }
+    func loadWindow() {
+        run("读取窗口设置…") {
+            let value = try await self.client.call(["action":"windowSnapshot"], as: WindowResponse.self).window
+            self.window = value
+            var draft = WindowDraft()
+            for spec in value.settingSpecs { draft.settings[spec.key] = value.settings[spec.key]?.text ?? "" }
+            draft.hotkeys = value.hotkeys; draft.rules = value.rules
+            self.windowDraft = draft; self.windowSaved = draft
+        }
+    }
+    func saveWindow(applyNow: Bool) {
+        guard let window else { return }
+        let settings = windowDraft.settings.filter { !$0.value.isEmpty }
+        let req: [String: Any] = ["action":"windowSave","digest":window.digest,"applyNow":applyNow,
+            "settings":settings,"hotkeys":windowDraft.hotkeys.map(\.payload),"rules":windowDraft.rules.map(\.payload)]
+        run(applyNow ? "保存并在运行中的 yabai / skhd 生效…" : "保存窗口设置…") {
+            let result = try await self.client.call(req, as: MessageResponse.self)
+            self.message = result.message
+            let value = try await self.client.call(["action":"windowSnapshot"], as: WindowResponse.self).window
+            self.window = value; self.windowSaved = self.windowDraft
+        }
+    }
+    func windowService(_ name: String, start: Bool) {
+        run(start ? "启动 \(name)…" : "停止 \(name)…") {
+            let result = try await self.client.call(["action":"windowService","service":name,"start":start], as: MessageResponse.self)
+            self.message = result.message
+            try? await Task.sleep(for: .milliseconds(600))
+            let value = try await self.client.call(["action":"windowSnapshot"], as: WindowResponse.self).window
+            self.window = value
+        }
+    }
+    /// 与其他工具的全局键冲突（skhd 是全局热键）。同一套规范化：修饰键排序 + 主键。
+    func conflicts(for key: String) -> [KeyBinding] {
+        guard let target = KeyCombo.canonical(key) else { return [] }
+        return (snapshot?.keys ?? []).filter { row in
+            row.component != "yabai" && (row.mode.contains("global") || row.mode == "outside-terminals")
+            && (row.profile == nil || row.profile == profile) && KeyCombo.canonical(row.key) == target
         }
     }
     func reveal(_ path: String) { NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath:path)]) }

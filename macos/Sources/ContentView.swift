@@ -26,13 +26,13 @@ struct ContentView: View {
                 if !model.error.isEmpty { banner(model.error,icon:"exclamationmark.triangle.fill",color:.orange) }
                 if !model.message.isEmpty { banner(model.message,icon:"checkmark.circle.fill",color:accent) }
                 Group {
-                    switch model.page { case .install: install; case .keys: keys; case .files: files; case .health: health }
+                    switch model.page { case .install: install; case .keys: keys; case .files: files; case .health: health; case .window: WindowPage(accent:accent) }
                 }.frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading)
             }.frame(minWidth:630)
         }
         .tint(accent)
         .toolbar {
-            ToolbarItem { Button(action:model.refresh) { Label("刷新",systemImage:"arrow.clockwise") }.disabled(model.busy || model.dirty).keyboardShortcut("r") }
+            ToolbarItem { Button(action:model.refresh) { Label("刷新",systemImage:"arrow.clockwise") }.disabled(model.busy || model.dirty || model.windowDirty).keyboardShortcut("r") }
             ToolbarItem { Button { model.open("https://mackit.tianli.cyou/") } label: { Label("使用帮助",systemImage:"questionmark.circle") } }
         }
         .alert("备份并安装这些配置？",isPresented:$model.confirmInstall) {

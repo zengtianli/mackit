@@ -8,7 +8,7 @@ import SwiftUI
             let alert=NSAlert(); alert.messageText="操作进行中"; alert.informativeText="请等当前操作完成后再退出，避免中断安装或恢复。"; alert.addButton(withTitle:"继续等待"); alert.runModal()
             return .terminateCancel
         }
-        if model?.dirty == true {
+        if model?.dirty == true || model?.windowDirty == true {
             let alert=NSAlert(); alert.messageText="配置还有未保存修改"; alert.informativeText="退出后将丢弃编辑器中的修改，磁盘上的配置不会改变。"; alert.addButton(withTitle:"返回编辑"); alert.addButton(withTitle:"放弃并退出")
             return alert.runModal() == .alertSecondButtonReturn ? .terminateNow : .terminateCancel
         }

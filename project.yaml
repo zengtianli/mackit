@@ -15,6 +15,7 @@ sop:
   - macos/Sources/ContentView.swift
   - macos/Sources/Models.swift
   - macos/Sources/MacKitApp.swift
+  - macos/Sources/WindowPage.swift
   media:
   - site/media
   media_meta: site/media/manifest.json

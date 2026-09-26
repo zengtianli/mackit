@@ -101,7 +101,7 @@ def inventory(home,payload,root):
     return {"installed":bool(installed),"profile":installed.get("profile","developer"),"selected":installed.get("components",cli.profile("developer")["components"]),
         "sourceRoot":str(root),"sourceVersion":(data_root/"VERSION").read_text().strip(),"appVersion":(payload/"VERSION").read_text().strip(),
         "components":defs,"profiles":{n:cli.read(data_root/"profiles"/(n+".json"))["components"] for n in ("developer","tianli")},
-        "transactions":transactions,"files":edit,"keys":cli.read(data_root/"data/keys.json",[]),"brew":shutil.which("brew") or ""}
+        "transactions":transactions,"files":edit,"keys":cli.read(data_root/"data/keys.json",[])+[{k:r[k] for k in ("component","key","description","mode","source") if k in r} for r in cli.local_rows(home)[0]],"brew":shutil.which("brew") or ""}
 
 def edit_path(request,home,root):
     ident=request.get("file","")
@@ -137,6 +137,7 @@ def dispatch(request,home):
     root=source_root(home,payload)
     action=request.get("action","snapshot")
     if action=="snapshot":return inventory(home,payload,root)
+    if action.startswith("window"):return window_action(action,request,home,payload,root)
     args=arguments(request,home)
     if action=="dependencies":return {"dependencies":dependencies(cli.selection(args,home)[1],home)}
     if action=="installDependencies":return install_dependencies(dependencies(cli.selection(args,home)[1],home),home)
@@ -182,6 +183,35 @@ def dispatch(request,home):
         message="已创建新配置文件。" if old["digest"]=="absent" else "已保存。修改前副本位于恢复记录目录。"
         return {**file_result(path),"message":message,"backup":str(backup) if old["digest"]!="absent" else ""}
     finally:cli.ROOT=payload
+
+def window_action(action,request,home,payload,root):
+    from . import window
+    base=root if valid_root(root) else payload
+    if action=="windowSnapshot":
+        loaded=window.load(base)
+        return {"window":{**loaded,**window.status(),"digest":window_digest(loaded),
+            "settingSpecs":[{"key":k,"kind":kind,"choices":rng if kind=="choice" else [],"range":rng if kind!="choice" else [],"label":label,"help":tip} for k,kind,rng,label,tip in window.SETTINGS],
+            "actions":[{"id":k,"label":v[0]} for k,v in window.ACTIONS.items()],
+            "editable":valid_root(root)}}
+    if not valid_root(root):raise ValueError("请先在“安装配置”中安装 yabai 组件后再修改窗口设置。")
+    _,state=cli.paths(home)
+    if action=="windowSave":
+        with cli.locked(state):
+            if request.get("digest")!=window_digest(window.load(root)):raise ValueError("窗口配置已被其他程序修改，请刷新后再改。")
+            saved=window.save(root,state,request)
+        live=request.get("applyNow") and home.resolve()==Path.home().resolve()  # 演示目录不动本机服务
+        applied=window.apply_live(root) if live else []
+        note="，已在运行中的 "+"、".join(applied)+" 生效" if applied else ""
+        return {"message":"已保存并重新生成 yabairc / skhdrc"+note+"。修改前副本在恢复记录目录。","backup":saved["backup"]}
+    if action=="windowService":
+        name=request.get("service");start=bool(request.get("start"))
+        if home.resolve()!=Path.home().resolve():raise ValueError("演示目录不会启停本机服务。")
+        window.service(name,start)
+        return {"message":f"{name} 已{'启动' if start else '停止'}。"}
+    raise ValueError("未知操作")
+
+def window_digest(data):
+    return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 def main(home):
     try:
