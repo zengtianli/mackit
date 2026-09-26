@@ -12,10 +12,9 @@ homepage: https://mackit.tianli.cyou
 sop:
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
   ui:
-  - macos/Sources/**
-  - macos/Resources/**
-  - mackit/**
-  - VERSION
+  - macos/Sources/ContentView.swift
+  - macos/Sources/Models.swift
+  - macos/Sources/MacKitApp.swift
   media:
   - site/media
   media_meta: site/media/manifest.json
@@ -23,3 +22,18 @@ sop:
     app: installed
   promo_url: https://mackit.tianli.cyou/
   site_build: ~/Dev/.venv/bin/python scripts/build-site.py
+  release: dist/releases/release.json
+  source:
+  - macos/**
+  - mackit/**/*.py
+  - bin/*
+  - components/**
+  - profiles/**
+  - data/**
+  - VERSION
+  - scripts/build-app.sh
+  - scripts/build-release.py
+  - scripts/assemble-app.py
+  - install.sh
+  - LICENSE
+  - THIRD_PARTY.md

@@ -21,7 +21,7 @@ Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and G
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
-<sub>v0.2.1 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 930 declared shortcuts · measured 2026-09-26. Memory is phys_footprint (the Memory column in Activity Monitor); CPU is CPU time ÷ wall time over 60 idle seconds; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+<sub>v0.2.1 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 930 declared shortcuts · measured 2026-09-26. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
 1. Open the DMG and drag **Tianli MacKit** to **Applications**.
