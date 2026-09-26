@@ -29,6 +29,8 @@ import SwiftUI
     let demo: Bool
     init(home: String = NSHomeDirectory()) {
         client = EngineClient(home: home); demo = home != NSHomeDirectory()
+        // 验证通道：`-page window` 等启动参数直接落到某页（生产路径上为空，同 iOS 的 `-tab`）。
+        if let name = UserDefaults.standard.string(forKey: "page"), let target = Page.allCases.first(where: { "\($0)" == name }) { page = target }
         // Start the read-only state query at launch so the engine runs while SwiftUI builds
         // the window; the first refresh (onAppear) takes this result instead of starting late.
         let client = client

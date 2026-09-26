@@ -84,6 +84,7 @@ struct WindowPage: View {
     ]
 
     var body: some View {
+        ScrollViewReader { proxy in
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -94,15 +95,22 @@ struct WindowPage: View {
                 if let w = model.window {
                     statusCard(w)
                     settingsCard(w)
-                    hotkeyCard(w)
-                    rulesCard
-                    saveBar(w)
+                    hotkeyCard(w).id("hotkeys")
+                    rulesCard.id("rules")
+                    saveBar(w).id("save")
                 } else {
                     ContentUnavailableView("正在读取窗口设置", systemImage: "rectangle.split.2x2", description: Text("读取 settings.json、hotkeys.json 与运行状态。"))
                 }
             }.padding(28)
         }
+        // 验证通道：`-section hotkeys|rules|save` 读到数据后直接滚到该区块（生产路径上为空）。
+        .onChange(of: model.window?.digest) { _, _ in
+            if let target = UserDefaults.standard.string(forKey: "section") { proxy.scrollTo(target, anchor: .top) }
+        }
+        }
         .onAppear { if model.window == nil { model.loadWindow() } }
+        // 进入本页时若其他操作在进行（如启动时读取配置状态），等它结束再读，避免请求被忙碌锁吞掉。
+        .onChange(of: model.busy) { _, busy in if !busy && model.window == nil { model.loadWindow() } }
     }
 
     private func card<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
@@ -161,7 +169,7 @@ struct WindowPage: View {
                         .textFieldStyle(.roundedBorder).frame(width: 150).font(.body.monospaced())
                 }
             }
-            Text(live.map { "当前 \($0)" } ?? "未运行").font(.caption.monospaced()).foregroundStyle(.secondary).frame(width: 90, alignment: .leading)
+            Text(live.map { "当前 \($0)" } ?? "未运行").font(.caption.monospaced()).foregroundStyle(.secondary).lineLimit(1).frame(width: 150, alignment: .leading)
         }.padding(.vertical, 2)
     }
 
