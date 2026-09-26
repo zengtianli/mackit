@@ -241,19 +241,31 @@ def run(args: list, timeout: int = 8) -> tuple[int, str]:
 
 
 def running(name: str) -> bool:
-    return subprocess.run(["pgrep", "-x", name], capture_output=True).returncode == 0
+    """skhd 把 pid（4 字节整数）写在 /tmp/skhd_<用户>.pid；yabai 能应答查询即在运行。都比 pgrep（约 17 ms）快。"""
+    import getpass, os, struct
+    if name == "skhd":
+        try:
+            raw = Path(f"/tmp/skhd_{getpass.getuser()}.pid").read_bytes()
+            os.kill(struct.unpack("<i", raw[:4])[0], 0)
+            return True
+        except (OSError, struct.error, ValueError):
+            return False
+    return run(["yabai", "-m", "config", "layout"], timeout=3)[0] == 0
 
 
 def status() -> dict:
+    from concurrent.futures import ThreadPoolExecutor
+    queries = [["yabai", "-m", "config", key] for key, *_ in SETTINGS]
+    # 每项一个短命令，并发查询；yabai 没在运行时这些查询直接失败，即视为未运行。
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(run, queries + [["yabai", "--version"], ["skhd", "--version"]]))
     live = {}
-    yabai_on = running("yabai")
-    if yabai_on:
-        for key, *_ in SETTINGS:
-            rc, out = run(["yabai", "-m", "config", key])
-            if rc == 0 and out:
-                live[key] = READBACK.get(out, out)
-    return {"yabai": {"installed": bool(shutil.which("yabai")), "running": yabai_on, "version": run(["yabai", "--version"])[1]},
-            "skhd": {"installed": bool(shutil.which("skhd")), "running": running("skhd"), "version": run(["skhd", "--version"])[1]},
+    for (key, *_), (rc, out) in zip(SETTINGS, results):
+        if rc == 0 and out:
+            live[key] = READBACK.get(out, out)
+    yabai_on = bool(live)
+    return {"yabai": {"installed": bool(shutil.which("yabai")), "running": yabai_on, "version": results[-2][1]},
+            "skhd": {"installed": bool(shutil.which("skhd")), "running": running("skhd"), "version": results[-1][1]},
             "live": live}
 
 
