@@ -1,0 +1,25 @@
+{
+  "version": "0.2.1",
+  "idle": {
+    "footprint_mb": 47.0,
+    "main_footprint_mb": 47.0,
+    "cpu_pct": 0.02,
+    "main_cpu_pct": 0.02,
+    "processes": [
+      {
+        "pid": 23851,
+        "name": "main",
+        "cpu_pct": 0.016,
+        "footprint_peak_mb": 47.0
+      }
+    ],
+    "process": "Tianli MacKit.app",
+    "window_s": 60,
+    "settle_s": 45,
+    "scope": "主进程 + XPC 辅助进程 + 子进程合计",
+    "method": "已公证装机版；45秒静置后60秒CPU窗口，窗口后3次phys_footprint合计峰值",
+    "measured_at": "2026-09-26",
+    "load": "{ 4.29 4.78 6.98 }"
+  },
+  "executable_sha256": "a66969a5947c2473408c3bda9d4289ec2e26c8cdce81f80ed16e360afcced4b9"
+}

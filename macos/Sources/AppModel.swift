@@ -26,7 +26,12 @@ import SwiftUI
     let demo: Bool
     init(home: String = NSHomeDirectory()) {
         client = EngineClient(home: home); demo = home != NSHomeDirectory()
+        // Start the read-only state query at launch so the engine runs while SwiftUI builds
+        // the window; the first refresh (onAppear) takes this result instead of starting late.
+        let client = client
+        launchSnapshot = Task.detached(priority: .userInitiated) { try await client.call(["action":"snapshot"], as: Snapshot.self) }
     }
+    private var launchSnapshot: Task<Snapshot, Error>?
     var dirty: Bool { file != nil && editor != file?.content }
     var newest: Transaction? { snapshot?.transactions.first { ["applied", "installing"].contains($0.status) } }
     var filteredKeys: [KeyBinding] {
@@ -50,7 +55,9 @@ import SwiftUI
         }
     }
     func refreshSnapshot(reset: Bool = false) async throws {
-        let value = try await client.call(["action":"snapshot"], as: Snapshot.self)
+        let value: Snapshot
+        if let pending = launchSnapshot { launchSnapshot = nil; value = try await pending.value }
+        else { value = try await client.call(["action":"snapshot"], as: Snapshot.self) }
         snapshot = value
         if reset { profile = value.profile; selected = Set(value.selected); invalidate() }
     }

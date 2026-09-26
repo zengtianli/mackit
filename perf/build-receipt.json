@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-09-26T19:17:01+08:00",
+  "artifact": {
+    "bundle_id": "cyou.tianli.mackit",
+    "version": "0.2.1",
+    "build": "0.2.1",
+    "executable": "Contents/MacOS/MacKit",
+    "sha256": "a66969a5947c2473408c3bda9d4289ec2e26c8cdce81f80ed16e360afcced4b9"
+  },
+  "source": {
+    "input_globs": [
+      "macos/**",
+      "mackit/**/*.py",
+      "bin/*",
+      "components/**",
+      "profiles/**",
+      "data/**",
+      "VERSION",
+      "scripts/build-app.sh",
+      "scripts/build-release.py",
+      "scripts/assemble-app.py",
+      "install.sh",
+      "LICENSE",
+      "THIRD_PARTY.md"
+    ],
+    "sha256": "b958d4c3cf3cac9c7b53eee9c373c627b36da3b13cff0a87bfd265d516dcf072",
+    "file_count": 162,
+    "commit": "7aadb136be547e6c350b5d6fa8fb2025023591c4",
+    "dirty": true
+  },
+  "build_command_sha256": "1463b59eb3e1a8a0700dfac0866a3b953bfa0eafaaa28f4799ff06872f7a7353"
+}

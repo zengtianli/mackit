@@ -1,0 +1,18 @@
+{
+  "version": "0.2.1",
+  "samples_ms": [
+    38.74774999985675,
+    40.115916000104335,
+    39.66741699969134,
+    39.447000000109256,
+    39.99004200068157,
+    39.082249999410124,
+    38.31350000018574,
+    38.877916999808804,
+    37.18762499920558,
+    37.67770899958123
+  ],
+  "median_ms": 39.0,
+  "runs": 10,
+  "validation": "installed engine same stdin JSON path as GUI, read-only snapshot; JSON checked, content not saved"
+}

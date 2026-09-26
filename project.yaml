@@ -6,6 +6,20 @@ origin: own
 description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件与备份恢复
 bundle_id: cyou.tianli.mackit
 key_scripts:
-  - bin/mackit
-  - scripts/build-app.sh
+- bin/mackit
+- scripts/build-app.sh
 homepage: https://mackit.tianli.cyou
+sop:
+  test: ~/Dev/.venv/bin/python -m unittest discover -s tests
+  ui:
+  - macos/Sources/**
+  - macos/Resources/**
+  - mackit/**
+  - VERSION
+  media:
+  - site/media
+  media_meta: site/media/manifest.json
+  measure:
+    app: installed
+  promo_url: https://mackit.tianli.cyou/
+  site_build: ~/Dev/.venv/bin/python scripts/build-site.py

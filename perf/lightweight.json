@@ -1,0 +1,139 @@
+{
+  "product": "Tianli MacKit",
+  "version": "0.2.1",
+  "measured_at": "2026-09-26",
+  "device": "Mac16,12 / Apple M4 / macOS 27.2",
+  "size": {
+    "download_mb": 9.89,
+    "installed_mb": 20.76,
+    "download_file": "MacKit-0.2.1-arm64.dmg",
+    "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含内置冻结 Python 引擎约 19 MB）",
+    "installed_bytes": 21766144,
+    "download_bytes": 10366549
+  },
+  "compare": [],
+  "idle": {
+    "footprint_mb": 47.0,
+    "main_footprint_mb": 47.0,
+    "cpu_pct": 0.02,
+    "main_cpu_pct": 0.02,
+    "processes": [
+      {
+        "pid": 23851,
+        "name": "main",
+        "cpu_pct": 0.016,
+        "footprint_peak_mb": 47.0
+      }
+    ],
+    "process": "Tianli MacKit.app",
+    "window_s": 60,
+    "settle_s": 45,
+    "scope": "主进程 + XPC 辅助进程 + 子进程合计",
+    "method": "已公证装机版；45秒静置后60秒CPU窗口，窗口后3次phys_footprint合计峰值",
+    "measured_at": "2026-09-26",
+    "load": "{ 4.29 4.78 6.98 }"
+  },
+  "data": "真实本机配置：tianli 预设 14 个组件、930 条快捷键声明",
+  "speed_cli": [
+    {
+      "key": "perf/engine-call.sh",
+      "label": "读取配置状态（与 App 相同引擎，含进程启动）",
+      "label_en": "Read configuration state (same engine as GUI, including process start)",
+      "median_ms": 39.0,
+      "runs": 10,
+      "raw": "perf/raw/engine-snapshot-0.2.1.json"
+    }
+  ],
+  "speed_gui": [],
+  "background": [],
+  "background_note": "无常驻后台进程、无 launchd/定时任务；只在用户点操作时起一次引擎子进程，结束即退出。",
+  "candidate": {
+    "status": "0.2.1 已签名、公证并安装；历史对照保留，页面使用本次装机复测",
+    "build": "本机 ad-hoc 构建 build/app，引擎与 0.2.0 相同",
+    "size": {
+      "download_mb": 9.86,
+      "installed_mb": 20.73,
+      "before": {
+        "download_mb": 10.77,
+        "installed_mb": 22.9
+      },
+      "how": "assemble-app.py：strip -x 内置 libpython（17.1→15.5 MB），App 内不再带 tests/docs/scripts/macos 图标源/README"
+    },
+    "launch_to_state_ms": {
+      "before": 379.0,
+      "after": 325.5,
+      "runs": 10,
+      "method": "临时打点构建（onAppear/配置就绪写时间戳，测完已移除），A=0.2.0 逻辑，B=启动即并行读取配置；交替各 10 次",
+      "raw": "perf/raw/startup-ab.json"
+    },
+    "idle": {
+      "footprint_mb": 48.0,
+      "cpu_pct": 0.03,
+      "window_s": 60,
+      "raw": "perf/raw/idle-candidate.json"
+    }
+  },
+  "measured_artifact": {
+    "version": "0.2.1",
+    "build": "0.2.1",
+    "executable_sha256": "a66969a5947c2473408c3bda9d4289ec2e26c8cdce81f80ed16e360afcced4b9"
+  },
+  "history": [
+    {
+      "version": "0.2.0",
+      "size": {
+        "download_mb": 10.77,
+        "installed_mb": 20.76,
+        "download_file": "MacKit-0.2.0-arm64.dmg（线上 downloads/ 与 GitHub Release 同一文件，11,292,447 字节）",
+        "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含内置冻结 Python 引擎约 19 MB）",
+        "installed_bytes": 21766144
+      },
+      "idle": {
+        "footprint_mb": 43.0,
+        "main_footprint_mb": 43.0,
+        "cpu_pct": 0.0,
+        "main_cpu_pct": 0.0,
+        "processes": [
+          {
+            "pid": 97241,
+            "name": "main",
+            "cpu_pct": 0.0,
+            "footprint_peak_mb": 43.0
+          }
+        ],
+        "process": "Tianli MacKit.app",
+        "window_s": 60,
+        "settle_s": 45,
+        "scope": "主进程 + XPC 辅助进程 + 子进程合计",
+        "measured_at": "2026-09-26",
+        "load": "{ 5.48 5.73 10.91 }",
+        "method": "已安装版 open -g -j 后台隐藏启动，静置 45 秒；复用 measure.py idle_with_helpers：60 秒 CPU 窗口内不查询 footprint，窗口后 3 次同一时刻主进程与辅助进程 phys_footprint 合计取峰值。"
+      },
+      "speed_gui": [
+        {
+          "key": "launch_to_state",
+          "what": "冷启动到读出配置状态（App 启动时第一次引擎调用结束）",
+          "median_ms": 374.0,
+          "runs": 10,
+          "method": "perf/launch-probe.py：open -g -j 后台启动，5 ms 轮询进程表记录引擎子进程退出时刻；不合成输入、不抢焦点。pgrep 轮询精度约 ±30 ms",
+          "raw": "perf/raw/launch-0.2.0.txt",
+          "load": "采样时 1 分钟负载约 6（02:14）"
+        }
+      ],
+      "speed_cli": [
+        {
+          "key": "perf/engine-call.sh",
+          "cmd": "perf/engine-call.sh",
+          "median_ms": 38.4,
+          "runs": 30,
+          "what": "一次引擎调用：读取配置状态 snapshot（与 App 相同的 stdin JSON 调用，只读）",
+          "raw": "perf/raw/engine-snapshot-0.2.0.json",
+          "load": "采样时 1 分钟负载约 5.6（02:15）；同机负载 30–60 时同一命令中位 80–190 ms，受其他进程影响，不作页面口径"
+        }
+      ]
+    }
+  ],
+  "why": "原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。",
+  "why_en": "Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.",
+  "data_en": "Real local configuration: 14 components and 930 declared shortcuts"
+}

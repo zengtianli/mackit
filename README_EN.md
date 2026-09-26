@@ -12,6 +12,18 @@ MacKit brings zsh, Neovim, Hammerspoon, Ghostty, tmux, Yazi, Karabiner and yabai
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.
 
+<!-- lightweight:start -->
+## Lightweight (measured)
+
+| Download | Idle memory | Idle CPU | Read configuration state (same engine as GUI, including process start) |
+|---|---|---|---|
+| **10.4 MB** (installed 21.8 MB) | **47 MB** | **0.02%** | **39 ms** |
+
+Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
+
+<sub>v0.2.1 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 930 declared shortcuts · measured 2026-09-26. Memory is phys_footprint (the Memory column in Activity Monitor); CPU is CPU time ÷ wall time over 60 idle seconds; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+<!-- lightweight:end -->
+
 1. Open the DMG and drag **Tianli MacKit** to **Applications**.
 2. Select a preset and components in **安装配置**, then click **预览配置变化** to review changes.
 3. Use **安装缺失软件与依赖** to install missing tools. If Homebrew is missing, use **安装 Homebrew** and complete its system installer.

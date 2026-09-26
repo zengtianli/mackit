@@ -22,8 +22,8 @@ xcrun swiftc -swift-version 5 -O -parse-as-library -target "$ARCH-apple-macos14.
 SIGN_ARGS=()
 if [ "$IDENTITY" != '-' ]; then SIGN_ARGS=(--codesign-identity "$IDENTITY"); fi
 "$PYTHON" -m PyInstaller --noconfirm --clean --onedir --name mackit --paths "$MACKIT_DIR" --distpath build/frozen --workpath build/pyinstaller --specpath build --target-arch "$ARCH" "${SIGN_ARGS[@]}" bin/mackit
-python3 scripts/build-release.py
-python3 scripts/assemble-app.py
+"$PYTHON" scripts/build-release.py
+"$PYTHON" scripts/assemble-app.py
 cp build/native/MacKit "$APP/Contents/MacOS/MacKit"
 cp macos/Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 if [ "$IDENTITY" = '-' ]; then

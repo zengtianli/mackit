@@ -1,0 +1,8 @@
+{
+  "idle": {
+    "process": "scratchpad/B/Tianli MacKit.app/Contents/MacOS/MacKit",
+    "footprint_mb": 48.0,
+    "cpu_pct": 0.03,
+    "window_s": 60
+  }
+}
