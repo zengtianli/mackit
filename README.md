@@ -13,7 +13,7 @@
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 
 <!-- lightweight:start -->
-## 轻量（本机实测）
+## 资源占用
 
 | 安装包 | 空闲内存 | 空闲 CPU | 读取配置状态（与 App 相同引擎，含进程启动） |
 |---|---|---|---|
@@ -21,7 +21,7 @@
 
 原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。
 
-<sub>v0.2.1 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、930 条快捷键声明 · 2026-09-26 本机实测。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v0.2.1 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、930 条快捷键声明 · 2026-09-26。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。
