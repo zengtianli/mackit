@@ -16,9 +16,13 @@ media = ROOT / 'site/media'
 meta = json.loads((media / 'manifest.json').read_text())
 for name in ('style.css', 'icon.svg', 'keys.html'):
     shutil.copy2(ROOT / 'site' / name, out / name)
+sys.path.insert(0, str(Path.home() / 'Dev/tools/dev/lib/tools/macapp'))
+from product_icons import render_icon
+render_icon(ROOT / 'macos/Resources/AppIcon.icns', out / 'icon.png')
 perf = json.loads((ROOT / 'perf/lightweight.json').read_text())
 block = standalone_section(ROOT / 'perf/lightweight.json', version, accent='#476d59')
 page = (ROOT / 'site/index.template.html').read_text()
+page = page.replace('icon.svg', 'icon.png')
 fields = {
     '__LIGHTWEIGHT__': block,
     '__PKG_MB__': f"{perf['size']['download_bytes'] / 1_000_000:.1f}",

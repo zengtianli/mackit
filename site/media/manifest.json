@@ -29,5 +29,12 @@
     "physical global key delivery",
     "fresh plugin download",
     "GUI permission dialogs"
-  ]
+  ],
+  "reused_for": {
+    "0.2.1": {
+      "reviewed_at": "2026-09-26",
+      "reason": "现有视频明确为0.1.0 CLI真实操作回放，非GUI连续实录；0.2.1只改GUI启动预读与包体裁剪，CLI已通过21个真实功能测试，视频覆盖查键、配置预览、安装、恢复的命令接口没有改变。GUI截图继续展示当前相同布局，未冒称新录。",
+      "ui_change": "macos/Sources/AppModel.swift: 在init预读snapshot并在首次refresh复用，无ContentView布局变化"
+    }
+  }
 }
