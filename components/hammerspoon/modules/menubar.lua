@@ -96,7 +96,7 @@ function M.build_menu()
     add_group("global", "全局")
 
     local features={}
-    for _,feature in ipairs({{"hyper","右 Option → Hyper"},{"vim_nav","Ctrl+HJKL 导航（终端除外）"},{"rcmd","右 Command 切换应用"},{"wechat","微信启动快捷键"}}) do
+    for _,feature in ipairs({{"hyper","右 Option → Hyper"},{"vim_nav","Ctrl+HJKL 导航（终端除外）"},{"wechat","微信启动快捷键"}}) do
         local name,label=feature[1],feature[2]
         table.insert(features,{title=label,checked=settings[name],fn=function()
             local data=read_overrides()

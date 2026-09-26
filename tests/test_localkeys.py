@@ -41,12 +41,9 @@ class LocalKeysTests(unittest.TestCase):
    {"component": "hammerspoon", "mode": "finder", "key": "cmd+shift+n", "description": "folder"},
   ]
   issues = localkeys.conflicts(rows, self.home)
-  self.assertEqual(len(issues), 2, issues)
-  self.assertTrue(any("claimed twice: right-cmd+c" in i for i in issues))
+  # Hammerspoon no longer owns right-⌘ (Initials does), so only the Sift clash remains.
+  self.assertEqual(len(issues), 1, issues)
   self.assertTrue(any("Sift key cmd+h" in i for i in issues))
-  # Turning Hammerspoon's rcmd off removes its right-⌘ claims.
-  (self.home / ".config/mackit/hotkey_overrides.json").write_text(json.dumps({"features": {"rcmd": False}}))
-  issues = localkeys.conflicts(rows, self.home)
   self.assertFalse(any("right-cmd" in i for i in issues), issues)
 
  def test_keyboard_maestro_active_hot_keys_only(self):

@@ -94,21 +94,14 @@ def normalize(key: str) -> str | None:
     return "+".join(canon + [last])
 
 
-def rcmd_disabled(home: Path) -> bool:
-    try:
-        overrides = json.loads((config_dir(home) / "hotkey_overrides.json").read_text())
-    except (OSError, ValueError):
-        return False
-    return (overrides.get("features") or {}).get("rcmd") is False
-
-
 def conflicts(rows: list[dict], home: Path) -> list[str]:
     """Two tools on one system-wide key, or an app key that a global key intercepts first."""
-    skip_rcmd = rcmd_disabled(home)
     glob, local = {}, []
     for row in rows:
         mode = row.get("mode", "")
-        if row["component"] == "hammerspoon" and skip_rcmd and row["key"].startswith("right-cmd+"):
+        # Right-⌘ app switching moved to Initials (2026-09-27); Hammerspoon's keymaps.lua
+        # right_command table is only an import source for Initials, never a live claim.
+        if row["component"] == "hammerspoon" and row["key"].startswith("right-cmd+"):
             continue
         key = normalize(row["key"])
         if key is None:
