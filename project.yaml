@@ -13,11 +13,23 @@ key_scripts:
 homepage: https://mackit.tianli.cyou
 sop:
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
+  test_inputs:
+  - tests/**
+  - scripts/accept/**
+  - scripts/release-checksums.py
+  accept:
+    functionality: python3 scripts/accept/functionality.py
+    recovery: python3 scripts/accept/recovery.py
+    privacy: python3 scripts/accept/privacy.py
+    native_ui: python3 scripts/accept/native_ui.py
   ui:
   - macos/Sources/ContentView.swift
   - macos/Sources/Models.swift
   - macos/Sources/MacKitApp.swift
   - macos/Sources/WindowPage.swift
+  - macos/Sources/AppModel.swift
+  - macos/Sources/EngineClient.swift
+  - macos/Sources/UISelfTest.swift
   media:
   - site/media
   media_meta: site/media/manifest.json
@@ -25,7 +37,7 @@ sop:
     app: installed
   promo_url: https://mackit.tianli.cyou/
   site_build: ~/Dev/.venv/bin/python scripts/build-site.py
-  release: dist/releases/release.json
+  release: perf/release.json
   source:
   - macos/**
   - icon/**

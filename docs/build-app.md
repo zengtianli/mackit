@@ -17,4 +17,8 @@ bash scripts/build-app.sh
 
 测试仅操作临时目录；完整软件安装、系统权限和下载插件仍需在适合的环境中验收。版本升级不要覆盖已有 GitHub Release 的同名资产。
 
+固定产品验收见 [acceptance.md](acceptance.md)。`--ui-self-test` 在进程内离屏运行真实界面，不启动常规窗口。
+
+维护者打包前须由实际构建生成 `perf/build-receipt.json`（Chapter 的 `app_sop.py build-receipt` 入口）；回执记录干净提交、源码摘要、App 版本和可执行摘要。`scripts/release-checksums.py` 校验回执与待打包 App，一致后同时生成 `dist/releases/release.json` 与入库的 `perf/release.json`。回执过期或缺失时停止，不能用打包时的 HEAD 冒充构建来源，也不能把新代码的回执绑定到旧发行包。
+
 正式图标唯一源位于 `icon/`：Seedream 原图、提示词、打包后的 `AppIcon.png` / `AppIcon.icns` 与 `provenance.json`。构建与官网读取同一份打包图标；不要使用代码符号图覆盖正式素材。

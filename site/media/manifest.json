@@ -36,6 +36,11 @@
       "reason": "现有视频明确为0.1.0 CLI真实操作回放，非GUI连续实录；0.2.1只改GUI启动预读与包体裁剪，CLI已通过21个真实功能测试，视频覆盖查键、配置预览、安装、恢复的命令接口没有改变。GUI截图继续展示当前相同布局，未冒称新录。",
       "ui_change": "macos/Sources/AppModel.swift: 在init预读snapshot并在首次refresh复用，无ContentView布局变化"
     },
+    "0.3.1": {
+      "reviewed_at": "2026-09-28",
+      "reason": "现有截图仍对应已发布及已装机的 0.3.1；CLI 视频仍明确标注原始 0.1.0 回放。本轮只增加 --ui-self-test 入口及离屏测试实现，常规启动仍调用同一个 MacKitApp，未修改 ContentView、AppModel 或窗口页的布局和动作。当前源码的进程内交互另由固定 native_ui 验收证明，未把测试候选冒充已发布版本。",
+      "ui_change": "macos/Sources/MacKitApp.swift 的 @main 移至 UISelfTest.swift 内的分流入口；无普通用户界面变化"
+    },
     "0.3.0": {
       "reviewed_at": "2026-09-27",
       "reason": "视频是 0.1.0 CLI 真实操作回放，覆盖的查键、预览、安装、恢复命令接口在 0.3.0 未改变；新增窗口页用 0.3.0 已公证装机版的真实截图 window.png / window-hotkeys.png 展示，未冒称新录视频。",

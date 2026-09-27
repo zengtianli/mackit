@@ -16,7 +16,7 @@ import SwiftUI
     }
 }
 
-@main struct MacKitApp: App {
+struct MacKitApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var model: AppModel
     init() {
