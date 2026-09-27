@@ -1,5 +1,7 @@
 name: mackit
-display_name: Tianli MacKit
+name_en: MacKit
+name_zh: 配置助手
+display_name: MacKit · 配置助手
 form: macos
 lifecycle: active
 origin: own
