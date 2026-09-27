@@ -1,0 +1,47 @@
+{
+  "version": "0.3.1",
+  "executable_sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
+  "records": [
+    {
+      "file": "site/media/app.png",
+      "pid": 2220,
+      "window_id": 2987,
+      "arguments": [
+        "-page",
+        "keys"
+      ],
+      "sha256": "0b707086ba8a24e7b2438dab7bb28b40af36ec5c3b61c6c8c2b2f90252973c35",
+      "captured_at": "2026-09-27T14:20:11.984180+08:00",
+      "method": "Installed app launched in background with supported page/section arguments; passive per-window screencapture, no input or foreground activation"
+    },
+    {
+      "file": "site/media/window.png",
+      "pid": 2278,
+      "window_id": 2997,
+      "arguments": [
+        "-page",
+        "window"
+      ],
+      "sha256": "cd2a6100a2ff8f0e4b057070031d1004f1d7b533d57d009130b6c3fb1fe9d10c",
+      "captured_at": "2026-09-27T14:20:14.777116+08:00",
+      "method": "Installed app launched in background with supported page/section arguments; passive per-window screencapture, no input or foreground activation"
+    },
+    {
+      "file": "site/media/window-hotkeys.png",
+      "pid": 2446,
+      "window_id": 2998,
+      "arguments": [
+        "-page",
+        "window",
+        "-section",
+        "hotkeys"
+      ],
+      "sha256": "51b9cf677f493e06c9cb51601e9380080b56de45976488565145cab812cfd5d3",
+      "captured_at": "2026-09-27T14:20:17.430022+08:00",
+      "method": "Installed app launched in background with supported page/section arguments; passive per-window screencapture, no input or foreground activation"
+    }
+  ],
+  "visual_review": "passed",
+  "reviewed_at": "2026-09-27T14:21:09.239342+08:00",
+  "notes": "逐张实看快捷键、窗口设置、窗口快捷键3张真实窗口截图。左侧均显示同源玉绿玻璃扳手图标，底部版本0.3.1，内容清晰无缺图；未编辑配置或触发服务控制。"
+}

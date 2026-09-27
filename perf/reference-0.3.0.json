@@ -1,26 +1,24 @@
 {
   "product": "Tianli MacKit",
-  "version": "0.3.1",
+  "version": "0.3.0",
   "measured_at": "2026-09-27",
   "device": "Mac16,12 / Apple M4 / macOS 27.2",
   "size": {
-    "installed_bytes": 23687168,
-    "installed_mb": 22.59,
-    "download_bytes": 11838072,
-    "download_mb": 11.29,
-    "download_file": "MacKit-0.3.1-arm64.dmg",
-    "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含冻结引擎）"
+    "installed_bytes": 22695936,
+    "installed_mb": 21.64,
+    "download_file": "MacKit-0.3.0-arm64.dmg",
+    "download_bytes": 10827867,
+    "download_mb": 10.33,
+    "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含内置冻结 Python 引擎约 19 MB）"
   },
   "compare": [],
-  "data": "真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表）",
+  "data": "真实本机配置：tianli 预设 14 个组件、930 条快捷键声明",
   "background_note": "无常驻后台进程、无 launchd/定时任务；只在用户点操作时起一次引擎子进程，结束即退出。",
   "measured_artifact": {
-    "version": "0.3.1",
-    "build": "0.3.1",
-    "executable_sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
-    "engine_sha256": "f0b2983ea69e64820f1620600828b0a4f375991efc80796729897d06f6a32d9f",
-    "icon_sha256": "b9fc6599fa7699befc9d53bf281afd66d5f44966a3eb05afb97e70f5b1f8d840",
-    "note": "本次已装机、公证的最终sidebar图标构建；5次冷启动、60秒空闲与5次CLI读取均重新实测。"
+    "version": "0.3.0",
+    "build": "0.3.0",
+    "executable_sha256": "9a7a8b4b5652be4cd30daae20e603681e2c3cd95d8cd9d22d7648a810d2155c4",
+    "note": "空闲内存/CPU 与冷启动实测于同一源码提交 3bac74c 的上一次 Developer ID 构建；本装机版为 build-receipt 按相同源码与命令重建并公证，仅签名字节不同"
   },
   "history": [
     {
@@ -228,163 +226,66 @@
           "raw": "perf/raw/idle-candidate.json"
         }
       }
-    },
-    {
-      "section": "version",
-      "replaced_on": "2026-09-27",
-      "reason": "装机：安装了轻量化后的新构建",
-      "value": "0.3.0"
-    },
-    {
-      "section": "idle",
-      "version": "0.3.0",
-      "replaced_on": "2026-09-27",
-      "reason": "版本变化；仅本次实测可作为当前证据",
-      "value": {
-        "process": "/Applications/Tianli MacKit.app",
-        "footprint_mb": 44.0,
-        "main_footprint_mb": 44.0,
-        "cpu_pct": 0.0,
-        "main_cpu_pct": 0.0,
-        "processes": [
-          {
-            "name": "main",
-            "cpu_pct": 0.0,
-            "footprint_peak_mb": 44.0
-          }
-        ],
-        "window_s": 60,
-        "settle_s": 45,
-        "measured_at": "2026-09-27",
-        "method": "open -g -j 后台启动，静置 45 秒后 measure.py idle <PID> --seconds 60 --with-helpers：内存为主进程 + WebKit/XPC 辅助进程 + 子进程同一时刻 phys_footprint 之和的峰值（活动监视器「内存」列同口径），CPU 为这些进程窗口内 CPU 时间增量之和 ÷ 墙钟",
-        "load": "负载均值 2.80 4.73 6.47；total = 8192.00M  used = 7253.81M  free = 938.19M"
-      }
-    },
-    {
-      "section": "speed_gui",
-      "version": "0.3.0",
-      "replaced_on": "2026-09-27",
-      "reason": "版本变化；仅本次实测可作为当前证据",
-      "value": [
-        {
-          "key": "cold_launch_to_window",
-          "label": "冷启动到窗口出现",
-          "median_ms": 497,
-          "runs": 5,
-          "headline": true,
-          "raw_ms": [
-            1030,
-            401,
-            493,
-            497,
-            518
-          ],
-          "method": "open -g -j 后台隐藏启动，被动读取窗口列表直到主窗口出现；不点击、不激活；5 次取中位",
-          "load": "负载均值 5.29 5.73 7.02；total = 8192.00M  used = 7325.88M  free = 866.12M"
-        }
-      ]
-    },
-    {
-      "section": "speed_cli",
-      "version": "0.3.0",
-      "replaced_on": "2026-09-27",
-      "reason": "版本变化；仅本次实测可作为当前证据",
-      "value": [
-        {
-          "key": "perf/engine-call.sh",
-          "label": "读取配置状态（与 App 相同引擎，含进程启动；含 keys.d 与 Keyboard Maestro 按键）",
-          "label_en": "Read configuration state (same engine as GUI, including process start, keys.d and Keyboard Maestro keys)",
-          "median_ms": 46.1,
-          "runs": 10,
-          "raw": "perf/raw/engine-snapshot-0.3.0.json"
-        },
-        {
-          "key": "perf/engine-call.sh windowSnapshot",
-          "label": "读取窗口页（yabai 19 项实时值 + skhd 快捷键）",
-          "label_en": "Read the Windows page (19 live yabai values + skhd shortcuts)",
-          "median_ms": 77.4,
-          "runs": 10,
-          "raw": "perf/raw/engine-window-0.3.0.json"
-        }
-      ]
-    },
-    {
-      "section": "background",
-      "version": "0.3.0",
-      "replaced_on": "2026-09-27",
-      "reason": "版本变化；仅本次实测可作为当前证据",
-      "value": []
-    },
-    {
-      "section": "size",
-      "version": "0.3.0",
-      "replaced_on": "2026-09-27",
-      "reason": "版本变化；旧安装包大小不沿用",
-      "value": {
-        "installed_bytes": 22695936,
-        "installed_mb": 21.64,
-        "download_file": "MacKit-0.3.0-arm64.dmg",
-        "download_bytes": 10827867,
-        "download_mb": 10.33,
-        "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含内置冻结 Python 引擎约 19 MB）"
-      }
     }
   ],
   "why": "原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。",
   "why_en": "Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.",
-  "data_en": "Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps",
-  "env_note": "2026-09-27 本轮仅对 MacKit 顺序测量，负载均值 4.04 18.26 38.77；total = 6144.00M  used = 4537.94M  free = 1606.06M（开始时）；启动时间受负载影响，内存与 CPU 为进程自身数值",
+  "data_en": "Real local configuration: 14 components and 930 declared shortcuts",
   "speed_gui": [
     {
       "key": "cold_launch_to_window",
       "label": "冷启动到窗口出现",
-      "median_ms": 465,
+      "median_ms": 497,
       "runs": 5,
       "headline": true,
       "raw_ms": [
-        793,
-        458,
-        465,
-        484,
-        464
+        1030,
+        401,
+        493,
+        497,
+        518
       ],
       "method": "open -g -j 后台隐藏启动，被动读取窗口列表直到主窗口出现；不点击、不激活；5 次取中位",
-      "load": "负载均值 3.82 17.51 38.14；total = 6144.00M  used = 4529.94M  free = 1614.06M",
-      "label_en": "Cold launch until the native window appears"
+      "load": "负载均值 5.29 5.73 7.02；total = 8192.00M  used = 7325.88M  free = 866.12M"
     }
   ],
   "idle": {
     "process": "/Applications/Tianli MacKit.app",
-    "footprint_mb": 49.0,
-    "main_footprint_mb": 49.0,
+    "footprint_mb": 44.0,
+    "main_footprint_mb": 44.0,
     "cpu_pct": 0.0,
     "main_cpu_pct": 0.0,
     "processes": [
       {
         "name": "main",
         "cpu_pct": 0.0,
-        "footprint_peak_mb": 49.0
+        "footprint_peak_mb": 44.0
       }
     ],
     "window_s": 60,
     "settle_s": 45,
     "measured_at": "2026-09-27",
     "method": "open -g -j 后台启动，静置 45 秒后 measure.py idle <PID> --seconds 60 --with-helpers：内存为主进程 + WebKit/XPC 辅助进程 + 子进程同一时刻 phys_footprint 之和的峰值（活动监视器「内存」列同口径），CPU 为这些进程窗口内 CPU 时间增量之和 ÷ 墙钟",
-    "load": "负载均值 5.67 13.65 34.10；total = 6144.00M  used = 4513.94M  free = 1630.06M",
-    "memory_metric": "phys_footprint",
-    "memory_note": "主进程与辅助进程合计；页面换算为十进制 MB。",
-    "memory_note_en": "App and helper physical footprint, shown in decimal MB.",
-    "cpu_note": "后台隐藏启动并静置45秒后采样60秒；0.00%为该采样窗内的显示精度，不表示运行任务时零占用。",
-    "cpu_note_en": "Measured over 60 idle seconds after a 45-second settle; 0.00% is the sample precision and does not mean zero use during work."
+    "load": "负载均值 2.80 4.73 6.47；total = 8192.00M  used = 7253.81M  free = 938.19M"
   },
+  "env_note": "2026-09-27 主会话逐个顺序测量，负载均值 5.46 5.79 7.06；total = 8192.00M  used = 7325.88M  free = 866.12M（开始时）；启动时间受负载影响，内存与 CPU 为进程自身数值",
   "speed_cli": [
     {
-      "key": "/bin/sh perf/engine-call.sh",
-      "cmd": "/bin/sh perf/engine-call.sh",
-      "median_ms": 85.1,
-      "runs": 5,
-      "label": "读取配置状态（与 App 相同引擎，含进程启动）",
-      "label_en": "Read configuration state (same engine as GUI, including process start)"
+      "key": "perf/engine-call.sh",
+      "label": "读取配置状态（与 App 相同引擎，含进程启动；含 keys.d 与 Keyboard Maestro 按键）",
+      "label_en": "Read configuration state (same engine as GUI, including process start, keys.d and Keyboard Maestro keys)",
+      "median_ms": 46.1,
+      "runs": 10,
+      "raw": "perf/raw/engine-snapshot-0.3.0.json"
+    },
+    {
+      "key": "perf/engine-call.sh windowSnapshot",
+      "label": "读取窗口页（yabai 19 项实时值 + skhd 快捷键）",
+      "label_en": "Read the Windows page (19 live yabai values + skhd shortcuts)",
+      "median_ms": 77.4,
+      "runs": 10,
+      "raw": "perf/raw/engine-window-0.3.0.json"
     }
-  ]
+  ],
+  "background": []
 }

@@ -1,16 +1,21 @@
 {
   "schema_version": 1,
-  "built_at": "2026-09-27T01:23:46+08:00",
+  "built_at": "2026-09-27T14:13:58+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.mackit",
-    "version": "0.3.0",
-    "build": "0.3.0",
+    "version": "0.3.1",
+    "build": "0.3.1",
     "executable": "Contents/MacOS/MacKit",
-    "sha256": "9a7a8b4b5652be4cd30daae20e603681e2c3cd95d8cd9d22d7648a810d2155c4"
+    "sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
+    "icon": {
+      "path": "Contents/Resources/AppIcon.icns",
+      "sha256": "b9fc6599fa7699befc9d53bf281afd66d5f44966a3eb05afb97e70f5b1f8d840"
+    }
   },
   "source": {
     "input_globs": [
       "macos/**",
+      "icon/**",
       "mackit/**/*.py",
       "bin/*",
       "components/**",
@@ -24,11 +29,11 @@
       "LICENSE",
       "THIRD_PARTY.md"
     ],
-    "sha256": "bf809821eb1dab5fc2982cbb144547f8303b1adca6db3f50a4f10d4e0c6b92a5",
-    "file_count": 162,
-    "commit": "3bac74ce76011867ad75965c17fac853742c3e86",
+    "sha256": "ae376e0ef9dc7cbada4ed783362b32b5f533fb57960c012d9d53a174ee3a6aa5",
+    "file_count": 169,
+    "commit": "ae6de2b5b48574c91a76f775f12c83b9ea102a24",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },
-  "build_command_sha256": "089bc4460185443d476a83ddd0609bddaf78aa2630ba8d354fe5ee008f7b8892"
+  "build_command_sha256": "a4258706d770895192750370e3a545a7b26c8c310c16ea526b4df0f76bec9020"
 }

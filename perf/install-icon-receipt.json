@@ -1,0 +1,12 @@
+{
+  "version": "0.3.1",
+  "installed_at": "2026-09-27T14:16:12.685005+08:00",
+  "path": "/Applications/Tianli MacKit.app",
+  "backup": "/Users/tianli/Apps/mackit/build/install-backups/20260927-141612",
+  "bundle_id": "cyou.tianli.mackit",
+  "executable_sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
+  "icon_sha256": "b9fc6599fa7699befc9d53bf281afd66d5f44966a3eb05afb97e70f5b1f8d840",
+  "resource_matches": true,
+  "dock_or_finder_observed": false,
+  "note": "Final sidebar build installed; only the agent-owned read-only inspection process was stopped. No business config writes, Dock/Finder restart or foreground input."
+}

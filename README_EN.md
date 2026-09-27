@@ -17,13 +17,17 @@ Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and G
 <!-- lightweight:start -->
 ## Resource use
 
-| Download | Idle memory | Idle CPU | Cold launch to window |
+| Download | Idle memory | Idle CPU | Cold launch until the native window appears |
 |---|---|---|---|
-| **10.8 MB** (installed 22.7 MB) | **46.1 MB** | **0%** | **497 ms** |
+| **11.8 MB** (installed 23.7 MB) | **51.4 MB** | **0%** | **465 ms** |
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
-<sub>v0.3.0 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 930 declared shortcuts · measured 2026-09-27. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+Memory conditions: App and helper physical footprint, shown in decimal MB.
+
+CPU conditions: Measured over 60 idle seconds after a 45-second settle; 0.00% is the sample precision and does not mean zero use during work.
+
+<sub>v0.3.1 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps · measured 2026-09-27. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
 1. Open the DMG and drag **Tianli MacKit** to **Applications**.

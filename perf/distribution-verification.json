@@ -1,0 +1,12 @@
+{
+  "version": "0.3.1",
+  "verified_at": "2026-09-27T14:17:54.639872+08:00",
+  "dmg_sha256": "df0ffde709c65b4b741a38d89748aeb2dd7aadab1dcdd2291ff1d6169ac377d9",
+  "dmg_bytes": 11838072,
+  "icon_matches_canonical": true,
+  "executable_matches_installed": true,
+  "signature_and_gatekeeper": "accepted",
+  "isolated_frozen_engine_snapshot": true,
+  "notarized": true,
+  "scope": "Mounted read-only official DMG; exact installed executable and canonical icon; isolated HOME engine with system-only PATH"
+}

@@ -19,11 +19,15 @@
 
 | 安装包 | 空闲内存 | 空闲 CPU | 冷启动到窗口出现 |
 |---|---|---|---|
-| **10.8 MB**（装好后 22.7 MB） | **46.1 MB** | **0%** | **497 ms** |
+| **11.8 MB**（装好后 23.7 MB） | **51.4 MB** | **0%** | **465 ms** |
 
 原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。
 
-<sub>v0.3.0 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、930 条快捷键声明 · 2026-09-27。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+内存口径：主进程与辅助进程合计；页面换算为十进制 MB。
+
+CPU 口径：后台隐藏启动并静置45秒后采样60秒；0.00%为该采样窗内的显示精度，不表示运行任务时零占用。
+
+<sub>v0.3.1 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-27。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。

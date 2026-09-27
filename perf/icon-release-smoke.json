@@ -1,0 +1,17 @@
+{
+  "version": "0.3.1",
+  "validated_at": "2026-09-27T14:08:34.645251+08:00",
+  "scope": "Final frozen engine snapshot in isolated HOME with only system PATH; no actual configuration writes or service changes",
+  "ok": true,
+  "engine_sha256": "f0b2983ea69e64820f1620600828b0a4f375991efc80796729897d06f6a32d9f",
+  "business_sources_unchanged": true,
+  "executable_sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
+  "ui_change": "ContentView sidebar uses the bundled NSApplicationIcon via NSImage at 36 pt; business interactions unchanged.",
+  "reference_evidence": {
+    "version": "0.3.0",
+    "path": "perf/reference-0.3.0.json",
+    "sha256": "fd38dd9b367f57360fc22bd5fe0005607b07f0dc1a01e92b99604eb5f40e80c0",
+    "status": "historical baseline retained; current 0.3.1 idle, cold launch, size and CLI timing re-measured after sidebar change"
+  },
+  "sidebar_visual_evidence": "perf/sidebar-media.json"
+}
