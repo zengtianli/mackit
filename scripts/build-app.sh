@@ -25,7 +25,7 @@ if [ "$IDENTITY" != '-' ]; then SIGN_ARGS=(--codesign-identity "$IDENTITY"); fi
 "$PYTHON" scripts/build-release.py
 "$PYTHON" scripts/assemble-app.py
 cp build/native/MacKit "$APP/Contents/MacOS/MacKit"
-cp macos/Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+cp icon/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 if [ "$IDENTITY" = '-' ]; then
   codesign --force --deep --sign - "$APP"
 else

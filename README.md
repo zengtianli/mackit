@@ -6,9 +6,11 @@
 
 **原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
+本次 v0.3.1 更新应用图标，采用白瓷与玉色玻璃工具造型；功能、配置与使用习惯保持原状。
+
 ## 下载 App（推荐）
 
-[下载 MacKit 0.2.0 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.2.0/MacKit-0.2.0-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.1 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.1/MacKit-0.3.1-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 

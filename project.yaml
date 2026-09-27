@@ -26,6 +26,7 @@ sop:
   release: dist/releases/release.json
   source:
   - macos/**
+  - icon/**
   - mackit/**/*.py
   - bin/*
   - components/**

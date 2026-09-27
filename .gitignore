@@ -6,6 +6,7 @@ dist/
 __pycache__/
 *.pyc
 .DS_Store
+icon/AppIcon.iconset/
 components/nvim/tmp/
 components/karabiner/automatic_backups/
 components/hammerspoon/lib/hotkey_overrides.json

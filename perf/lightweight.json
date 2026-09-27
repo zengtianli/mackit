@@ -287,5 +287,10 @@
       "raw": "perf/raw/engine-window-0.3.0.json"
     }
   ],
-  "background": []
+  "background": [],
+  "reuse": {
+    "release_version": "0.3.1",
+    "scope": "icon_only",
+    "reason": "仅替换正式应用图标及其同源公开素材；Swift界面、Python业务引擎、依赖与配置未改。保留0.3.0真实测量版本，不将其标为0.3.1实测。"
+  }
 }

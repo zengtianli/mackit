@@ -6,9 +6,11 @@ A Mac configuration kit with one place to find your keys, edit native configurat
 
 MacKit brings zsh, Neovim, Hammerspoon, Ghostty, tmux, Yazi, Karabiner and yabai/skhd into one maintained source. A native SwiftUI app and the standard-library CLI share the same installation engine. The app bundles its runtime and does not stay resident when closed. Existing applications keep their own runtimes.
 
+Version 0.3.1 refreshes the app icon with ivory porcelain and jade glass artwork. Features, configuration and shortcuts are unchanged.
+
 ## Download the macOS app
 
-[MacKit 0.2.0 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.2.0/MacKit-0.2.0-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
+[MacKit 0.3.1 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.1/MacKit-0.3.1-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.
 

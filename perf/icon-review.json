@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "app": "mackit",
+  "version": "0.3.1",
+  "kind": "icon_review",
+  "status": "passed",
+  "reviewed_at": "2026-09-27T14:06:14.080298+08:00",
+  "source": "icon/SeedreamSource.png",
+  "image": "icon/AppIcon.png",
+  "sha256": "b8336c77c4ff264585e3d515fa4ccb418e87ff675d37f143b0db619396840b5a",
+  "source_sha256": "b9697f51e4feeba7a4730b47640b9d09594a281c1355aad530fee8f96efcdf1b",
+  "review": {
+    "reviewed_at": "2026-09-27T14:06:14.080298+08:00",
+    "reviewers": [
+      "brand worker",
+      "root agent"
+    ],
+    "status": "passed",
+    "sizes_px": [
+      16,
+      32,
+      64,
+      128,
+      1024
+    ],
+    "notes": "原图与打包图已实看；扳手两钳口、U形开口与圆孔明确；32/64px仍可辨识单一工具，16px保留斜向工具轮廓。主体未被蒙版裁断，圆角外透明。浅瓷与玉玻璃相配，无文字、系统符号、额外底座或场景。"
+  },
+  "sizes": {
+    "16": {
+      "path": "icon/preview-16.png",
+      "sha256": "3448465713c13d73845ec49677113b0c079e03a677db912b865bd987dea0252c"
+    },
+    "32": {
+      "path": "icon/preview-32.png",
+      "sha256": "52cfd624b0ed5b83c24d737cf746894e416016adc78fb779751099a7770b58fc"
+    },
+    "64": {
+      "path": "icon/preview-64.png",
+      "sha256": "70bccd4ec41eafa5559cd02d24d4ac2b56de6338c64422ce9a747c9bcafebd34"
+    },
+    "128": {
+      "path": "icon/preview-128.png",
+      "sha256": "488e52707b321c4e19103e9ad8c6acf6cfbcdbf5efe91a73f0fc42b468a764be"
+    }
+  }
+}

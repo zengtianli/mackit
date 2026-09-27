@@ -1,0 +1,51 @@
+{
+  "provider": "volcengine-seedream",
+  "model": "doubao-seedream-4-0-250828",
+  "tool": "~/Dev/tools/dev/lib/tools/media/genai_image.py",
+  "source": "SeedreamSource.png",
+  "source_sha256": "b9697f51e4feeba7a4730b47640b9d09594a281c1355aad530fee8f96efcdf1b",
+  "prompt_file": "prompt.txt",
+  "generated_at": "2026-09-27T14:05:42.120232+08:00",
+  "reference": "Prior jade-glass wrench candidate; initial composition reference: Sift/SeedreamSource.png",
+  "generation_attempts": 3,
+  "rejected": [
+    {
+      "candidate": "toolbox",
+      "reason": "Multiple tools, photographic scene and no clear base; crowded at small size."
+    },
+    {
+      "candidate": "wrench",
+      "reason": "Incorrect three-prong head reads as a fork."
+    }
+  ],
+  "selected": "wrench-two-jaws: a single jade glass open-end spanner on pale ivory porcelain; no text or command symbol",
+  "packaging": {
+    "crop_box": [
+      189,
+      185,
+      835,
+      831
+    ],
+    "output_canvas_px": 1024,
+    "tile_px": 832,
+    "inset_px": 96,
+    "corner_radius_px": 188,
+    "method": "Pillow crop inside tile bevel, resize, rounded alpha mask; shared make_icon.to_icns only converts PNG to ICNS."
+  },
+  "visual_review": {
+    "reviewed_at": "2026-09-27T14:06:14.080298+08:00",
+    "reviewers": [
+      "brand worker",
+      "root agent"
+    ],
+    "status": "passed",
+    "sizes_px": [
+      16,
+      32,
+      64,
+      128,
+      1024
+    ],
+    "notes": "原图与打包图已实看；扳手两钳口、U形开口与圆孔明确；32/64px仍可辨识单一工具，16px保留斜向工具轮廓。主体未被蒙版裁断，圆角外透明。浅瓷与玉玻璃相配，无文字、系统符号、额外底座或场景。"
+  }
+}

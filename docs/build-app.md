@@ -16,3 +16,5 @@ bash scripts/build-app.sh
 `mackit gui` 是 App 使用的 JSON 协议：stdin 为一个请求对象、stdout 为一个带 `ok` 的结果、stderr 为进度。安装与恢复仍调用 CLI 的同一事务实现。`--home` 可指定隔离验证目录；App 的 `--demo-home <目录>` 对应同一路径，并禁用本机软件安装与系统权限按钮。
 
 测试仅操作临时目录；完整软件安装、系统权限和下载插件仍需在适合的环境中验收。版本升级不要覆盖已有 GitHub Release 的同名资产。
+
+正式图标唯一源位于 `icon/`：Seedream 原图、提示词、打包后的 `AppIcon.png` / `AppIcon.icns` 与 `provenance.json`。构建与官网读取同一份打包图标；不要使用代码符号图覆盖正式素材。

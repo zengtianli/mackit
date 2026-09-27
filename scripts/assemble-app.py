@@ -18,7 +18,7 @@ shutil.copytree(ROOT/"build/frozen/mackit/_internal",core/"bin/_internal",symlin
 # Lightweight bundle: the app runs only bin/mackit, mackit, components, profiles and data
 # (the same allowlist gui.ensure_source copies). Tests, docs, build scripts, the icon
 # source set and READMEs stay in the public source archive, not in the installed app.
-for name in ("tests","docs","scripts","macos","README.md","README_EN.md"):
+for name in ("tests","docs","scripts","macos","icon","README.md","README_EN.md"):
     target=core/name
     if target.is_dir() and not target.is_symlink():shutil.rmtree(target)
     elif target.exists():target.unlink()
