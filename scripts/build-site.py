@@ -28,6 +28,9 @@ page = (ROOT / 'site/index.template.html').read_text()
 page = page.replace('icon.svg', 'icon.png').replace('type="image/svg+xml"', 'type="image/png"')
 icon_version = hashlib.sha256((out / 'icon.png').read_bytes()).hexdigest()[:10]
 page = page.replace('icon.png"', f'icon.png?v={icon_version}"')
+for image_name in ('app.png', 'window.png', 'window-hotkeys.png'):
+    image_version = hashlib.sha256((media / image_name).read_bytes()).hexdigest()[:10]
+    page = page.replace(f'media/{image_name}', f'media/{image_name}?v={image_version}')
 fields = {
     '__LIGHTWEIGHT__': block,
     '__PKG_MB__': f"{package.stat().st_size / 1_000_000:.1f}",

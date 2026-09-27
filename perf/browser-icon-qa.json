@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "version": "0.3.1",
+  "checked_at": "2026-09-27T14:30:39.044575+08:00",
+  "method": "ui_automation",
+  "provider": "Official Chrome Computer Use extension",
+  "url": "https://mackit.tianli.cyou/?review=icon-0.3.1",
+  "homepage_sha256": "edeb1082fb9cafed691d840e2117a98b0659495d6b30207bd4ab0dbd4ff88ada",
+  "checks": {
+    "desktop": {
+      "result": "passed",
+      "viewport_width": 1280,
+      "document_scroll_width": 1265,
+      "visual_review": "Porcelain / jade glass icon shown in navigation; new real App screenshot shows matching sidebar icon; v0.3.1 download and 11.8 MB displayed; layout readable."
+    },
+    "mobile": {
+      "result": "passed",
+      "viewport_width": 390,
+      "document_scroll_width": 375,
+      "visual_review": "Navigation and both primary CTAs fit; hero text and App screenshot fit width; no horizontal overflow."
+    },
+    "images": {
+      "result": "passed",
+      "all_complete": true,
+      "natural_widths": [
+        640,
+        1080,
+        1080,
+        1080
+      ],
+      "content_sha256": {
+        "icon.png": "d45cbfcda31bb6d03145386b676db51dddbacd1646a2a388e212bfb1349b6e34",
+        "media/app.png": "0b707086ba8a24e7b2438dab7bb28b40af36ec5c3b61c6c8c2b2f90252973c35",
+        "media/window.png": "cd2a6100a2ff8f0e4b057070031d1004f1d7b533d57d009130b6c3fb1fe9d10c",
+        "media/window-hotkeys.png": "51b9cf677f493e06c9cb51601e9380080b56de45976488565145cab812cfd5d3"
+      },
+      "cache_versioned": true
+    },
+    "download_cta": {
+      "result": "passed",
+      "href": "https://mackit.tianli.cyou/downloads/MacKit-0.3.1-arm64.dmg"
+    },
+    "resource_text": {
+      "result": "passed",
+      "version": "0.3.1",
+      "values": [
+        "11.8 MB",
+        "23.7 MB",
+        "51.4 MB",
+        "0%",
+        "465 ms"
+      ]
+    }
+  },
+  "scope": [
+    "Current icon, native screenshots, release CTA, resource text and desktop/mobile layout.",
+    "Existing v0.1.0 CLI output replay retained with explicit historical label; playback not repeated for icon release."
+  ],
+  "cleanup": {
+    "viewport_reset": true,
+    "temporary_tab_closed": true
+  }
+}

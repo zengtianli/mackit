@@ -1,0 +1,143 @@
+{
+  "version": "0.3.1",
+  "verified_at": "2026-09-27T14:29:33.653729+08:00",
+  "site": [
+    {
+      "path": "index.html",
+      "url": "https://mackit.tianli.cyou/",
+      "status": 200,
+      "sha256": "edeb1082fb9cafed691d840e2117a98b0659495d6b30207bd4ab0dbd4ff88ada",
+      "bytes": 13991,
+      "matches_local": true
+    },
+    {
+      "path": "icon.png",
+      "url": "https://mackit.tianli.cyou/icon.png",
+      "status": 200,
+      "sha256": "d45cbfcda31bb6d03145386b676db51dddbacd1646a2a388e212bfb1349b6e34",
+      "bytes": 297960,
+      "matches_local": true
+    },
+    {
+      "path": "media/app.png",
+      "url": "https://mackit.tianli.cyou/media/app.png",
+      "status": 200,
+      "sha256": "0b707086ba8a24e7b2438dab7bb28b40af36ec5c3b61c6c8c2b2f90252973c35",
+      "bytes": 119544,
+      "matches_local": true
+    },
+    {
+      "path": "media/window.png",
+      "url": "https://mackit.tianli.cyou/media/window.png",
+      "status": 200,
+      "sha256": "cd2a6100a2ff8f0e4b057070031d1004f1d7b533d57d009130b6c3fb1fe9d10c",
+      "bytes": 136832,
+      "matches_local": true
+    },
+    {
+      "path": "media/window-hotkeys.png",
+      "url": "https://mackit.tianli.cyou/media/window-hotkeys.png",
+      "status": 200,
+      "sha256": "51b9cf677f493e06c9cb51601e9380080b56de45976488565145cab812cfd5d3",
+      "bytes": 123802,
+      "matches_local": true
+    },
+    {
+      "path": "downloads/MacKit-0.3.1-arm64.dmg",
+      "url": "https://mackit.tianli.cyou/downloads/MacKit-0.3.1-arm64.dmg",
+      "status": 200,
+      "sha256": "df0ffde709c65b4b741a38d89748aeb2dd7aadab1dcdd2291ff1d6169ac377d9",
+      "bytes": 11838072,
+      "matches_local": true
+    },
+    {
+      "path": "downloads/SHA256SUMS",
+      "url": "https://mackit.tianli.cyou/downloads/SHA256SUMS",
+      "status": 200,
+      "sha256": "cb7a183711d4ebde0f5c096773c2e871603c2a9ce5518e789cea3094cf1e7689",
+      "bytes": 349,
+      "matches_local": true
+    }
+  ],
+  "github_release": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/592304713",
+        "contentType": "application/x-apple-diskimage",
+        "createdAt": "2026-09-27T06:24:39Z",
+        "digest": "sha256:df0ffde709c65b4b741a38d89748aeb2dd7aadab1dcdd2291ff1d6169ac377d9",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jTdpJ",
+        "label": "",
+        "name": "MacKit-0.3.1-arm64.dmg",
+        "size": 11838072,
+        "state": "uploaded",
+        "updatedAt": "2026-09-27T06:24:43Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.1/MacKit-0.3.1-arm64.dmg"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/592304711",
+        "contentType": "application/zip",
+        "createdAt": "2026-09-27T06:24:39Z",
+        "digest": "sha256:16c9a0cecadbf26eb4383bd28a2ba4f53fa5a9aa01840bfd7cfdad40f027a915",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jTdpH",
+        "label": "",
+        "name": "MacKit-0.3.1-arm64.zip",
+        "size": 11057368,
+        "state": "uploaded",
+        "updatedAt": "2026-09-27T06:24:43Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.1/MacKit-0.3.1-arm64.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/592304709",
+        "contentType": "application/x-gtar",
+        "createdAt": "2026-09-27T06:24:39Z",
+        "digest": "sha256:c639033697c7042c248b56eda742492aed2732059a0228c6d55ec871dce76db6",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jTdpF",
+        "label": "",
+        "name": "mackit-v0.3.1.tar.gz",
+        "size": 2942316,
+        "state": "uploaded",
+        "updatedAt": "2026-09-27T06:24:41Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.1/mackit-v0.3.1.tar.gz"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/592304712",
+        "contentType": "application/zip",
+        "createdAt": "2026-09-27T06:24:39Z",
+        "digest": "sha256:29777296dd969b4b51d4e7a95042e44c8a457b764020fd290792089c234d6a56",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jTdpI",
+        "label": "",
+        "name": "mackit-v0.3.1.zip",
+        "size": 3000643,
+        "state": "uploaded",
+        "updatedAt": "2026-09-27T06:24:41Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.1/mackit-v0.3.1.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/592304714",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-09-27T06:24:39Z",
+        "digest": "sha256:cb7a183711d4ebde0f5c096773c2e871603c2a9ce5518e789cea3094cf1e7689",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jTdpK",
+        "label": "",
+        "name": "SHA256SUMS",
+        "size": 349,
+        "state": "uploaded",
+        "updatedAt": "2026-09-27T06:24:39Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.1/SHA256SUMS"
+      }
+    ],
+    "publishedAt": "2026-09-27T06:24:44Z",
+    "targetCommitish": "c90f67ff0af401e8342f7ecca540cfc59c971f9d",
+    "url": "https://github.com/zengtianli/mackit/releases/tag/v0.3.1"
+  },
+  "github_assets_match_local": true,
+  "notes": [
+    "Python urllib direct request received HTTP 403; normal curl HTTP client and official Chrome CUA succeeded. No access protection disabled."
+  ]
+}

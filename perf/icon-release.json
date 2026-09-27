@@ -1,6 +1,6 @@
 {
   "version": "0.3.1",
-  "status": "prepared",
+  "status": "published",
   "prepared_at": "2026-09-27T14:23:09.325337+08:00",
   "notarized": true,
   "app_notarization_id": "1e7248b6-c016-4b99-b154-8c92510acc82",
@@ -34,5 +34,17 @@
   "distribution_verification": "perf/distribution-verification.json",
   "runtime_measurements": "perf/lightweight.json",
   "business_logic_change": false,
-  "ui_change": "Sidebar brand symbol replaced by the packaged application icon through NSImage.applicationIconName."
+  "ui_change": "Sidebar brand symbol replaced by the packaged application icon through NSImage.applicationIconName.",
+  "published_at": "2026-09-27T06:24:44Z",
+  "verified_at": "2026-09-27T14:30:39.044575+08:00",
+  "homepage": "https://mackit.tianli.cyou/",
+  "github_release": "https://github.com/zengtianli/mackit/releases/tag/v0.3.1",
+  "release_target_commit": "c90f67ff0af401e8342f7ecca540cfc59c971f9d",
+  "publication_verification": "perf/publication-verification-0.3.1.json",
+  "browser_review": "perf/browser-icon-qa.json",
+  "installed_os_icon_display": {
+    "dock_or_finder_observed": false,
+    "app_sidebar_system_icon_observed": true,
+    "note": "The installed App sidebar resolves NSImage.applicationIconName and was visibly reviewed in final 0.3.1 captures. Dock/Finder display cache remains unobserved; no restart was performed."
+  }
 }
