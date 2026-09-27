@@ -1,14 +1,16 @@
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @EnvironmentObject var model: AppModel
     @FocusState private var searchFocused: Bool
     private let accent = Color(red:0.20,green:0.40,blue:0.29)
+    private static let brandIcon = NSImage(named: NSImage.applicationIconName) ?? NSImage()
     var body: some View {
         NavigationSplitView {
             VStack(alignment:.leading,spacing:18) {
                 HStack(spacing:10) {
-                    Image(systemName:"command").font(.system(size:30,weight:.bold)).foregroundStyle(accent)
+                    Image(nsImage:Self.brandIcon).resizable().interpolation(.high).frame(width:36,height:36).accessibilityLabel("MacKit 图标")
                     VStack(alignment:.leading) { Text("MacKit").font(.title2.bold()); Text("你的 Mac 配置入口").font(.caption).foregroundStyle(.secondary) }
                 }.padding(.horizontal,14).padding(.top,20)
                 List(Page.allCases,selection:$model.page) { page in Label(page.rawValue,systemImage:page.icon).tag(page).padding(.vertical,6) }
