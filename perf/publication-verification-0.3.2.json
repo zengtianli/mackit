@@ -1,0 +1,188 @@
+{
+  "version": "0.3.2",
+  "verified_at": "2026-09-28T14:24:19.199266+08:00",
+  "build_source_commit": "53052b38998fd57c4b8744daecd4f61482497d4e",
+  "site": [
+    {
+      "path": "index.html",
+      "url": "https://mackit.tianli.cyou/",
+      "sha256": "f13f44c08fdedcf5f8a9fdef4f4db7c4fa5ea8fe2c8163c97c6b81189001b41c",
+      "bytes": 13890,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "style.css",
+      "url": "https://mackit.tianli.cyou/style.css",
+      "sha256": "62cfd9fc7c729fb1f9d0ad5a684834d1c39e3a7d6cd2411ea274e8ceb56e7dd7",
+      "bytes": 6871,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "keys.html",
+      "url": "https://mackit.tianli.cyou/keys.html",
+      "sha256": "bfa76033d4f6393394eaf7be82255bf3ba02fba9092c74349570db61421b0b3d",
+      "bytes": 318842,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "icon.png",
+      "url": "https://mackit.tianli.cyou/icon.png",
+      "sha256": "d45cbfcda31bb6d03145386b676db51dddbacd1646a2a388e212bfb1349b6e34",
+      "bytes": 297960,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "media/app.png",
+      "url": "https://mackit.tianli.cyou/media/app.png",
+      "sha256": "0b707086ba8a24e7b2438dab7bb28b40af36ec5c3b61c6c8c2b2f90252973c35",
+      "bytes": 119544,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "media/window.png",
+      "url": "https://mackit.tianli.cyou/media/window.png",
+      "sha256": "cd2a6100a2ff8f0e4b057070031d1004f1d7b533d57d009130b6c3fb1fe9d10c",
+      "bytes": 136832,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "media/window-hotkeys.png",
+      "url": "https://mackit.tianli.cyou/media/window-hotkeys.png",
+      "sha256": "51b9cf677f493e06c9cb51601e9380080b56de45976488565145cab812cfd5d3",
+      "bytes": 123802,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "media/tutorial.mp4",
+      "url": "https://mackit.tianli.cyou/media/tutorial.mp4",
+      "sha256": "1dc260e1c9a93dda0f8a6887c2a3ab1af7cf8f5e57d2ba9f9fc413c5a76bca26",
+      "bytes": 230957,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "downloads/MacKit-0.3.2-arm64.dmg",
+      "url": "https://mackit.tianli.cyou/downloads/MacKit-0.3.2-arm64.dmg",
+      "sha256": "c0b46eb4b50ff0135ec8b14d2133359176e7ab7f5fec1503afe5ec98b295b121",
+      "bytes": 11871670,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "downloads/SHA256SUMS",
+      "url": "https://mackit.tianli.cyou/downloads/SHA256SUMS",
+      "sha256": "8048dbab836590cf1b953d612168bbca627d08ebb82ae16f52aee920f0f50952",
+      "bytes": 349,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    },
+    {
+      "path": "downloads/release.json",
+      "url": "https://mackit.tianli.cyou/downloads/release.json",
+      "sha256": "265d45ec622e315822700183f416a963cd508c2ea386b319775ee973d24a3716",
+      "bytes": 985,
+      "matches_local": true,
+      "via": "deployment host to public Cloudflare HTTPS",
+      "status": 200
+    }
+  ],
+  "github_release": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/594678524",
+        "contentType": "application/x-apple-diskimage",
+        "createdAt": "2026-09-28T06:19:42Z",
+        "digest": "sha256:c0b46eb4b50ff0135ec8b14d2133359176e7ab7f5fec1503afe5ec98b295b121",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jchL8",
+        "label": "",
+        "name": "MacKit-0.3.2-arm64.dmg",
+        "size": 11871670,
+        "state": "uploaded",
+        "updatedAt": "2026-09-28T06:19:50Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.2/MacKit-0.3.2-arm64.dmg"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/594678522",
+        "contentType": "application/zip",
+        "createdAt": "2026-09-28T06:19:42Z",
+        "digest": "sha256:239cc2ed8c9922da4d22381d6a9e491adbe6ff3eeaf09d9aae888468b4307e85",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jchL6",
+        "label": "",
+        "name": "MacKit-0.3.2-arm64.zip",
+        "size": 11082614,
+        "state": "uploaded",
+        "updatedAt": "2026-09-28T06:19:50Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.2/MacKit-0.3.2-arm64.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/594678539",
+        "contentType": "application/x-gtar",
+        "createdAt": "2026-09-28T06:19:43Z",
+        "digest": "sha256:90d6782d4025cf8f16ad81f27506bf03f90d4fa023dd9681d7c7c992b47d2c16",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jchML",
+        "label": "",
+        "name": "mackit-v0.3.2.tar.gz",
+        "size": 2955131,
+        "state": "uploaded",
+        "updatedAt": "2026-09-28T06:19:47Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.2/mackit-v0.3.2.tar.gz"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/594678525",
+        "contentType": "application/zip",
+        "createdAt": "2026-09-28T06:19:42Z",
+        "digest": "sha256:7ce3e9a64a88a0277b096e2f3f0c1ee10fc1612c5fcbc049c3270278dc820bc6",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jchL9",
+        "label": "",
+        "name": "mackit-v0.3.2.zip",
+        "size": 3017853,
+        "state": "uploaded",
+        "updatedAt": "2026-09-28T06:19:47Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.2/mackit-v0.3.2.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/zengtianli/mackit/releases/assets/594678523",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-09-28T06:19:42Z",
+        "digest": "sha256:8048dbab836590cf1b953d612168bbca627d08ebb82ae16f52aee920f0f50952",
+        "downloadCount": 0,
+        "id": "RA_kwDOUbfijs4jchL7",
+        "label": "",
+        "name": "SHA256SUMS",
+        "size": 349,
+        "state": "uploaded",
+        "updatedAt": "2026-09-28T06:19:43Z",
+        "url": "https://github.com/zengtianli/mackit/releases/download/v0.3.2/SHA256SUMS"
+      }
+    ],
+    "publishedAt": "2026-09-28T06:19:52Z",
+    "tagName": "v0.3.2",
+    "targetCommitish": "d1371ae39908bca73b947fa258b7da7a32b3316e",
+    "url": "https://github.com/zengtianli/mackit/releases/tag/v0.3.2"
+  },
+  "github_assets_match_local": true,
+  "notes": [
+    "Local TLS/read timeouts; file verification used the deployment host against public HTTPS with required cf-ray, without changing DNS or access controls."
+  ]
+}
