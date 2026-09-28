@@ -1,15 +1,11 @@
 {
   "product": "Tianli MacKit",
-  "version": "0.3.2",
-  "measured_at": "2026-09-28",
+  "version": "0.3.3 (0.3.3)",
+  "measured_at": "2026-09-29",
   "device": "Mac16,12 / Apple M4 / macOS 27.2",
   "size": {
-    "download_bytes": 11871670,
-    "download_mb": 11.32,
     "installed_bytes": 23773184,
-    "installed_mb": 22.67,
-    "download_file": "MacKit-0.3.2-arm64.dmg",
-    "installed_path": "/Applications/Tianli MacKit.app"
+    "installed_mb": 22.67
   },
   "compare": [],
   "data": "真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表）",
@@ -328,15 +324,53 @@
         "download_mb": 10.33,
         "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含内置冻结 Python 引擎约 19 MB）"
       }
+    },
+    {
+      "section": "version",
+      "replaced_on": "2026-09-29",
+      "reason": "装机：安装了轻量化后的新构建",
+      "value": "0.3.2"
+    },
+    {
+      "section": "idle",
+      "version": "0.3.2",
+      "replaced_on": "2026-09-29",
+      "reason": "版本变化；仅本次实测可作为当前证据",
+      "value": {}
+    },
+    {
+      "section": "speed_gui",
+      "version": "0.3.2",
+      "replaced_on": "2026-09-29",
+      "reason": "版本变化；仅本次实测可作为当前证据",
+      "value": []
+    },
+    {
+      "section": "speed_cli",
+      "version": "0.3.2",
+      "replaced_on": "2026-09-29",
+      "reason": "版本变化；仅本次实测可作为当前证据",
+      "value": []
+    },
+    {
+      "section": "size",
+      "version": "0.3.2",
+      "replaced_on": "2026-09-29",
+      "reason": "版本变化；旧安装包大小不沿用",
+      "value": {
+        "download_bytes": 11871670,
+        "download_mb": 11.32,
+        "installed_bytes": 23773184,
+        "installed_mb": 22.67,
+        "download_file": "MacKit-0.3.2-arm64.dmg",
+        "installed_path": "/Applications/Tianli MacKit.app"
+      }
     }
   ],
   "why": "原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。",
   "why_en": "Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.",
   "data_en": "Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps",
-  "env_note": "本次仅实测下载包与安装后体积；运行资源采样因整机负载 959.5 ≥ 10 核未达到空闲门，未执行。0.3.1 数值保存在 historical，不作为本版实测。",
-  "speed_gui": [],
-  "idle": {},
-  "speed_cli": [],
+  "env_note": "2026-09-29 主会话逐个顺序测量，负载均值 6.57 17.03 12.59；total = 5120.00M  used = 4186.81M  free = 933.19M（开始时）；启动时间受负载影响，内存与 CPU 为进程自身数值",
   "historical": [
     {
       "section": "version_metrics",
@@ -424,5 +458,42 @@
     "size": "measured",
     "idle": "pending_idle_gate",
     "speed": "pending_idle_gate"
+  },
+  "speed_gui": [
+    {
+      "key": "cold_launch_to_window",
+      "label": "冷启动到窗口出现",
+      "median_ms": 489,
+      "runs": 5,
+      "headline": true,
+      "raw_ms": [
+        639,
+        489,
+        493,
+        486,
+        468
+      ],
+      "method": "open -g -j 后台隐藏启动，被动读取窗口列表直到主窗口出现；不点击、不激活；5 次取中位",
+      "load": "负载均值 6.70 16.55 12.50；total = 5120.00M  used = 4186.81M  free = 933.19M"
+    }
+  ],
+  "idle": {
+    "process": "/Applications/Tianli MacKit.app",
+    "footprint_mb": 44.0,
+    "main_footprint_mb": 44.0,
+    "cpu_pct": 0.0,
+    "main_cpu_pct": 0.0,
+    "processes": [
+      {
+        "name": "main",
+        "cpu_pct": 0.0,
+        "footprint_peak_mb": 44.0
+      }
+    ],
+    "window_s": 60,
+    "settle_s": 45,
+    "measured_at": "2026-09-29",
+    "method": "open -g -j 后台启动，静置 45 秒后 measure.py idle <PID> --seconds 60 --with-helpers：内存为主进程 + WebKit/XPC 辅助进程 + 子进程同一时刻 phys_footprint 之和的峰值（活动监视器「内存」列同口径），CPU 为这些进程窗口内 CPU 时间增量之和 ÷ 墙钟",
+    "load": "负载均值 4.20 12.67 11.46；total = 5120.00M  used = 4186.81M  free = 933.19M"
   }
 }
