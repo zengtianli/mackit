@@ -6,26 +6,24 @@ A Mac configuration kit with one place to find your keys, edit native configurat
 
 MacKit brings zsh, Neovim, Hammerspoon, Ghostty, tmux, Yazi, Karabiner and yabai/skhd into one maintained source. A native SwiftUI app and the standard-library CLI share the same installation engine. The app bundles its runtime and does not stay resident when closed. Existing applications keep their own runtimes.
 
-Version 0.3.2 adds isolated functionality, recovery, privacy and native UI self-tests, with verified release provenance. Everyday features, configuration and shortcuts are unchanged.
+Version 0.3.3 ships the `mackit` command inside the app, updated with it and still working on the configuration source recorded at install. Everyday features, configuration and shortcuts are unchanged.
 
 ## Download the macOS app
 
-[MacKit 0.3.2 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.2/MacKit-0.3.2-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
+[MacKit 0.3.3 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.3/MacKit-0.3.3-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.
 
 <!-- lightweight:start -->
 ## Resource use
 
-| Download | Idle memory | Idle CPU | Speed |
+| Download | Idle memory | Idle CPU | Cold launch to window |
 |---|---|---|---|
-| **11.9 MB** (installed 23.8 MB) | **Not measured** | **Not measured** | **Not measured** |
+| **11.9 MB** (installed 23.8 MB) | **46.1 MB** | **0%** | **489 ms** |
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
-Items marked Not measured have no measurement record for this version.
-
-<sub>v0.3.2 · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps · measured 2026-09-28. Measured on the listed device; re-measured for each version. sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+<sub>v0.3.3 (0.3.3) · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps · measured 2026-09-29. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
 1. Open the DMG and drag **Tianli MacKit** to **Applications**.
@@ -34,6 +32,8 @@ Items marked Not measured have no measurement record for this version.
 4. Choose **备份并安装配置**, then reopen your terminal and the selected applications.
 
 The Chinese-language app includes shortcut search, configuration editing with backups, dependency checks, and restoration. The Windows page (⌘5) turns yabai settings into an explained form, records skhd shortcuts by pressing them and flags clashes with other tools, adds app rules visually, and regenerates yabairc / skhdrc with backups, optionally applying them to running yabai/skhd. Existing MacKit sources are reused; fresh installations use `~/.local/share/mackit`. Enter administrator passwords only in the system installer. Accessibility/Input Monitoring permissions remain user-controlled. Install yabai/skhd from their official instructions; once installed, the Windows page can start or stop them.
+
+From 0.3.3 the `mackit` command ships inside the app: after installing from the app, `~/.local/bin/mackit` points into the app bundle and updates with it, while still working on the configuration source recorded at install (`edit`, `keys`, `doctor`, `update` are unchanged). Existing installs switch by installing again from the app, or by running `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components nvim` (use a component you already installed); `mackit restore <transaction>` brings back the previous link. Source checkouts installed with `./install.sh` keep their existing link.
 
 Keyboard navigation: ⌘1–4 switch pages, ⌘F search, ⌘R refresh, ⌘S save, ⌘Return preview. The app package is arm64; Intel users can use the CLI below.
 

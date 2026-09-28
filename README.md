@@ -6,26 +6,24 @@
 
 **原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-本次 v0.3.2 补齐隔离环境下的功能、恢复、隐私与原生界面自检，并完善发行源码溯源；日常功能、配置与使用习惯保持原状。
+本次 v0.3.3 把 `mackit` 命令放进 App，随 App 一起更新，并继续使用安装时记录的配置源；日常功能、配置与使用习惯保持原状。
 
 ## 下载 App（推荐）
 
-[下载 MacKit 0.3.2 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.2/MacKit-0.3.2-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.3 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.3/MacKit-0.3.3-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 
 <!-- lightweight:start -->
 ## 资源占用
 
-| 安装包 | 空闲内存 | 空闲 CPU | 速度 |
+| 安装包 | 空闲内存 | 空闲 CPU | 冷启动到窗口出现 |
 |---|---|---|---|
-| **11.9 MB**（装好后 23.8 MB） | **未测** | **未测** | **未测** |
+| **11.9 MB**（装好后 23.8 MB） | **46.1 MB** | **0%** | **489 ms** |
 
 原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。
 
-未测项尚无本版本实测记录。
-
-<sub>v0.3.2 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-28。数字来自所列设备实测，版本更新后重新测量。大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v0.3.3 (0.3.3) · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-29。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。
@@ -34,6 +32,8 @@
 4. 点击“备份并安装配置”，完成后重新打开终端和相关应用。
 
 App 提供快捷键搜索、配置文件编辑（保存前备份）、依赖检查与按记录恢复；「窗口」页（⌘5）把 yabai 设置做成带说明的表单，skhd 快捷键可点按录制、自动标出与其他工具的冲突，应用规则可视化添加，保存时重新生成 yabairc / skhdrc 并备份，可选择立即在运行中的 yabai/skhd 生效。已有 MacKit 安装会接管原配置源；首次安装将配置放在 `~/.local/share/mackit`。管理员密码只在系统安装器输入；辅助功能等权限按系统与各应用提示自行确认。yabai/skhd 仍需按官方说明手动安装；装好后可在「窗口」页启动或停止。
+
+从 0.3.3 起 `mackit` 命令随 App 提供：从 App 安装配置后，`~/.local/bin/mackit` 指向 App 内的命令，随 App 一起更新，并继续使用安装时记录的配置源（`edit`、`keys`、`doctor`、`update` 用法不变）。已有安装可重新在 App 中安装，或运行 `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components nvim`（换成已安装的组件）切换；`mackit restore <记录>` 可恢复原来的链接。源码目录用 `./install.sh` 安装仍保持原有链接方式。
 
 App 快捷键：⌘1–4 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
 

@@ -12,6 +12,12 @@ App 支持 macOS 14+ 与 Apple Silicon。打开 DMG，将 Tianli MacKit 拖到 A
 
 已有 CLI 安装会继续使用原来的配置源。App 不会覆盖源文件的个人修改。更换预设前，按从新到旧的顺序恢复已有安装；取消勾选只表示本次不处理该组件，不卸载以前安装的配置。
 
+### 终端里的 mackit 命令
+
+从 0.3.3 起 `mackit` 命令随 App 提供，位于 `/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit`。从 App 安装配置后，`~/.local/bin/mackit` 成为指向它的软链，App 更新后命令随之更新。它与 App 一样使用安装时记录的配置源（`~/.config/mackit/profile.json` 的 `source_root`：源码安装为仓库目录，App 安装为 `~/.local/share/mackit`），因此 `mackit edit`、`keys`、`doctor`、`update` 仍作用于同一份配置。
+
+已有安装切换方式：在 App 中重新“备份并安装配置”，或运行 `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components <已安装的组件>`。切换是一次普通安装记录，`mackit restore <记录>` 可恢复原来的链接。源码目录通过 `bin/mackit` 或 `install.sh` 安装时，仍链接到原有的命令包装。
+
 ## 查询、编辑与恢复
 
 “快捷键”按用途、键名和路径搜索。编号功能是 `V` 选行后依次按空格 n l。目录来自发行包内的原生键位声明；修改键位源后，维护者应重新生成索引。它不包含所有插件内建键，也不判断其他 App 是否抢键。
