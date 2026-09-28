@@ -58,6 +58,16 @@ def paths(home):
  for p in result:
   if not p.resolve().is_relative_to(home.resolve()):raise ValueError("MacKit state escapes target home: "+str(p))
  return result
+def bundled_cli():
+ """The CLI inside an installed MacKit.app, or None when running from a source checkout."""
+ exe=Path(sys.executable).resolve()
+ return exe if getattr(sys,"frozen",False) and ".app/Contents/" in str(exe) else None
+def adopt_source(home):
+ """The app's CLI works on the source an existing install recorded (repo or ~/.local/share/mackit), as the app does."""
+ global ROOT
+ recorded=(read(home/".config/mackit/profile.json",{}) or {}).get("source_root")
+ root=Path(recorded) if recorded else None
+ if root and all((root/x).exists() for x in ("components","profiles","VERSION","bin/mackit")):ROOT=root
 @contextlib.contextmanager
 def locked(state):
  state.mkdir(parents=True,exist_ok=True)
@@ -155,7 +165,7 @@ def apply(args,home):
   entries=p["entries"]+[
    {"source":str(generation/"profile.json"),"target":str(config/"profile.json")},
    {"source":str(generation/"profile.zsh"),"target":str(config/"profile.zsh")},
-   {"source":str(generation/"mackit"),"target":str(home/".local/bin/mackit")}]
+   {"source":str(bundled_cli() or generation/"mackit"),"target":str(home/".local/bin/mackit")}]
   record={"id":tx,"status":"installing","profile":p["profile"],"components":p["components"],"operations":[]}
   receipt=state/"transactions"/(tx+".json");dump(receipt,record)
   try:
@@ -241,6 +251,7 @@ def main(argv=None):
   if args.command=="gui":
    from mackit.gui import main as gui_main
    return gui_main(home)
+  if getattr(sys,"frozen",False):adopt_source(home)
   if args.command=="plan":
    p=plan(args,home)
    if args.json:print(json.dumps(p,ensure_ascii=False,indent=2))

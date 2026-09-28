@@ -22,6 +22,16 @@ class InstallTests(unittest.TestCase):
   self.assertEqual(again["changed"],0)
   self.run_cli("restore",r["transaction"])
   self.assertEqual(z.read_text(),"original shell\n");self.assertEqual((n/"user.lua").read_text(),"private edits")
+ def test_app_cli_links_into_app_and_uses_recorded_source(self):
+  app=self.home/"Applications/Tianli MacKit.app/Contents/Resources/core";(app/"bin").mkdir(parents=True)
+  exe=app/"bin/mackit";exe.write_text("#!/bin/sh\n");exe.chmod(0o755);(app/"VERSION").write_text("0\n")
+  with patch.object(sys,"frozen",True,create=True),patch.object(sys,"executable",str(exe)),patch.object(cli,"ROOT",ROOT),contextlib.redirect_stdout(io.StringIO()) as out:
+   self.assertEqual(cli.main(["--home",str(self.home),"apply","--components","nvim"]),0)
+   self.assertEqual((self.home/".local/bin/mackit").resolve(),exe.resolve())
+   cli.ROOT=app;self.assertEqual(cli.main(["--home",str(self.home),"edit","nvim-keys","--print"]),0)
+  self.assertEqual(out.getvalue().splitlines()[-1],str(ROOT/"components/nvim/lua/config/keymaps.lua"))
+  self.run_cli("restore",json.loads(out.getvalue().splitlines()[0])["transaction"])
+  self.assertFalse(os.path.lexists(self.home/".local/bin/mackit"))
  def test_restore_does_not_delete_new_user_config(self):
   self.run_cli("apply","--components","zsh")
   z=self.home/".zshrc";z.unlink();z.write_text("new work")
