@@ -1,0 +1,13 @@
+{
+  "version": "0.3.2",
+  "artifact": {
+    "version": "0.3.2",
+    "build": "0.3.2",
+    "bundle_id": "cyou.tianli.mackit",
+    "sha256": "054b5f99b1059270c21b10a6b13d7866b35c6c84089e8ce429f58f9bc4d301c3"
+  },
+  "build_receipt": "perf/build-receipt.json",
+  "installed_app": "/Applications/Tianli MacKit.app",
+  "launched": false,
+  "dock_finder_visual_confirmed": false
+}

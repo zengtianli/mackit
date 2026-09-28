@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Compile the actual Mac app and exercise its nonactivating in-process UI self-test."""
 import json
+import hashlib
 import os
+from pathlib import Path
 import platform
 import plistlib
 import shlex
@@ -12,7 +14,7 @@ import sys
 from _common import ROOT, OUT_DIR, finish, isolated_home
 
 
-def main():
+def source_candidate():
     build = ROOT / "build/accept-native-ui"
     app = build / "MacKit UI Acceptance.app"
     contents = app / "Contents"
@@ -35,6 +37,20 @@ def main():
                "-target", platform.machine() + "-apple-macos14.0", "-sdk", sdk,
                *map(str, sorted((ROOT / "macos/Sources").glob("*.swift"))), "-o", str(executable)]
     subprocess.run(command, cwd=ROOT, check=True, timeout=120)
+    return app
+
+
+def main():
+    installed = os.environ.get("MACKIT_ACCEPT_APP")
+    app = Path(installed).resolve() if installed else source_candidate()
+    executable = app / "Contents/MacOS/MacKit"
+    if installed:
+        receipt = json.loads((ROOT / "perf/build-receipt.json").read_text())
+        info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+        assert info["CFBundleIdentifier"] == receipt["artifact"]["bundle_id"]
+        assert info["CFBundleShortVersionString"] == (ROOT / "VERSION").read_text().strip()
+        assert info["CFBundleVersion"] == receipt["artifact"]["build"]
+        assert hashlib.sha256(executable.read_bytes()).hexdigest() == receipt["artifact"]["sha256"]
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     with isolated_home() as home:
         env = os.environ.copy()
@@ -50,6 +66,7 @@ def main():
         assert len(data["screenshots"]) == 5
         for name in data["screenshots"]:
             assert (OUT_DIR / name).stat().st_size > 10000
+        data["artifact"] = "installed receipt-matched application" if installed else "source-built acceptance candidate"
         finish("native_ui", f"原生界面进程内自检通过：{len(data['checks'])} 项断言、5 页离屏截图；未显示窗口或操作输入。", **data)
 
 

@@ -17,4 +17,10 @@
 
 脚本共用 `_common.py`，只在临时 HOME 操作；原生候选构建到 `build/accept-native-ui/`。自检截图和日志由脚本写入 `perf/acceptance/`，判定及输入绑定由 Chapter 写入。
 
+装机后可让同一固定脚本使用实际 App 与冻结引擎，并校验版本、bundle ID 和构建回执 SHA256：
+
+```sh
+MACKIT_ACCEPT_APP="/Applications/Tianli MacKit.app" ~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py accept --app mackit --check native_ui --json
+```
+
 装机图标 `installed_icon` 必须由本人在 Chapter 确认。前置材料是 `icon/AppIcon.png`、`icon/AppIcon.icns`、`perf/icon-review.json`、`perf/install-icon-receipt.json` 与 `perf/release.json`；文件哈希一致不能代替本人看到 Dock/Finder 图标。本轮自检候选也不代表新代码已经装机或发布。

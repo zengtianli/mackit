@@ -6,28 +6,26 @@
 
 **原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-本次 v0.3.1 更新应用图标，采用白瓷与玉色玻璃工具造型；功能、配置与使用习惯保持原状。
+本次 v0.3.2 补齐隔离环境下的功能、恢复、隐私与原生界面自检，并完善发行源码溯源；日常功能、配置与使用习惯保持原状。
 
 ## 下载 App（推荐）
 
-[下载 MacKit 0.3.1 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.1/MacKit-0.3.1-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.2 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.2/MacKit-0.3.2-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 
 <!-- lightweight:start -->
 ## 资源占用
 
-| 安装包 | 空闲内存 | 空闲 CPU | 冷启动到窗口出现 |
+| 安装包 | 空闲内存 | 空闲 CPU | 速度 |
 |---|---|---|---|
-| **11.8 MB**（装好后 23.7 MB） | **51.4 MB** | **0%** | **465 ms** |
+| **11.9 MB**（装好后 23.8 MB） | **未测** | **未测** | **未测** |
 
 原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。
 
-内存口径：主进程与辅助进程合计；页面换算为十进制 MB。
+未测项尚无本版本实测记录。
 
-CPU 口径：后台隐藏启动并静置45秒后采样60秒；0.00%为该采样窗内的显示精度，不表示运行任务时零占用。
-
-<sub>v0.3.1 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-27。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v0.3.2 · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-28。数字来自所列设备实测，版本更新后重新测量。大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。

@@ -22,6 +22,7 @@ sop:
     recovery: python3 scripts/accept/recovery.py
     privacy: python3 scripts/accept/privacy.py
     native_ui: python3 scripts/accept/native_ui.py
+    homepage_desktop: builtin:homepage_desktop
   ui:
   - macos/Sources/ContentView.swift
   - macos/Sources/Models.swift
