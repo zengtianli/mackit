@@ -12,6 +12,8 @@ key_scripts:
 - scripts/build-app.sh
 homepage: https://mackit.tianli.cyou
 sop:
+  cli:
+    commands: [mackit]
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
   test_inputs:
   - tests/**
