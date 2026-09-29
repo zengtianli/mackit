@@ -9,6 +9,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path.home() / 'Apps/apps-portal/site'))
 from perf_block import standalone_section
+import product_facts
 
 out = ROOT / 'dist/site'
 out.mkdir(parents=True, exist_ok=True)
@@ -49,6 +50,10 @@ assert '__VERSION__' not in page and '__PERF' not in page and '_MB__' not in pag
 (out / 'index.html').write_text(page)
 shutil.copytree(media, out / 'media', dirs_exist_ok=True)
 shutil.copytree(ROOT / 'dist/releases', out / 'downloads', dirs_exist_ok=True)
+# Portal-facing numbers, published at the homepage root with this page (products.yaml id: mackit).
+facts = product_facts.from_repo(ROOT, product_id='mackit', icon='icon.png')
+assert facts['version'] == version, f"facts.json version {facts['version']} (sop.release) differs from VERSION {version}"
+product_facts.write(out, facts)
 import subprocess
 subprocess.run([sys.executable, str(Path.home() / 'Apps/apps-portal/site/perf_block.py'), str(ROOT)], check=True)
 print(out)
