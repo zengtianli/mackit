@@ -40,6 +40,7 @@ sop:
     app: installed
   promo_url: https://mackit.tianli.cyou/
   site_build: ~/Dev/.venv/bin/python scripts/build-site.py
+  site_deploy: bash scripts/deploy-site.sh
   release: perf/release.json
   source:
   - macos/**
