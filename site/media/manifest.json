@@ -31,6 +31,11 @@
     "GUI permission dialogs"
   ],
   "reused_for": {
+    "0.3.4": {
+      "reviewed_at": "2026-09-30",
+      "reason": "0.3.4 只把 Hammerspoon 插电不睡眠改为本机配置开关（components/hammerspoon/init.lua 读取 ac_awake，默认关闭）并更新文档与版本号；macos/ 下界面源码自 0.3.3 起没有变化。沿用明确标注的 0.1.0 CLI 回放及 0.3.1 装机截图，不把旧素材称为新录。",
+      "ui_change": "无（git diff eaef662..HEAD -- macos/ 为空）"
+    },
     "0.3.3": {
       "reviewed_at": "2026-09-29",
       "reason": "0.3.3 只改 Python 引擎的命令行链接与配置源读取（mackit/cli.py），macos/ 下界面源码自 0.3.2 起没有变化；录制后唯一的界面提交是 0.3.2 的 --ui-self-test 分流入口，正常界面布局与动作不变。沿用明确标注的 0.1.0 CLI 回放及 0.3.1 装机截图；当前装机版界面另经固定 native_ui 离屏自检（30 项断言、5 页截图）验证，不把旧素材称为新录。",
