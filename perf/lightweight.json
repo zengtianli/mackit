@@ -431,12 +431,57 @@
         "download_file": "MacKit-0.3.3-arm64.dmg",
         "installed_path": "/Applications/Tianli MacKit.app（du 实际占用，含冻结引擎）"
       }
+    },
+    {
+      "section": "speed_gui.cold_launch_to_window",
+      "replaced_on": "2026-09-30",
+      "reason": "低负载下按 5 次重测",
+      "value": {
+        "key": "cold_launch_to_window",
+        "label": "冷启动到窗口出现",
+        "median_ms": 475,
+        "runs": 5,
+        "headline": true,
+        "raw_ms": [
+          706,
+          460,
+          463,
+          475,
+          481
+        ],
+        "method": "open -g -j 后台隐藏启动，被动读取窗口列表直到主窗口出现；不点击、不激活；5 次取中位",
+        "load": "负载均值 5.60 5.03 5.13；total = 9216.00M  used = 8710.62M  free = 505.38M"
+      }
+    },
+    {
+      "section": "idle",
+      "replaced_on": "2026-09-30",
+      "reason": "本次按记录的采样窗口与辅助进程合计实测",
+      "value": {
+        "process": "/Applications/Tianli MacKit.app",
+        "footprint_mb": 44.0,
+        "main_footprint_mb": 44.0,
+        "cpu_pct": 0.02,
+        "main_cpu_pct": 0.02,
+        "processes": [
+          {
+            "name": "main",
+            "cpu_pct": 0.017,
+            "footprint_peak_mb": 44.0
+          }
+        ],
+        "window_s": 60,
+        "settle_s": 45,
+        "measured_at": "2026-09-30",
+        "method": "open -g -j 后台启动，静置 45 秒后 measure.py idle <PID> --seconds 60 --with-helpers：内存为主进程 + WebKit/XPC 辅助进程 + 子进程同一时刻 phys_footprint 之和的峰值（活动监视器「内存」列同口径），CPU 为这些进程窗口内 CPU 时间增量之和 ÷ 墙钟",
+        "load": "负载均值 5.88 5.53 5.33；total = 10240.00M  used = 9937.50M  free = 302.50M"
+      }
     }
   ],
   "why": "原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。",
   "why_en": "Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.",
   "data_en": "Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps",
-  "env_note": "2026-09-30 主会话逐个顺序测量，负载均值 5.13 4.92 5.10；total = 9216.00M  used = 8710.62M  free = 505.38M（开始时）；启动时间受负载影响，内存与 CPU 为进程自身数值",
+  "env_note": "2026-09-30 主会话逐个顺序测量，负载均值 6.90 5.70 5.21；total = 11264.00M  used = 10189.69M  free = 1074.31M（开始时）；启动时间受负载影响，内存与 CPU 为进程自身数值",
   "historical": [
     {
       "section": "version_metrics",
@@ -529,37 +574,37 @@
     {
       "key": "cold_launch_to_window",
       "label": "冷启动到窗口出现",
-      "median_ms": 475,
+      "median_ms": 575,
       "runs": 5,
       "headline": true,
       "raw_ms": [
-        706,
-        460,
-        463,
-        475,
-        481
+        1123,
+        569,
+        575,
+        679,
+        575
       ],
       "method": "open -g -j 后台隐藏启动，被动读取窗口列表直到主窗口出现；不点击、不激活；5 次取中位",
-      "load": "负载均值 5.60 5.03 5.13；total = 9216.00M  used = 8710.62M  free = 505.38M"
+      "load": "负载均值 6.27 5.61 5.19；total = 11264.00M  used = 10181.69M  free = 1082.31M"
     }
   ],
   "idle": {
     "process": "/Applications/Tianli MacKit.app",
-    "footprint_mb": 44.0,
-    "main_footprint_mb": 44.0,
-    "cpu_pct": 0.02,
-    "main_cpu_pct": 0.02,
+    "footprint_mb": 47.0,
+    "main_footprint_mb": 47.0,
+    "cpu_pct": 0.0,
+    "main_cpu_pct": 0.0,
     "processes": [
       {
         "name": "main",
-        "cpu_pct": 0.017,
-        "footprint_peak_mb": 44.0
+        "cpu_pct": 0.0,
+        "footprint_peak_mb": 47.0
       }
     ],
     "window_s": 60,
     "settle_s": 45,
     "measured_at": "2026-09-30",
     "method": "open -g -j 后台启动，静置 45 秒后 measure.py idle <PID> --seconds 60 --with-helpers：内存为主进程 + WebKit/XPC 辅助进程 + 子进程同一时刻 phys_footprint 之和的峰值（活动监视器「内存」列同口径），CPU 为这些进程窗口内 CPU 时间增量之和 ÷ 墙钟",
-    "load": "负载均值 5.88 5.53 5.33；total = 10240.00M  used = 9937.50M  free = 302.50M"
+    "load": "负载均值 5.65 5.57 5.22；total = 12288.00M  used = 10971.06M  free = 1316.94M"
   }
 }
