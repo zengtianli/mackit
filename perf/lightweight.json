@@ -5,7 +5,10 @@
   "device": "Mac16,12 / Apple M4 / macOS 27.2",
   "size": {
     "installed_bytes": 23773184,
-    "installed_mb": 22.67
+    "installed_mb": 22.67,
+    "download_bytes": 11874646,
+    "download_mb": 11.32,
+    "download_file": "MacKit-0.3.4-arm64.dmg"
   },
   "compare": [],
   "data": "真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表）",
