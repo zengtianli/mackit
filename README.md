@@ -6,11 +6,11 @@
 
 **原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-本次 v0.3.3 把 `mackit` 命令放进 App，随 App 一起更新，并继续使用安装时记录的配置源；日常功能、配置与使用习惯保持原状。
+本次 v0.3.4 新增可选的插电不睡眠：在 `~/.config/mackit/hammerspoon.lua` 写入 `ac_awake=true` 后，接通电源时不睡眠、改用电池时恢复（见[配置说明](docs/configuration.md)）；默认关闭，日常功能、配置与使用习惯保持原状。
 
 ## 下载 App（推荐）
 
-[下载 MacKit 0.3.3 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.3/MacKit-0.3.3-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.4 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.4/MacKit-0.3.4-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 
