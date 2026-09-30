@@ -14,4 +14,5 @@ if settings.vim_nav then require("modules.keymap").init_vim_nav() end
 manager.init()
 if settings.wechat then require("modules.apps").init_wechat_hotkey() end
 if settings.commands.office_cleanup then require("modules.office_cleanup").init() end
+require("modules.system").init_ac_awake()
 require("modules.menubar").init()

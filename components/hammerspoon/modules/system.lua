@@ -271,5 +271,24 @@ function M.lid_sleep_toggle()
     })
 end
 
-return M
+-- 插电自动不睡眠（2026-09-30）：接电源 → disablesleep 1（空闲、合盖、DarkWake 维护睡眠都不睡），
+-- 拔电 → disablesleep 0 恢复省电。只在电源来源变化时动作，中途手动切换在下次插拔前保持。
+local ac_watcher, ac_source = nil, nil
 
+local function apply_power_source()
+    local source = hs.battery.powerSource()
+    if source == ac_source then return end
+    ac_source = source
+    local value = source == "AC Power" and "1" or "0"
+    hs.task.new("/usr/bin/sudo", function(code, _, stderr)
+        if code ~= 0 then utils.log("AcAwake", "disablesleep " .. value .. " 失败: " .. (stderr or "")) end
+    end, {"-n", "/usr/bin/pmset", "-a", "disablesleep", value}):start()
+end
+
+function M.init_ac_awake()
+    ac_watcher = hs.battery.watcher.new(apply_power_source)
+    ac_watcher:start()
+    apply_power_source()
+end
+
+return M
