@@ -19,7 +19,7 @@ Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and G
 
 | Installed | Idle memory | Idle CPU | Cold launch to window |
 |---|---|---|---|
-| **23.8 MB** | **46.1 MB** | **0.02%** | **475 ms** |
+| **23.8 MB** | **46.1 MB** | **0.02%** | **395 ms** |
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
