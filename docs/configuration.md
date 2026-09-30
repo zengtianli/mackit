@@ -16,6 +16,8 @@ MacKit links native component sources into the usual application locations. `mac
 | paths.json | optional local OCR module path |
 | karabiner-device-settings.json | local devices and machine_specific overrides merged during apply |
 
+`hammerspoon.lua` returns a table whose keys override the portable defaults. Optional system behavior stays off unless enabled there: `return {ac_awake=true}` keeps the Mac awake while it is on AC power (`sudo -n pmset -a disablesleep 1`, restored to `0` on battery; a manual change holds until the next plug or unplug). It needs a passwordless sudo rule for `/usr/bin/pmset`; without one Hammerspoon logs the failure and sleep settings stay unchanged.
+
 For example, `actions.json` may contain `{"format":["my-formatter","--write"]}`. Running `mackit action format -- "file with spaces.md"` preserves argument boundaries and invokes that command without shell expansion.
 
 Do not put credentials in a public component. Your local files remain yours; MacKit neither uploads them nor places them in release archives.
