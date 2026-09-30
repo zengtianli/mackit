@@ -5,7 +5,7 @@ display_name: MacKit · 配置助手
 form: macos
 lifecycle: active
 origin: own
-description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件与备份恢复
+description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件、窗口管理与备份恢复；App 各页都有供 Agent 调用的命令
 bundle_id: cyou.tianli.mackit
 key_scripts:
 - bin/mackit

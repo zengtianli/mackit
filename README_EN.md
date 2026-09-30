@@ -65,6 +65,42 @@ Apps can register their shortcuts in `~/.config/mackit/keys.d/<app>.json` (`[{"c
 
 Choose components: `./install.sh --apply --components zsh,nvim,tmux`. Existing files and symlinks are moved into a transaction backup, not discarded. If you replace an installed link with new content, restore refuses to erase that content. Local additions in `~/.config/mackit/` survive updates and restores.
 
+## Command line for agents and scripts
+
+Everything you can see or do in the app has a command (the GUI is for people, the CLI for agents). Both call one engine: `mackit/cli.py` owns planning, installing and restoring, and `mackit/gui.py` with `mackit/window.py` is the business layer behind each app page. Commands reuse the same validation, digest locks, backups and transaction records rather than a second implementation. Read commands take `--json` for a stable object with `"ok"` and never write state; failures exit non-zero, and with `--json` print `{"ok": false, "error": …}`.
+
+```sh
+mackit status --json                          # preset, source, app/source versions, transactions, mackit link state
+mackit prepare --json                         # what the app's Preview does: prepare the configuration source (no-op when ready); needed before file and window writes
+mackit plan --json                            # preview with a token
+mackit apply --token <token>                  # install only if the targets are unchanged since the preview; one restorable transaction (a stale token creates nothing)
+mackit doctor --json                          # sources, dependencies, command link, key conflicts; exit 1 on issues
+mackit deps --json                            # installed state per formula/cask; --check exits 1 when something is missing
+mackit deps --install                         # brew install only what is missing (real HOME only; progress on stderr, poll deps --json)
+mackit keys 编号 --json                       # shortcut catalog as {ok, count, rows} (with keys.d and Keyboard Maestro)
+mackit keys --conflicts-with ctrl+alt+h --json   # global-key clash hint, the same rule as the Windows page and doctor
+mackit file list --json                       # every Files-page entry, including local / local-keys / hs-local
+mackit file read nvim-keys --json             # content + sha256 digest
+mackit file write nvim-keys --digest <digest> --from new.lua   # refused on a stale digest; the old file goes to editor-backups
+mackit window status --json                   # yabai/skhd state, live values, saved settings/rules/hotkeys, actions, digest
+mackit window set window_gap=8 layout=bsp     # validated, yabairc regenerated after a backup; --apply also updates running yabai/skhd
+mackit window hotkey add --key ctrl+alt+h --action focus-west   # or --command '<one line>'; --replace for a bound key
+mackit window hotkey remove --key ctrl+alt+h
+mackit window rule add --app "System Settings" --manage off
+mackit window save --digest <digest> --from window.json         # replace everything, same shape as window status --json's window
+mackit window service stop skhd               # start/stop yabai or skhd (real HOME only)
+mackit restore <transaction> --json           # undo the newest transaction
+mackit link                                   # point ~/.local/bin/mackit at this app's command (recorded, restorable)
+```
+
+`--home <dir>` (any folder other than your own home) is a sandbox: no software installs, no service start/stop, nothing applied to running yabai/skhd, and no file written outside the folder. Whether you run the app's command or a source checkout's `bin/mackit`, the configuration source is prepared as the app prepares it, in `<dir>/.local/share/mackit`: `plan` reports it without creating it, and `prepare` or `apply` creates it from the built-in copy, so window and file writes land inside the sandbox. If a sandbox recorded a source outside itself (source commands before 0.3.5 did), that source is read-only there and writes are refused; start from a new folder.
+
+Without `--home`, commands act on this Mac's real configuration, whose source is the folder recorded at install time. For an install from a git checkout (`./install.sh`) that is the checkout itself, so `mackit window …` and `mackit file write` change files in the checkout, just as saving in the app does.
+
+Since 0.3.5 `keys --json` prints `{ok, count, rows}`; earlier versions printed a bare array of rows.
+
+GUI-only: recording a key by pressing it (the CLI takes the key name), Reveal in Finder, opening the permission panes in System Settings, downloading the official Homebrew package and opening the system installer (`deps --json` gives the package URL when brew is missing), page switching and search focus, unsaved-draft and quit prompts, and the online handbook/GitHub links. The app reaches the same engine through `mackit gui`, an unlisted JSON channel.
+
 ## Profiles
 
 - **developer**: native Neovim movement and Ctrl-W window commands; optional desktop integrations are not installed by default.

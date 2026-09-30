@@ -6,6 +6,8 @@ struct Transaction: Decodable, Identifiable { let id: String; let status: String
 struct KeyBinding: Decodable, Identifiable {
     let component: String; let key: String; let description: String; let mode: String; let source: String
     let profile: String?
+    /// 引擎按统一口径算好的全局键（localkeys.clash_key）；不会与窗口快捷键冲突的行没有该字段。
+    let clash: String?
     var advanced: Bool { description.hasPrefix("编码跳行") }
     var id: String { [component, key, mode, profile ?? "", description, source].joined(separator: "|") }
 }

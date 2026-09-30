@@ -162,12 +162,12 @@ import SwiftUI
             self.window = value
         }
     }
-    /// 与其他工具的全局键冲突（skhd 是全局热键）。同一套规范化：修饰键排序 + 主键。
+    /// 与其他工具的全局键冲突（skhd 是全局热键）。判定规则只在引擎（localkeys.clash_key）：
+    /// 快照给每行算好 clash，录制键与窗口快照里的键本身就是同一规范写法，这里只比较字符串。
     func conflicts(for key: String) -> [KeyBinding] {
-        guard let target = KeyCombo.canonical(key) else { return [] }
+        guard !key.isEmpty else { return [] }
         return (snapshot?.keys ?? []).filter { row in
-            row.component != "yabai" && (row.mode.contains("global") || row.mode == "outside-terminals")
-            && (row.profile == nil || row.profile == profile) && KeyCombo.canonical(row.key) == target
+            row.clash == key && (row.profile == nil || row.profile == profile)
         }
     }
     func reveal(_ path: String) { NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath:path)]) }

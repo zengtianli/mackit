@@ -69,6 +69,14 @@ import SwiftUI
             model.loadWindow()
             try await idle(model)
             checks["window_settings"] = model.window?.settingSpecs.isEmpty == false && !model.windowDirty
+            // The 窗口 page's clash hint compares against the engine's per-row "clash" key (localkeys.clash_key).
+            if let held = model.snapshot?.keys.first(where: { $0.clash != nil }), let key = held.clash {
+                let shown = model.profile
+                model.profile = held.profile ?? shown
+                let found = model.conflicts(for: key)
+                checks["window_conflict_hint"] = found.contains { $0.id == held.id } && found.allSatisfy { $0.clash == key && $0.component != "yabai" }
+                model.profile = shown
+            } else { checks["window_conflict_hint"] = false }
             let delegate = UISelfTest()
             let window = NSWindow(contentRect: NSRect(x: -20000, y: -20000, width: 1080, height: 790),
                                   styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)

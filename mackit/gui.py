@@ -6,7 +6,7 @@ No shell evaluates requests. An isolated --home uses the same production path.
 from __future__ import annotations
 import argparse, contextlib, hashlib, io, json, os, shlex, shutil, subprocess, sys, time, uuid
 from pathlib import Path
-from . import cli
+from . import cli, localkeys
 
 LABELS = {"zsh":"Shell 与命令行", "nvim":"Neovim 编辑器", "ghostty":"Ghostty 终端", "tmux":"终端分屏", "yazi":"Yazi 文件管理", "starship":"命令提示符", "lazygit":"Git 界面", "atuin":"命令历史", "hammerspoon":"桌面快捷键", "karabiner":"键盘映射", "yabai":"窗口管理（可选）", "btop":"系统资源", "fd":"文件查找", "glow":"Markdown 阅读"}
 APPS = {"ghostty":"Ghostty", "hammerspoon":"Hammerspoon", "karabiner":"Karabiner-Elements"}
@@ -62,7 +62,7 @@ def arguments(request, home):
     chosen=request.get("components")
     if chosen is not None and (not isinstance(chosen,list) or not chosen or not all(isinstance(c,str) and c in cli.COMPONENTS for c in chosen)):
         raise ValueError("请至少选择一个有效组件。")
-    return argparse.Namespace(profile=name, components=",".join(chosen) if chosen is not None else None)
+    return argparse.Namespace(profile=name, components=",".join(chosen) if chosen is not None else None, token=request.get("token"))
 
 def dependencies(selected, home):
     result=[]
@@ -83,9 +83,13 @@ def capture(fn,*args):
 
 def plan_result(args,home):
     p=cli.plan(args,home)
-    fingerprints=[cli.fingerprint(Path(e["target"])) for e in p["entries"]]
-    token=hashlib.sha256(json.dumps([p,fingerprints],sort_keys=True).encode()).hexdigest()
-    return {"plan":p,"token":token,"dependencies":dependencies(p["components"],home)}
+    return {"plan":p,"token":cli.plan_token(p),"dependencies":dependencies(p["components"],home)}
+
+def key_rows(home,payload,root):
+    """The shortcut catalog the App shows: data/keys.json of the configuration source (the built-in
+    copy until a source is prepared), plus keys apps registered in keys.d and Keyboard Maestro."""
+    base=root if valid_root(root) else payload
+    return cli.read(base/"data/keys.json",[])+cli.local_rows(home)[0]
 
 def inventory(home,payload,root):
     config,state=cli.paths(home)
@@ -95,18 +99,33 @@ def inventory(home,payload,root):
     defs=[]
     for name in cli.COMPONENTS:
         defs.append({"id":name,"label":LABELS[name],"desktop":name in ("hammerspoon","karabiner","yabai")})
-    edit=[{"id":k,"path":str(root/"components"/v)} for k,v in cli.EDIT.items() if k!="vim"]
-    edit += [{"id":k,"path":str(config/v)} for k,v in {"local":"local.zsh","local-keys":"keymaps.zsh","hs-local":"hammerspoon.lua"}.items()]
+    edit=cli.edit_files(home,root,aliases=False)
     data_root=root if valid_root(root) else payload
     return {"installed":bool(installed),"profile":installed.get("profile","developer"),"selected":installed.get("components",cli.profile("developer")["components"]),
         "sourceRoot":str(root),"sourceVersion":(data_root/"VERSION").read_text().strip(),"appVersion":(payload/"VERSION").read_text().strip(),
         "components":defs,"profiles":{n:cli.read(data_root/"profiles"/(n+".json"))["components"] for n in ("developer","tianli")},
-        "transactions":transactions,"files":edit,"keys":cli.read(data_root/"data/keys.json",[])+[{k:r[k] for k in ("component","key","description","mode","source") if k in r} for r in cli.local_rows(home)[0]],"brew":shutil.which("brew") or ""}
+        "transactions":transactions,"files":edit,"keys":[snapshot_key(r) for r in key_rows(home,payload,root)],"brew":shutil.which("brew") or ""}
+
+def snapshot_key(row):
+    """A catalog row for the App. "clash" is the canonical key a new window hotkey must not reuse
+    (localkeys.clash_key), so the 窗口 page compares strings instead of re-implementing the rules."""
+    # keys.d and Keyboard Maestro rows ("origin") pass only the fields the App shows; catalog rows pass whole.
+    item={k:row[k] for k in ("component","key","description","mode","source","profile") if isinstance(row.get(k),str)} if "origin" in row else dict(row)
+    clash=localkeys.clash_key(row)
+    if clash:item["clash"]=clash
+    return item
+
+def file_list(home):
+    """The 配置文件 page's list (no vim alias), with the source it resolves to."""
+    root=source_root(home,cli.ROOT)
+    return {"sourceRoot":str(root),"ready":valid_root(root),"files":cli.edit_files(home,root,aliases=False)}
 
 def edit_path(request,home,root):
     ident=request.get("file","")
-    local={"local":"local.zsh","local-keys":"keymaps.zsh","hs-local":"hammerspoon.lua"}
+    if not isinstance(ident,str):raise ValueError("未知配置文件")
+    local=cli.LOCAL_EDIT
     base=cli.paths(home)[0] if ident in local else root/"components"
+    if ident in cli.GENERATED:raise ValueError("yabairc / skhdrc 由「窗口」页生成，请在「窗口」页或 mackit window 修改。")
     if ident not in local and ident not in cli.EDIT:raise ValueError("未知配置文件")
     path=base/(local[ident] if ident in local else cli.EDIT[ident])
     if not path.resolve().is_relative_to(base.resolve()):raise ValueError("文件链接指向配置目录之外，未写入。")
@@ -118,11 +137,12 @@ def file_result(path):
     return {"path":str(path),"content":raw.decode("utf-8"),"digest":hashlib.sha256(raw).hexdigest() if path.exists() else "absent"}
 
 def install_dependencies(items,home):
+    # An isolated HOME never installs software, whether or not anything is missing.
+    if isolated(home):raise ValueError("演示目录不会安装或改动本机软件。")
     missing=[d for d in items if not d["installed"]]
     if not missing:return {"message":"所选应用与依赖已经安装。","dependencies":items}
     brew=shutil.which("brew")
     if not brew:raise ValueError("请先点击“安装 Homebrew”，在系统安装器完成后回到这里重试。")
-    if home.resolve()!=Path.home().resolve():raise ValueError("演示目录不会安装或改动本机软件。")
     env=os.environ.copy();env.update(HOMEBREW_NO_AUTO_UPDATE="1",HOMEBREW_NO_ENV_HINTS="1",NONINTERACTIVE="1")
     for d in missing:
         print("正在安装 "+d["label"]+"…",file=sys.stderr,flush=True)
@@ -132,10 +152,22 @@ def install_dependencies(items,home):
             raise ValueError(d["label"]+" 未完成安装（可能是网络或系统授权）。已安装的其他依赖会保留；查看运行记录后重试。需要管理员权限的软件可用页面中的官方安装入口。")
     return {"message":"依赖安装完成。"}
 
+isolated=cli.isolated
+
+def writable(path,home):
+    """An isolated --home (demo folder, test sandbox) only ever writes inside itself. A source it
+    recorded elsewhere (a source checkout, an App bundle) stays read-only there."""
+    return not isolated(home) or path.resolve().is_relative_to(home.resolve())
+
+def inside_home(path,home):
+    if not writable(path,home):
+        raise ValueError("演示目录的配置来源在它之外（"+str(path)+"），不会写入。请换一个新的演示目录。")
+
 def dispatch(request,home):
     payload=cli.ROOT
     root=source_root(home,payload)
     action=request.get("action","snapshot")
+    if not isinstance(action,str):raise ValueError("未知操作")
     if action=="snapshot":return inventory(home,payload,root)
     if action.startswith("window"):return window_action(action,request,home,payload,root)
     args=arguments(request,home)
@@ -167,6 +199,7 @@ def dispatch(request,home):
         if action=="readFile":return file_result(path)
         text=request.get("content")
         if not isinstance(text,str) or len(text.encode())>1024*1024:raise ValueError("配置文本无效或超过 1 MB")
+        inside_home(path,home)
         _,state=cli.paths(home)
         with cli.locked(state):
             old=file_result(path)
@@ -184,28 +217,40 @@ def dispatch(request,home):
         return {**file_result(path),"message":message,"backup":str(backup) if old["digest"]!="absent" else ""}
     finally:cli.ROOT=payload
 
+def window_saved(home):
+    """Saved window settings and their digest, read the way the 窗口 page reads them (no live queries)."""
+    from . import window
+    payload=cli.ROOT;root=source_root(home,payload)
+    loaded=window.load(root if valid_root(root) else payload)
+    return loaded,window_digest(loaded)
+
 def window_action(action,request,home,payload,root):
     from . import window
     base=root if valid_root(root) else payload
     if action=="windowSnapshot":
         loaded=window.load(base)
-        return {"window":{**loaded,**window.status(),"digest":window_digest(loaded),
+        # Keys as the recorder writes them (a hand-edited hotkeys.json may use another order); the digest stays that of the file.
+        shown=[{**h,"key":localkeys.combo(h["key"]) or h["key"]} if isinstance(h,dict) and isinstance(h.get("key"),str) else h for h in loaded["hotkeys"]]
+        return {"window":{**loaded,"hotkeys":shown,**window.status(),"digest":window_digest(loaded),
             "settingSpecs":[{"key":k,"kind":kind,"choices":rng if kind=="choice" else [],"range":rng if kind!="choice" else [],"label":label,"help":tip} for k,kind,rng,label,tip in window.SETTINGS],
             "actions":[{"id":k,"label":v[0]} for k,v in window.ACTIONS.items()],
-            "editable":valid_root(root)}}
+            "editable":valid_root(root) and writable(root,home)}}
     if not valid_root(root):raise ValueError("请先在“安装配置”中安装 yabai 组件后再修改窗口设置。")
     _,state=cli.paths(home)
     if action=="windowSave":
+        inside_home(root,home)
         with cli.locked(state):
             if request.get("digest")!=window_digest(window.load(root)):raise ValueError("窗口配置已被其他程序修改，请刷新后再改。")
             saved=window.save(root,state,request)
-        live=request.get("applyNow") and home.resolve()==Path.home().resolve()  # 演示目录不动本机服务
+            digest=window_digest(window.load(root))
+        live=request.get("applyNow") and not isolated(home)  # 演示目录不动本机服务
         applied=window.apply_live(root) if live else []
         note="，已在运行中的 "+"、".join(applied)+" 生效" if applied else ""
-        return {"message":"已保存并重新生成 yabairc / skhdrc"+note+"。修改前副本在恢复记录目录。","backup":saved["backup"]}
+        return {"message":"已保存并重新生成 yabairc / skhdrc"+note+"。修改前副本在恢复记录目录。","backup":saved["backup"],
+            "applied":applied,"digest":digest}
     if action=="windowService":
         name=request.get("service");start=bool(request.get("start"))
-        if home.resolve()!=Path.home().resolve():raise ValueError("演示目录不会启停本机服务。")
+        if isolated(home):raise ValueError("演示目录不会启停本机服务。")
         window.service(name,start)
         return {"message":f"{name} 已{'启动' if start else '停止'}。"}
     raise ValueError("未知操作")
@@ -219,6 +264,7 @@ def main(home):
         if not isinstance(request,dict):raise ValueError("请求格式无效")
         result=dispatch(request,home)
         print(json.dumps({"ok":True,**result},ensure_ascii=False))
-    except (ValueError,OSError,subprocess.SubprocessError) as exc:
+    except (ValueError,TypeError,OSError,subprocess.SubprocessError) as exc:
+        # TypeError: a request field of the wrong JSON type; the App still gets one JSON answer.
         print(json.dumps({"ok":False,"error":str(exc)},ensure_ascii=False))
     return 0

@@ -17,21 +17,51 @@ class InstallTests(unittest.TestCase):
   z=self.home/".zshrc";z.write_text("original shell\n")
   n=self.home/".config/nvim";n.mkdir(parents=True);(n/"user.lua").write_text("private edits")
   r=json.loads(self.run_cli("apply","--components","zsh,nvim").stdout)
-  self.assertTrue(z.is_symlink());self.assertEqual(n.resolve(),ROOT/"components/nvim")
+  # An isolated --home installs from its own prepared source, never by linking into this checkout.
+  self.assertTrue(z.is_symlink());self.assertEqual(n.resolve(),(self.home/".local/share/mackit/components/nvim").resolve())
   again=json.loads(self.run_cli("apply","--components","zsh,nvim").stdout)
   self.assertEqual(again["changed"],0)
   self.run_cli("restore",r["transaction"])
   self.assertEqual(z.read_text(),"original shell\n");self.assertEqual((n/"user.lua").read_text(),"private edits")
- def test_app_cli_links_into_app_and_uses_recorded_source(self):
-  app=self.home/"Applications/Tianli MacKit.app/Contents/Resources/core";(app/"bin").mkdir(parents=True)
+ def fake_app(self):
+  app=self.home/"Applications/MacKit.app/Contents/Resources/core";(app/"bin").mkdir(parents=True)
   exe=app/"bin/mackit";exe.write_text("#!/bin/sh\n");exe.chmod(0o755);(app/"VERSION").write_text("0\n")
+  return app,exe
+ def test_app_cli_on_new_mac_prepares_app_source_not_bundle(self):
+  # The App's CLI must behave like the App: configs live in ~/.local/share/mackit, never inside the signed bundle.
+  app,exe=self.fake_app();source=self.home/".local/share/mackit"
   with patch.object(sys,"frozen",True,create=True),patch.object(sys,"executable",str(exe)),patch.object(cli,"ROOT",ROOT),contextlib.redirect_stdout(io.StringIO()) as out:
-   self.assertEqual(cli.main(["--home",str(self.home),"apply","--components","nvim"]),0)
+   self.assertEqual(cli.main(["--home",str(self.home),"plan","--components","nvim","--json"]),0)
+   planned=json.loads(out.getvalue());out.seek(0);out.truncate()
+   self.assertEqual(planned["root"],str(source));self.assertFalse(planned["source_ready"])
+   self.assertFalse(source.exists(),"plan must not create the source")
+   self.assertEqual(cli.main(["--home",str(self.home),"apply","--components","nvim","--token",planned["token"]]),0)
    self.assertEqual((self.home/".local/bin/mackit").resolve(),exe.resolve())
+   self.assertEqual((self.home/".config/nvim").resolve(),(source/"components/nvim").resolve())
    cli.ROOT=app;self.assertEqual(cli.main(["--home",str(self.home),"edit","nvim-keys","--print"]),0)
-  self.assertEqual(out.getvalue().splitlines()[-1],str(ROOT/"components/nvim/lua/config/keymaps.lua"))
-  self.run_cli("restore",json.loads(out.getvalue().splitlines()[0])["transaction"])
+  lines=out.getvalue().splitlines()
+  self.assertEqual(lines[-1],str(source/"components/nvim/lua/config/keymaps.lua"))
+  self.run_cli("restore",json.loads(lines[0])["transaction"])
   self.assertFalse(os.path.lexists(self.home/".local/bin/mackit"))
+ def test_app_cli_uses_recorded_source_and_stale_token_is_refused(self):
+  app,exe=self.fake_app();cfg=self.home/".config/mackit";cfg.mkdir(parents=True)
+  (cfg/"profile.json").write_text(json.dumps({"profile":"developer","components":["nvim"],"source_root":str(ROOT)}))
+  with patch.object(sys,"frozen",True,create=True),patch.object(sys,"executable",str(exe)),patch.object(cli,"ROOT",app),contextlib.redirect_stdout(io.StringIO()) as out,contextlib.redirect_stderr(io.StringIO()):
+   self.assertEqual(cli.main(["--home",str(self.home),"edit","nvim-keys","--print"]),0)
+   self.assertEqual(out.getvalue().splitlines()[-1],str(ROOT/"components/nvim/lua/config/keymaps.lua"))
+   self.assertEqual(cli.main(["--home",str(self.home),"apply","--components","nvim","--token","0"*64]),1)
+  self.assertFalse((self.home/".config/nvim").exists())
+ def test_link_command_is_recorded_and_restorable(self):
+  old=self.home/".local/bin/mackit";old.parent.mkdir(parents=True)
+  old.symlink_to(str(self.home/"gone/Tianli MacKit.app/Contents/Resources/core/bin/mackit"))  # a renamed App's leftover
+  status=json.loads(self.run_cli("status","--json").stdout)
+  self.assertEqual(status["commandLink"]["target"],str(self.home/"gone/Tianli MacKit.app/Contents/Resources/core/bin/mackit"))
+  self.assertFalse(status["commandLink"]["resolves"])
+  done=json.loads(self.run_cli("link","--json").stdout)
+  self.assertEqual(done["changed"],1);self.assertTrue(old.exists())
+  self.assertEqual(json.loads(self.run_cli("link","--json").stdout)["changed"],0)
+  self.run_cli("restore",done["transaction"])
+  self.assertEqual(os.readlink(old),str(self.home/"gone/Tianli MacKit.app/Contents/Resources/core/bin/mackit"))
  def test_restore_does_not_delete_new_user_config(self):
   self.run_cli("apply","--components","zsh")
   z=self.home/".zshrc";z.unlink();z.write_text("new work")
@@ -76,8 +106,19 @@ class InstallTests(unittest.TestCase):
   self.assertNotEqual(self.run_cli("restore",ok=False).returncode,0)
   self.assertEqual(z.read_text(),"new work")
  def test_edit_returns_real_key_owner(self):
-  p=self.run_cli("edit","nvim-keys","--print").stdout.strip()
-  self.assertEqual(Path(p),ROOT/"components/nvim/lua/config/keymaps.lua")
+  refused=self.run_cli("edit","nvim-keys","--print",ok=False)
+  self.assertNotEqual(refused.returncode,0);self.assertIn("mackit prepare",refused.stderr)
+  prepared=json.loads(self.run_cli("prepare","--json").stdout)
+  self.assertTrue(prepared["created"]);self.assertFalse(json.loads(self.run_cli("prepare","--json").stdout)["created"])
+  p=Path(self.run_cli("edit","nvim-keys","--print").stdout.strip())
+  self.assertEqual(p,Path(prepared["root"])/"components/nvim/lua/config/keymaps.lua");self.assertTrue(p.is_file())
+ def test_app_cli_accepts_a_source_recorded_in_its_own_bundle(self):
+  # 0.3.3/0.3.4's bundled apply on a new Mac recorded the bundle's core; the App keeps working on it, so must the CLI.
+  cfg=self.home/".config/mackit";cfg.mkdir(parents=True)
+  (cfg/"profile.json").write_text(json.dumps({"profile":"developer","components":["nvim"],"source_root":str(ROOT)}))
+  with patch.object(sys,"frozen",True,create=True),patch.object(cli,"ROOT",ROOT),contextlib.redirect_stdout(io.StringIO()) as out:
+   self.assertEqual(cli.main(["--home",str(self.home),"plan","--components","nvim","--json"]),0)
+  self.assertEqual(json.loads(out.getvalue())["root"],str(ROOT))
  def test_config_action_preserves_argument_boundaries(self):
   cfg=self.home/".config/mackit";cfg.mkdir(parents=True)
   (cfg/"actions.json").write_text(json.dumps({"echo":[sys.executable,"-c","import sys; print(repr(sys.argv[1:]))"]}))

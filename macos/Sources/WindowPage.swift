@@ -1,32 +1,15 @@
 import AppKit
 import SwiftUI
 
-/// 组合键规范化：与引擎 localkeys.normalize 同一口径（修饰键排序 + 主键小写）。
+/// 录制与显示组合键。录制结果按引擎 localkeys.normalize 的规范顺序（cmd、ctrl、alt、shift + 主键）写出；
+/// 冲突判定不在这里重复实现，见 AppModel.conflicts。
 enum KeyCombo {
-    static let mods: [String: String] = ["cmd":"cmd","command":"cmd","⌘":"cmd","ctrl":"ctrl","control":"ctrl","⌃":"ctrl",
-        "alt":"alt","opt":"alt","option":"alt","⌥":"alt","shift":"shift","⇧":"shift","left-cmd":"cmd"]
-    static let order = ["cmd","ctrl","alt","shift"]
     /// Carbon keyCode → 引擎使用的键名（US 布局，与 localkeys.KEYCODES 相同）。
     static let names: [UInt16: String] = [0:"a",11:"b",8:"c",2:"d",14:"e",3:"f",5:"g",4:"h",34:"i",38:"j",40:"k",37:"l",46:"m",45:"n",31:"o",
         35:"p",12:"q",15:"r",1:"s",17:"t",32:"u",9:"v",13:"w",7:"x",16:"y",6:"z",18:"1",19:"2",20:"3",21:"4",
         23:"5",22:"6",26:"7",28:"8",25:"9",29:"0",41:";",39:"'",43:",",47:".",44:"/",42:"\\",33:"[",30:"]",
         27:"-",24:"=",50:"`",48:"tab",49:"space",36:"return",51:"delete",123:"left",124:"right",
         125:"down",126:"up",122:"f1",120:"f2",99:"f3",118:"f4",96:"f5",97:"f6",98:"f7",100:"f8",101:"f9",109:"f10"]
-    static func canonical(_ raw: String) -> String? {
-        var text = raw.lowercased()
-        for symbol in ["⌘","⌃","⌥","⇧"] { text = text.replacingOccurrences(of: symbol, with: symbol + "+") }
-        // skhd 写法 "ctrl + shift - y" → 最后一个 " - " 前是修饰键
-        if let range = text.range(of: " - ", options: .backwards) { text.replaceSubrange(range, with: "+") }
-        let parts = text.replacingOccurrences(of: " ", with: "+").split(separator: "+").map(String.init).filter { !$0.isEmpty }
-        guard parts.count >= 2, let last = parts.last else { return nil }
-        var set = Set<String>()
-        for m in parts.dropLast() {
-            if m == "hyper" { set.formUnion(["cmd","ctrl","shift"]); continue }
-            guard let v = mods[m] else { return nil }
-            set.insert(v)
-        }
-        return (order.filter(set.contains) + [last]).joined(separator: "+")
-    }
     static func display(_ canon: String) -> String {
         let symbols = ["cmd":"⌘","ctrl":"⌃","alt":"⌥","shift":"⇧"]
         let parts = canon.split(separator: "+").map(String.init)

@@ -70,7 +70,7 @@ def main():
         # installed configuration and declaration checks actually succeed.
         assert all(issue.startswith(("missing command:", "missing app:")) for issue in diagnosis["issues"]), diagnosis["issues"]
         assert diagnosed.returncode == int(bool(diagnosis["issues"]))
-        keys = json.loads(cli(home, "keys", "编号", "--component", "nvim", "--json").stdout)
+        keys = json.loads(cli(home, "keys", "编号", "--component", "nvim", "--json").stdout)["rows"]
         assert keys and all(row["component"] == "nvim" for row in keys)
         assert any("keymaps.lua" in row["source"] for row in keys)
         assert Path(cli(home, "edit", "nvim-keys", "--print").stdout.strip()) == ROOT / "components/nvim/lua/config/keymaps.lua"

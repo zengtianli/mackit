@@ -79,6 +79,8 @@ def read_json(path: Path, default):
 
 # ── validation ────────────────────────────────────────────────────────────
 def clean_settings(values: dict) -> dict:
+    if not isinstance(values, dict):
+        raise ValueError("settings 需要是对象（键 → 值）")
     out = {}
     for key, value in values.items():
         if key not in SPEC:
@@ -102,10 +104,17 @@ def clean_settings(values: dict) -> dict:
 APP_RE = re.compile(r"^[\w .\-+&'()一-鿿]{1,60}$")
 
 
+def rows_of(value, name: str) -> list:
+    if not isinstance(value, list) or not all(isinstance(row, dict) for row in value):
+        raise ValueError(f"{name} 需要是对象列表")
+    return value
+
+
 def clean_rules(rules: list) -> list:
     out = []
-    for rule in rules:
-        app = str(rule.get("app", "")).strip()
+    for rule in rows_of(rules, "rules"):
+        app = rule.get("app", "")
+        app = app.strip() if isinstance(app, str) else ""
         if not APP_RE.match(app):
             raise ValueError(f"应用名无效：{app!r}（只用应用显示名，如 System Settings）")
         item = {"app": app}
@@ -115,7 +124,10 @@ def clean_rules(rules: list) -> list:
                     raise ValueError(f"{app} 的 {key} 只能是 {' / '.join(allowed)}")
                 item[key] = rule[key]
         if rule.get("space") not in (None, "", 0):
-            space = int(rule["space"])
+            try:
+                space = int(rule["space"])
+            except (TypeError, ValueError):
+                raise ValueError(f"{app} 的桌面编号需在 1–16") from None
             if not 1 <= space <= 16:
                 raise ValueError(f"{app} 的桌面编号需在 1–16")
             item["space"] = space
@@ -139,16 +151,18 @@ def canonical_key(key: str) -> str:
 
 def clean_hotkeys(rows: list) -> list:
     out, seen = [], {}
-    for row in rows:
+    for row in rows_of(rows, "hotkeys"):
         key = canonical_key(str(row.get("key", "")))
         if key in seen:
             raise ValueError(f"{key} 重复绑定（{seen[key]}）")
-        action, command = row.get("action", ""), row.get("command", "")
+        action, command = row.get("action") or "", row.get("command") or ""
+        if not isinstance(action, str) or not isinstance(command, str):
+            raise ValueError(f"{key} 的动作和命令需要是文字")
         if action:
             if action not in ACTIONS:
                 raise ValueError(f"未知动作：{action}")
             command = ""
-        elif not isinstance(command, str) or not command.strip() or "\n" in command:
+        elif not command.strip() or "\n" in command:
             raise ValueError(f"{key} 需要选择动作或填写单行命令")
         item = {"key": key, "action": action} if action else {"key": key, "command": command.strip()}
         if row.get("note"):
