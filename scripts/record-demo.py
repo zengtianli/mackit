@@ -64,7 +64,7 @@ for i,(title,cmd) in enumerate(steps):
  image=Image.new("RGB",(1280,720),"#eff0e4");draw=ImageDraw.Draw(image)
  draw.rounded_rectangle((24,24,1256,696),radius=16,fill="#20382d")
  for j,color in enumerate(["#d28a71","#d2bd73","#91b480"]):draw.ellipse((48+j*24,46,60+j*24,58),fill=color)
- draw.text((160,39),"Tianli MacKit  /  v"+version,font=latin,fill="#c2d0b5")
+ draw.text((160,39),"MacKit  /  v"+version,font=latin,fill="#c2d0b5")
  draw.text((48,90),f"{i+1:02d}   {title}",font=titlefont,fill="#c4e396")
  display=wrapped("$ "+cmd)+[""]+wrapped(output.rstrip())
  for n,line in enumerate(display[-17:]):drawline(draw,(48,143+n*27),line,"#e2eedc" if n else "#cae6a7")

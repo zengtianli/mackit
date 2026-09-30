@@ -1,4 +1,4 @@
-# Tianli MacKit
+# MacKit · 配置助手
 
 [English](README_EN.md) · [产品主页](https://mackit.tianli.cyou) · [快捷键手册](https://mackit.tianli.cyou/keys.html)
 
@@ -26,20 +26,22 @@
 <sub>v0.3.4 (0.3.4) · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-30。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
-1. 下载并打开 DMG，把 **Tianli MacKit** 拖到 **Applications / 应用程序**。
+1. 下载并打开 DMG，把 **MacKit** 拖到 **Applications / 应用程序**。
 2. 从应用程序打开 App，在“安装配置”选择预设与组件，点击“预览配置变化”。
 3. 点击“安装缺失软件与依赖”；缺少 Homebrew 时，点“安装 Homebrew”并在系统安装器完成授权。
 4. 点击“备份并安装配置”，完成后重新打开终端和相关应用。
 
 App 提供快捷键搜索、配置文件编辑（保存前备份）、依赖检查与按记录恢复；「窗口」页（⌘5）把 yabai 设置做成带说明的表单，skhd 快捷键可点按录制、自动标出与其他工具的冲突，应用规则可视化添加，保存时重新生成 yabairc / skhdrc 并备份，可选择立即在运行中的 yabai/skhd 生效。已有 MacKit 安装会接管原配置源；首次安装将配置放在 `~/.local/share/mackit`。管理员密码只在系统安装器输入；辅助功能等权限按系统与各应用提示自行确认。yabai/skhd 仍需按官方说明手动安装；装好后可在「窗口」页启动或停止。
 
-从 0.3.3 起 `mackit` 命令随 App 提供：从 App 安装配置后，`~/.local/bin/mackit` 指向 App 内的命令，随 App 一起更新，并继续使用安装时记录的配置源（`edit`、`keys`、`doctor`、`update` 用法不变）。已有安装可重新在 App 中安装，或运行 `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components nvim`（换成已安装的组件）切换；`mackit restore <记录>` 可恢复原来的链接。源码目录用 `./install.sh` 安装仍保持原有链接方式。
+从 0.3.3 起 `mackit` 命令随 App 提供：从 App 安装配置后，`~/.local/bin/mackit` 指向 App 内的命令，随 App 一起更新，并继续使用安装时记录的配置源（`edit`、`keys`、`doctor`、`update` 用法不变）。已有安装可重新在 App 中安装，或运行 `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link` 切换；`mackit restore <记录>` 可恢复原来的链接。源码目录用 `./install.sh` 安装仍保持原有链接方式。
 
-App 快捷键：⌘1–4 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
+App 现名 **MacKit**（显示名 MacKit · 配置助手，bundle ID `cyou.tianli.mackit` 不变）；0.3.4 及更早版本安装名为 Tianli MacKit。从旧版升级：把新 App 拖入应用程序后运行一次 `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link`，再把旧的 Tianli MacKit 移到废纸篓；`mackit doctor` 会指出仍指向旧 App 的失效链接。
+
+App 快捷键：⌘1–5 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
 
 [App 操作与恢复说明](docs/macos-app.md) · [构建 App](docs/build-app.md)
 
-## 命令行方式
+## 从源码安装命令行
 
 需要 macOS、Python 3.11+、Git；Neovim 配置需要 0.11+。先安装你选择的应用。缺 Python 时用 `brew install python`；依赖清单由 `mackit deps` 输出。
 

@@ -26,7 +26,7 @@ struct MacKitApp: App {
         _model=StateObject(wrappedValue:AppModel(home:home))
     }
     var body: some Scene {
-        Window("Tianli MacKit",id:"main") {
+        Window("MacKit · 配置助手",id:"main") {
             ContentView().environmentObject(model).onAppear { delegate.model=model }
         }.defaultSize(width:1080,height:790).windowResizability(.contentMinSize)
         .commands {

@@ -36,7 +36,7 @@ def provenance(root, app, receipt):
 def main():
     out = ROOT / "dist/releases"
     receipt = json.loads((ROOT / "perf/build-receipt.json").read_text())
-    record = provenance(ROOT, ROOT / "build/app/Tianli MacKit.app", receipt)
+    record = provenance(ROOT, ROOT / "build/app/MacKit.app", receipt)
     version = record["version"]
     files = sorted(p for p in out.iterdir() if p.is_file() and version in p.name
                    and p.suffix in (".zip", ".dmg", ".gz"))

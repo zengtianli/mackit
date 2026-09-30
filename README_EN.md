@@ -1,4 +1,4 @@
-# Tianli MacKit
+# MacKit · 配置助手
 
 [中文](README.md) · [Website](https://mackit.tianli.cyou) · [Shortcut handbook](https://mackit.tianli.cyou/keys.html)
 
@@ -26,20 +26,22 @@ Native SwiftUI; the configuration engine runs only for an action and exits, with
 <sub>v0.3.4 (0.3.4) · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps · measured 2026-09-30. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
-1. Open the DMG and drag **Tianli MacKit** to **Applications**.
+1. Open the DMG and drag **MacKit** to **Applications**.
 2. Select a preset and components in **安装配置**, then click **预览配置变化** to review changes.
 3. Use **安装缺失软件与依赖** to install missing tools. If Homebrew is missing, use **安装 Homebrew** and complete its system installer.
 4. Choose **备份并安装配置**, then reopen your terminal and the selected applications.
 
 The Chinese-language app includes shortcut search, configuration editing with backups, dependency checks, and restoration. The Windows page (⌘5) turns yabai settings into an explained form, records skhd shortcuts by pressing them and flags clashes with other tools, adds app rules visually, and regenerates yabairc / skhdrc with backups, optionally applying them to running yabai/skhd. Existing MacKit sources are reused; fresh installations use `~/.local/share/mackit`. Enter administrator passwords only in the system installer. Accessibility/Input Monitoring permissions remain user-controlled. Install yabai/skhd from their official instructions; once installed, the Windows page can start or stop them.
 
-From 0.3.3 the `mackit` command ships inside the app: after installing from the app, `~/.local/bin/mackit` points into the app bundle and updates with it, while still working on the configuration source recorded at install (`edit`, `keys`, `doctor`, `update` are unchanged). Existing installs switch by installing again from the app, or by running `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components nvim` (use a component you already installed); `mackit restore <transaction>` brings back the previous link. Source checkouts installed with `./install.sh` keep their existing link.
+From 0.3.3 the `mackit` command ships inside the app: after installing from the app, `~/.local/bin/mackit` points into the app bundle and updates with it, while still working on the configuration source recorded at install (`edit`, `keys`, `doctor`, `update` are unchanged). Existing installs switch by installing again from the app, or by running `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link`; `mackit restore <transaction>` brings back the previous link. Source checkouts installed with `./install.sh` keep their existing link.
 
-Keyboard navigation: ⌘1–4 switch pages, ⌘F search, ⌘R refresh, ⌘S save, ⌘Return preview. The app package is arm64; Intel users can use the CLI below.
+The app is now named **MacKit** (display name MacKit · 配置助手, bundle ID `cyou.tianli.mackit` unchanged); 0.3.4 and earlier installed as Tianli MacKit. When upgrading, drag the new app to Applications, run `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link` once, then move the old Tianli MacKit to the Trash; `mackit doctor` points out a link that still targets the old app.
+
+Keyboard navigation: ⌘1–5 switch pages, ⌘F search, ⌘R refresh, ⌘S save, ⌘Return preview. The app package is arm64; Intel users can use the CLI below.
 
 [App guide](docs/macos-app.md) · [Build the app](docs/build-app.md)
 
-## CLI installation
+## CLI installation from source
 
 Requires macOS, Python 3.11+, Git and the applications you choose. Neovim configuration requires 0.11+. Use Homebrew to install missing tools; `mackit deps` prints the selected dependency commands.
 
@@ -132,7 +134,7 @@ For a Git checkout, `mackit update` accepts only a clean working tree and a fast
 ```sh
 python3 -m unittest discover -s tests -v
 python3 scripts/build-handbook.py
-python3 scripts/package.py
+bash scripts/build-app.sh --local     # development app build; installs and publishes nothing
 ```
 
 Tests cover installation into isolated homes, idempotence, rollback, preservation of new user files and real headless Neovim numbering. Source checks do not prove which external application receives a physical key, nor do they verify macOS permissions. See [validation](docs/validation.md) for the release's tested scope.

@@ -3,7 +3,8 @@ from pathlib import Path
 import hashlib,tarfile,zipfile
 ROOT=Path(__file__).resolve().parents[1]
 version=(ROOT/"VERSION").read_text().strip();prefix="mackit-v"+version
-dist=ROOT/"dist/releases";dist.mkdir(parents=True,exist_ok=True)
+import os
+dist=Path(os.environ.get("MACKIT_RELEASE_DIR") or ROOT/"dist/releases");dist.mkdir(parents=True,exist_ok=True)
 roots=["bin","mackit","components","profiles","data","docs","tests","macos","icon","scripts","install.sh","VERSION","LICENSE","THIRD_PARTY.md","README.md","README_EN.md"]
 files=[]
 for name in roots:

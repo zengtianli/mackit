@@ -160,7 +160,14 @@ struct ContentView: View {
                             VStack(alignment:.leading,spacing:6) {
                                 Text(key.description)
                                 Text("\(key.component) · \(key.mode)").font(.caption).foregroundStyle(.secondary)
-                                Button(key.source) { model.open("https://github.com/zengtianli/mackit/blob/main/"+key.source) }.buttonStyle(.link).font(.caption.monospaced())
+                                // Catalog rows point into the public repo; keys.d rows are local files; Keyboard Maestro rows name a macro group.
+                                if key.source.hasPrefix("components/") {
+                                    Button(key.source) { model.open("https://github.com/zengtianli/mackit/blob/main/"+key.source) }.buttonStyle(.link).font(.caption.monospaced())
+                                } else if key.source.hasPrefix("/") {
+                                    Button(key.source) { model.reveal(key.source) }.buttonStyle(.link).font(.caption.monospaced()).help("在 Finder 中显示")
+                                } else {
+                                    Text(key.source).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled)
+                                }
                             }
                             Spacer(minLength:0)
                         }.padding(14).frame(maxWidth:.infinity,alignment:.leading).background(.background,in:RoundedRectangle(cornerRadius:10))

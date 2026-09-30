@@ -1,9 +1,17 @@
 #!/bin/bash
 # Standalone macOS application. Local Xcode selection reuses the shared resolver;
 # public builders can use their selected Xcode with xcrun normally.
+#   bash scripts/build-app.sh          release build: build/app/MacKit.app + dist/releases source archives
+#   bash scripts/build-app.sh --local  development build: build/local/app/MacKit.app; dist/releases is not touched
+# Neither mode installs, launches, notarizes or publishes anything.
 set -euo pipefail
 MACKIT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$MACKIT_DIR"
+if [ "${1:-}" = "--local" ]; then
+  export MACKIT_APP_DIR="$MACKIT_DIR/build/local/app" MACKIT_RELEASE_DIR="$MACKIT_DIR/build/local/releases"
+elif [ -n "${1:-}" ]; then
+  echo "usage: bash scripts/build-app.sh [--local]" >&2; exit 2
+fi
 if [ -f "$HOME/Dev/tools/dev/lib/tools/macapp/xcode_env.sh" ]; then
   source "$HOME/Dev/tools/dev/lib/tools/macapp/xcode_env.sh"
   xcode_env_use macosx
@@ -15,9 +23,9 @@ if [ ! -x "$PYTHON" ]; then
 fi
 VERSION="$(cat VERSION)"
 ARCH="$(uname -m)"
-APP="$MACKIT_DIR/build/app/Tianli MacKit.app"
+APP="${MACKIT_APP_DIR:-$MACKIT_DIR/build/app}/MacKit.app"
 IDENTITY="${MACKIT_SIGN_IDENTITY:--}"
-mkdir -p build/native dist/releases
+mkdir -p build/native "${MACKIT_RELEASE_DIR:-dist/releases}"
 xcrun swiftc -swift-version 5 -O -parse-as-library -target "$ARCH-apple-macos14.0" -sdk "$(xcrun --sdk macosx --show-sdk-path)" macos/Sources/*.swift -o build/native/MacKit
 SIGN_ARGS=()
 if [ "$IDENTITY" != '-' ]; then SIGN_ARGS=(--codesign-identity "$IDENTITY"); fi

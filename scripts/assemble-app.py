@@ -3,13 +3,14 @@ from pathlib import Path
 import os, plistlib, shutil, tarfile, subprocess
 ROOT=Path(__file__).resolve().parents[1]
 version=(ROOT/"VERSION").read_text().strip()
-app=ROOT/"build/app/Tianli MacKit.app"
+# MACKIT_APP_DIR / MACKIT_RELEASE_DIR: set by build-app.sh --local so a development build never touches dist/releases.
+app=Path(os.environ.get("MACKIT_APP_DIR") or ROOT/"build/app")/"MacKit.app"
 if app.exists():
     if app.is_symlink():raise ValueError("Refusing to replace linked app")
     shutil.rmtree(app)
 (app/"Contents/MacOS").mkdir(parents=True)
 resources=app/"Contents/Resources";resources.mkdir()
-with tarfile.open(ROOT/"dist/releases"/f"mackit-v{version}.tar.gz") as archive:
+with tarfile.open(Path(os.environ.get("MACKIT_RELEASE_DIR") or ROOT/"dist/releases")/f"mackit-v{version}.tar.gz") as archive:
     archive.extractall(resources,filter="data")
 (resources/f"mackit-v{version}").rename(resources/"core")
 core=resources/"core"

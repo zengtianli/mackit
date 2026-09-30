@@ -1,6 +1,6 @@
 # MacKit App 使用说明
 
-App 支持 macOS 14+ 与 Apple Silicon。打开 DMG，将 Tianli MacKit 拖到 Applications，再从应用程序打开。它使用 Developer ID 签名并经 Apple 公证。
+App 支持 macOS 14+ 与 Apple Silicon。打开 DMG，将 MacKit 拖到 Applications，再从应用程序打开。它使用 Developer ID 签名并经 Apple 公证。App 名为 MacKit（显示名 MacKit · 配置助手）；0.3.4 及更早版本名为 Tianli MacKit，升级方法见下文“终端里的 mackit 命令”。
 
 ## 安装配置
 
@@ -14,9 +14,11 @@ App 支持 macOS 14+ 与 Apple Silicon。打开 DMG，将 Tianli MacKit 拖到 A
 
 ### 终端里的 mackit 命令
 
-从 0.3.3 起 `mackit` 命令随 App 提供，位于 `/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit`。从 App 安装配置后，`~/.local/bin/mackit` 成为指向它的软链，App 更新后命令随之更新。它与 App 一样使用安装时记录的配置源（`~/.config/mackit/profile.json` 的 `source_root`：源码安装为仓库目录，App 安装为 `~/.local/share/mackit`），因此 `mackit edit`、`keys`、`doctor`、`update` 仍作用于同一份配置。
+从 0.3.3 起 `mackit` 命令随 App 提供，位于 `/Applications/MacKit.app/Contents/Resources/core/bin/mackit`。从 App 安装配置后，`~/.local/bin/mackit` 成为指向它的软链，App 更新后命令随之更新。它与 App 一样使用安装时记录的配置源（`~/.config/mackit/profile.json` 的 `source_root`：源码安装为仓库目录，App 安装为 `~/.local/share/mackit`），因此 `mackit edit`、`keys`、`doctor`、`update` 仍作用于同一份配置。新 Mac 上还没有安装记录时，App 内命令同 App 一样使用 `~/.local/share/mackit`：`plan` 只报告，`apply` 才从 App 内置副本创建它，不会把配置链接进 App 包。
 
-已有安装切换方式：在 App 中重新“备份并安装配置”，或运行 `"/Applications/Tianli MacKit.app/Contents/Resources/core/bin/mackit" apply --components <已安装的组件>`。切换是一次普通安装记录，`mackit restore <记录>` 可恢复原来的链接。源码目录通过 `bin/mackit` 或 `install.sh` 安装时，仍链接到原有的命令包装。
+已有安装切换方式：在 App 中重新“备份并安装配置”，或运行 `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link`（只改 `~/.local/bin/mackit` 这一个链接）。切换是一次普通安装记录，`mackit restore <记录>` 可恢复原来的链接。从 Tianli MacKit 升级后同样运行一次 `link`，再把旧 App 移到废纸篓；`mackit doctor` 会报告指向已删除 App 的失效链接。
+
+各页对应的命令（`--json` 输出稳定对象，失败退出码非 0）：安装配置 = `prepare`（即「预览」时准备配置源）/ `plan` / `apply --token` / `deps`；快捷键 = `keys`、`keys --conflicts-with`；配置文件 = `file list|read|write`；检查与恢复 = `doctor`、`status`、`restore`；窗口 = `window status|set|hotkey|rule|save|service`。窗口页录制快捷键时的冲突提示与 `keys --conflicts-with`、`doctor` 是同一规则（`localkeys.clash_key`），引擎在快照里给每行算好，App 只做比较。详见 README 的“命令行：给 Agent 与脚本”。源码目录通过 `bin/mackit` 或 `install.sh` 安装时，仍链接到原有的命令包装。
 
 ## 查询、编辑与恢复
 
@@ -26,7 +28,7 @@ App 支持 macOS 14+ 与 Apple Silicon。打开 DMG，将 Tianli MacKit 拖到 A
 
 “检查与恢复”检查所选组件的源与依赖。安装记录按新到旧排列，恢复时只处理最近仍有效的安装；软件本体与个人覆盖保留，后来替换的新文件不会被静默覆盖。
 
-快捷键：⌘1–4 切页、⌘F 查键、⌘R 刷新、⌘S 保存、⌘Return 预览。进行安装、恢复或编辑保存时，请等待结果再退出。
+快捷键：⌘1–5 切页、⌘F 查键、⌘R 刷新、⌘S 保存、⌘Return 预览。进行安装、恢复或编辑保存时，请等待结果再退出。
 
 ## 常见问题
 
