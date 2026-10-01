@@ -36,6 +36,7 @@ sop:
   media:
   - site/media
   media_meta: site/media/manifest.json
+  capture: ~/Dev/.venv/bin/python scripts/capture-media.py  # 离屏重录 App 截图（窗口在所有屏幕之外、不激活）；装机版本≠VERSION 时 exit 75
   measure:
     app: installed
   promo_url: https://mackit.tianli.cyou/

@@ -1,0 +1,63 @@
+{
+  "version": "0.3.5",
+  "installed_app": "/Applications/MacKit.app",
+  "installed_executable_sha256": "68b08ca9ba96ff6cd48d9ad35de94e4acfec96e8efe303e8a56be47f969d5512",
+  "ui_sources_sha256": {
+    "macos/Sources/AppModel.swift": "cb239e8793e54e93b52bd359e9fa9de247bbca348410ac6e606a973166a6e257",
+    "macos/Sources/ContentView.swift": "ecbbab8eabf021fb6828e5eee4d9fc5f62e79ee55727230a786980b3102a642f",
+    "macos/Sources/EngineClient.swift": "af79b71c2953ab04a986abadd4b9e8cea2223263c01b90ed1e0dcc219d2d6376",
+    "macos/Sources/MacKitApp.swift": "c699f9a257c1c5b1c016347b048293424bac85c842feff895656b795bc873b83",
+    "macos/Sources/Models.swift": "f938956d02fbcae8db5915732702de99fc3a09656d5dbeeac986e062ad29075d",
+    "macos/Sources/WindowPage.swift": "cfc8aedcce5d9a22dc9bf666868824818226ff11a042627be3eda169f4714aac"
+  },
+  "method": "Production SwiftUI views (macos/Sources) in a window outside every display that never becomes key or active; window-server image of the capture process's own window. Installed release engine on the real HOME (read-only snapshot). No input events, activation or screen recording.",
+  "records": [
+    {
+      "file": "site/media/app.png",
+      "arguments": [
+        "-page",
+        "keys"
+      ],
+      "page": "keys",
+      "title": "MacKit · 配置助手",
+      "window_frame": "{{-30000, -30000}, {1080, 790}}",
+      "width": 1080,
+      "height": 790,
+      "app_version": "0.3.5",
+      "captured_at": "2026-10-01T11:18:15+08:00",
+      "sha256": "566bd14462517866732cf1f30a4abde670dc2cd8dae5fbb591cbc60ef4ae140b"
+    },
+    {
+      "file": "site/media/window.png",
+      "arguments": [
+        "-page",
+        "window"
+      ],
+      "page": "window",
+      "title": "MacKit · 配置助手",
+      "window_frame": "{{-30000, -30000}, {1080, 790}}",
+      "width": 1080,
+      "height": 790,
+      "app_version": "0.3.5",
+      "captured_at": "2026-10-01T11:18:22+08:00",
+      "sha256": "418530ed9c96ae207d121e9f645c44afcb6bc8e0c1e1ef405856560b7f2c2fed"
+    },
+    {
+      "file": "site/media/window-hotkeys.png",
+      "arguments": [
+        "-page",
+        "window",
+        "-section",
+        "hotkeys"
+      ],
+      "page": "window",
+      "title": "MacKit · 配置助手",
+      "window_frame": "{{-30000, -30000}, {1080, 790}}",
+      "width": 1080,
+      "height": 790,
+      "app_version": "0.3.5",
+      "captured_at": "2026-10-01T11:18:30+08:00",
+      "sha256": "e51a08c907732616bf72856bd5061d989153b2634a3f0f9eefdd3502bfa0fe05"
+    }
+  ]
+}

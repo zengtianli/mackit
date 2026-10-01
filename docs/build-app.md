@@ -22,6 +22,8 @@ bash scripts/build-app.sh           # 发行构建
 
 固定产品验收见 [acceptance.md](acceptance.md)。`--ui-self-test` 在进程内离屏运行真实界面，不启动常规窗口。
 
+产品页截图：装好当前版本后运行 `python3 scripts/capture-media.py`。它用 `macos/Sources` 的生产界面加 `scripts/capture/main.swift` 编出独立采集包（另一个 bundle ID），以 App 自带的 `-page` / `-section` 参数逐页打开，窗口放在所有屏幕之外、不成为键盘窗口、不激活 App；读回窗口服务器合成的本进程窗口图像，写入 `site/media/app.png`、`window.png`、`window-hotkeys.png` 与 `perf/media-capture.json`。引擎是已装 App 的命令（真实 HOME，只读快照）；装机版本与 `VERSION` 不同时退出 75，不录旧版。
+
 维护者打包前须由实际构建生成 `perf/build-receipt.json`（Chapter 的 `app_sop.py build-receipt` 入口）；回执记录干净提交、源码摘要、App 版本和可执行摘要。`scripts/release-checksums.py` 校验回执与待打包 App，一致后同时生成 `dist/releases/release.json` 与入库的 `perf/release.json`。回执过期或缺失时停止，不能用打包时的 HEAD 冒充构建来源，也不能把新代码的回执绑定到旧发行包。
 
 正式图标唯一源位于 `icon/`：Seedream 原图、提示词、打包后的 `AppIcon.png` / `AppIcon.icns` 与 `provenance.json`。构建与官网读取同一份打包图标；不要使用代码符号图覆盖正式素材。

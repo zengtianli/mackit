@@ -31,6 +31,11 @@
     "GUI permission dialogs"
   ],
   "reused_for": {
+    "0.3.5": {
+      "reviewed_at": "2026-10-01",
+      "reason": "0.3.5 把 App 改名为 MacKit（窗口标题 MacKit · 配置助手）并为每页补命令行。App 截图 app.png / window.png / window-hotkeys.png 已用 scripts/capture-media.py 从已装 0.3.5 离屏重录（生产界面源码 + 已装发行引擎，记录 perf/media-capture.json）。视频与 terminal.png 仍是明确标注的 0.1.0 CLI 回放：其中的 keys、edit --print、plan、apply、doctor、restore 用法在 0.3.5 未变，不把旧回放称为新录。",
+      "ui_change": "窗口标题改为 MacKit · 配置助手；快捷键页按来源区分链接；窗口页冲突提示改用引擎给出的 clash 键（截图已重录）"
+    },
     "0.3.4": {
       "reviewed_at": "2026-09-30",
       "reason": "0.3.4 只把 Hammerspoon 插电不睡眠改为本机配置开关（components/hammerspoon/init.lua 读取 ac_awake，默认关闭）并更新文档与版本号；macos/ 下界面源码自 0.3.3 起没有变化。沿用明确标注的 0.1.0 CLI 回放及 0.3.1 装机截图，不把旧素材称为新录。",
@@ -63,9 +68,10 @@
     }
   },
   "app_screenshots": {
-    "version": "0.3.1",
-    "executable_sha256": "cc366ba92777e21825bea50fc6be551ce9d88445befcc8c9fe3c8b68663cce7e",
-    "evidence": "../../perf/sidebar-media.json",
-    "scope": "Real installed app screenshots refreshed for the new sidebar icon; the existing labelled CLI replay remains its original version."
+    "version": "0.3.5",
+    "executable_sha256": "68b08ca9ba96ff6cd48d9ad35de94e4acfec96e8efe303e8a56be47f969d5512",
+    "evidence": "../../perf/media-capture.json",
+    "captured_at": "2026-10-01T11:18:30+08:00",
+    "scope": "App screenshots (app.png, window.png, window-hotkeys.png) re-captured offscreen from the production views with the installed release engine; the CLI replay video and terminal.png keep their own labelled version."
   }
 }
