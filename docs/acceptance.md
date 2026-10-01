@@ -23,4 +23,10 @@
 MACKIT_ACCEPT_APP="/Applications/MacKit.app" ~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py accept --app mackit --check native_ui --json
 ```
 
-装机图标 `installed_icon` 必须由本人在 Chapter 确认。前置材料是 `icon/AppIcon.png`、`icon/AppIcon.icns`、`perf/icon-review.json`、`perf/install-icon-receipt.json` 与 `perf/release.json`；文件哈希一致不能代替本人看到 Dock/Finder 图标。本轮自检候选也不代表新代码已经装机或发布。
+装机图标 `installed_icon` 由 Chapter 内置的固定脚本判定，不需要人工确认：它离屏读取 macOS 实际给已装 App 显示的图标（IconServices，与 Finder、Dock 同源），与 `icon/AppIcon.icns` 逐像素比对；失败时按脚本给出的诊断修图标或重新装机，不手写通过记录。
+
+```sh
+~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py accept --app mackit --check installed_icon --json
+```
+
+自检候选不代表新代码已经装机或发布。
