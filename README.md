@@ -19,11 +19,11 @@
 
 | 安装包 | 空闲内存 | 空闲 CPU | 冷启动到窗口出现 |
 |---|---|---|---|
-| **11.9 MB**（装好后 23.8 MB） | **46.1 MB** | **0.02%** | **560 ms** |
+| **11.9 MB**（装好后 23.9 MB） | **49.3 MB** | **0%** | **395 ms** |
 
 原生 SwiftUI；配置引擎仅在操作时启动并退出，没有轮询或定时任务。随包附带 Python 标准库运行环境；剥离符号并移除运行不需要的开发文件。
 
-<sub>v0.3.4 (0.3.4) · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-09-30。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v0.3.5 (0.3.5) · Mac16,12 / Apple M4 / macOS 27.2 · 真实本机配置：tianli 预设 14 个组件、1017 条快捷键声明（含现有外部键表） · 2026-10-01。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 1. 下载并打开 DMG，把 **MacKit** 拖到 **Applications / 应用程序**。
