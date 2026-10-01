@@ -6,11 +6,11 @@ A Mac configuration kit with one place to find your keys, edit native configurat
 
 MacKit brings zsh, Neovim, Hammerspoon, Ghostty, tmux, Yazi, Karabiner and yabai/skhd into one maintained source. A native SwiftUI app and the standard-library CLI share the same installation engine. The app bundles its runtime and does not stay resident when closed. Existing applications keep their own runtimes.
 
-Version 0.3.4 adds an optional keep-awake on AC power: with `ac_awake=true` in `~/.config/mackit/hammerspoon.lua` the Mac does not sleep while plugged in and returns to normal sleep on battery (see [configuration](docs/configuration.md)). It is off by default; everyday features, configuration and shortcuts are unchanged.
+Version 0.3.5 renames the app to **MacKit** (display name MacKit · 配置助手) and gives every app page a matching command (`status`, `prepare`, `plan`/`apply`, `deps`, `keys`, `file`, `window`, `restore`, `link`) for agents and scripts (see [Command line for agents and scripts](#command-line-for-agents-and-scripts)). Configuration content, shortcuts and install semantics are unchanged; upgrading from an older version is described below.
 
 ## Download the macOS app
 
-[MacKit 0.3.4 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.4/MacKit-0.3.4-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
+[MacKit 0.3.5 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.5/MacKit-0.3.5-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.
 
