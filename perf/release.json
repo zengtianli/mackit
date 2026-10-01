@@ -1,30 +1,30 @@
 {
-  "version": "0.3.4",
-  "build": "0.3.4",
-  "source_commit": "a18976813b20b015087d1a4dca97e384f9818cbb",
-  "source_sha256": "25f132c2ea82130186f28ae3d75f9b33952c00f32ed2adbc131c789b8859c4bb",
-  "executable_sha256": "02067db6509219cd4e1575b383c0687117cab4a8784d3b1f04266ae3d066279c",
+  "version": "0.3.5",
+  "build": "0.3.5",
+  "source_commit": "64b4196d80ba9a9bb3a673fdc0d4d37ebf6a96bb",
+  "source_sha256": "2c8c9ca48bbc270ba3d643562f8dfd0f2b12bf685e2bad5a393ba60a0ed60a94",
+  "executable_sha256": "68b08ca9ba96ff6cd48d9ad35de94e4acfec96e8efe303e8a56be47f969d5512",
   "build_receipt": "perf/build-receipt.json",
   "assets": [
     {
-      "name": "MacKit-0.3.4-arm64.dmg",
-      "bytes": 11874646,
-      "sha256": "b0fb034f195541b4384ecdb203b983c4b75d3e4401f052faddacbe1e18b78259"
+      "name": "MacKit-0.3.5-arm64.dmg",
+      "bytes": 11915637,
+      "sha256": "4a281d7c8e8d3cf7383f01734e465b3454da41c500656bd8f3a46a2e9fc63268"
     },
     {
-      "name": "MacKit-0.3.4-arm64.zip",
-      "bytes": 11083733,
-      "sha256": "388c6a0c03235492324187041f299df884a20f792e24014fe4006aa96cdfa9e8"
+      "name": "MacKit-0.3.5-arm64.zip",
+      "bytes": 11116886,
+      "sha256": "0526334a27055c5c65d2ac0487168bfb208a8605fd5d972bb6f04d9566f2b067"
     },
     {
-      "name": "mackit-v0.3.4.tar.gz",
-      "bytes": 2957314,
-      "sha256": "4d887f551b8135874f78adfca5d1ac7307dc94d7d42533ac6ae9a6d60c836edf"
+      "name": "mackit-v0.3.5.tar.gz",
+      "bytes": 2980123,
+      "sha256": "f761e6ad58c75322a3643c204039526dcb6ae03def2cd8b4d5dd32cfebae91a9"
     },
     {
-      "name": "mackit-v0.3.4.zip",
-      "bytes": 3020166,
-      "sha256": "9a4a0d444fe80a130d1ac4bccb2a07bc115ba18a1ba5d450e9209747ac56489a"
+      "name": "mackit-v0.3.5.zip",
+      "bytes": 3044160,
+      "sha256": "403e8249371c5d044baf4861ed8b42d48de30ed7074d076eb11f4bad791732ae"
     }
   ]
 }

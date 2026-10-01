@@ -109,7 +109,7 @@ def main():
     migration = migrate_legacy(applications, target, Path.home(), stamp)
     result = {"version": version, "artifact": inspect(target), "build_receipt": "perf/build-receipt.json",
               "installed_app": str(target), "legacy_migration": migration,
-              "launched": False, "dock_finder_visual_confirmed": False}
+              "launched": False}
     (ROOT / f"perf/install-receipt-{version}.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))
 

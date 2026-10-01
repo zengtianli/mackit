@@ -1,0 +1,29 @@
+{
+  "version": "0.3.5",
+  "artifact": {
+    "version": "0.3.5",
+    "build": "0.3.5",
+    "bundle_id": "cyou.tianli.mackit",
+    "sha256": "68b08ca9ba96ff6cd48d9ad35de94e4acfec96e8efe303e8a56be47f969d5512"
+  },
+  "build_receipt": "perf/build-receipt.json",
+  "installed_app": "/Applications/MacKit.app",
+  "legacy_migration": {
+    "moved": [
+      {
+        "from": "/Applications/Tianli MacKit.app",
+        "to": "/Users/tianli/.Trash/mackit-rename-20261001-104613/Tianli MacKit.app"
+      }
+    ],
+    "command_link": {
+      "ok": true,
+      "changed": 1,
+      "transaction": "20261001-105345-916a62",
+      "target": "/Users/tianli/.local/bin/mackit",
+      "source": "/Applications/MacKit.app/Contents/Resources/core/bin/mackit",
+      "restore": "mackit restore 20261001-105345-916a62"
+    }
+  },
+  "launched": false,
+  "dock_finder_visual_confirmed": false
+}
