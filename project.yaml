@@ -12,6 +12,16 @@ key_scripts:
 - scripts/build-app.sh
 homepage: https://mackit.tianli.cyou
 sop:
+  platforms:
+    mac: {}
+    iphone:
+      not_applicable: 当前套件管理 Mac 本机 Homebrew、launchd、Hammerspoon、Karabiner 与配置文件；iOS 不提供这些桌面系统管理能力。
+    ipad:
+      not_applicable: 当前套件管理 Mac 本机 Homebrew、launchd、Hammerspoon、Karabiner 与配置文件；iPadOS 不提供这些桌面系统管理能力。
+    watch:
+      not_applicable: watchOS 没有 Mac 本机配置树、桌面包管理、登录服务和 Hammerspoon、Karabiner 环境。
+    vision:
+      not_applicable: visionOS 不提供当前套件依赖的 Mac 本机配置树、Homebrew、launchd、Hammerspoon 与 Karabiner 环境。
   cli:
     commands: [mackit]
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
