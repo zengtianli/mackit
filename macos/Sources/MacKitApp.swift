@@ -23,7 +23,17 @@ struct MacKitApp: App {
         let args=CommandLine.arguments
         let home: String
         if let i=args.firstIndex(of:"--demo-home"),args.count>i+1 { home=args[i+1] } else { home=NSHomeDirectory() }
-        _model=StateObject(wrappedValue:AppModel(home:home))
+        let model = AppModel(home:home)
+        _model=StateObject(wrappedValue:model)
+        if !model.demo {
+            model.seedPortablePreferences()
+            let preferences = URL(fileURLWithPath:home).appendingPathComponent(".config/mackit/portable-preferences.json")
+            let configuration = AppConfiguration(productID:"cyou.tianli.mackit",files:[AppConfigurationFile(url:preferences,keys:["profile","components"])])
+            configuration.onChange = { [weak model] in
+                Task { @MainActor in if let model, !model.busy { model.refresh() } }
+            }
+            AppLifecycleUI.install(name:"MacKit · 配置助手",configuration:configuration,updateSource:.github(repository:"zengtianli/mackit"))
+        }
     }
     var body: some Scene {
         Window("MacKit · 配置助手",id:"main") {

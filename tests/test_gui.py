@@ -53,5 +53,17 @@ class AppBridgeTests(unittest.TestCase):
         self.call("apply",components=["nvim"],token=p["token"])
         self.call("restore",transaction="wrong",ok=False)
         self.assertTrue((self.home/".config/nvim").is_symlink())
+    def test_portable_preferences_restore_choice_without_installation(self):
+        self.call("savePreferences",profile="tianli",components=["nvim","ghostty"])
+        snap=self.call("snapshot")
+        self.assertFalse(snap["installed"])
+        self.assertEqual(snap["profile"],"tianli")
+        self.assertEqual(snap["selected"],["ghostty","nvim"])
+        self.assertFalse((self.home/".config/mackit/profile.json").exists())
+        self.assertFalse((self.home/".local/share/mackit").exists())
+        self.call("savePreferences",seed=True)
+        self.assertEqual(self.call("snapshot")["selected"],["ghostty","nvim"])
+        self.call("savePreferences",profile="tianli",components=["unknown"],ok=False)
+        self.assertEqual(self.call("snapshot")["selected"],["ghostty","nvim"])
 
 if __name__=="__main__":unittest.main()

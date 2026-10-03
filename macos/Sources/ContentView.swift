@@ -80,7 +80,7 @@ struct ContentView: View {
                     LazyVGrid(columns:[GridItem(.flexible()),GridItem(.flexible())],alignment:.leading,spacing:12) {
                         ForEach(model.snapshot?.components ?? []) { c in
                             Toggle(isOn:Binding(get:{model.selected.contains(c.id)},set:{ value in
-                                if value { model.selected.insert(c.id) } else { model.selected.remove(c.id) }; model.invalidate()
+                                if value { model.selected.insert(c.id) } else { model.selected.remove(c.id) }; model.invalidate(); model.rememberPreferences()
                             })) {
                                 VStack(alignment:.leading,spacing:2) { Text(c.id).font(.system(.body,design:.monospaced).weight(.medium)); Text(c.label).font(.caption).foregroundStyle(.secondary) }
                             }.disabled(model.busy)

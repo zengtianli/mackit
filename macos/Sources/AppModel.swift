@@ -37,6 +37,8 @@ import SwiftUI
         launchSnapshot = Task.detached(priority: .userInitiated) { try await client.call(["action":"snapshot"], as: Snapshot.self) }
     }
     private var launchSnapshot: Task<Snapshot, Error>?
+    private var preferenceWriter: Task<Void, Never>?
+    private var preferenceRevision = 0
     var dirty: Bool { file != nil && editor != file?.content }
     var windowDirty: Bool { window != nil && windowDraft != windowSaved }
     var newest: Transaction? { snapshot?.transactions.first { ["applied", "installing"].contains($0.status) } }
@@ -50,7 +52,26 @@ import SwiftUI
     func request(_ action: String) -> [String: Any] { ["action":action,"profile":profile,"components":selected.sorted()] }
     func invalidate() { preview = nil; dependencies = []; diagnosis = nil }
     func choose(_ name: String) {
-        profile = name; selected = Set(snapshot?.profiles[name] ?? []); invalidate()
+        profile = name; selected = Set(snapshot?.profiles[name] ?? []); invalidate(); rememberPreferences()
+    }
+    func seedPortablePreferences() {
+        guard !demo else { return }
+        Task { do { _ = try await client.call(["action":"savePreferences","seed":true], as: MessageResponse.self) } catch { self.error = error.localizedDescription } }
+    }
+    /// A single writer drains the latest selection; a cloud restore never applies Mac system configuration.
+    func rememberPreferences() {
+        guard !demo else { return }
+        preferenceRevision += 1
+        guard preferenceWriter == nil else { return }
+        preferenceWriter = Task {
+            defer { preferenceWriter = nil }
+            while true {
+                let revision = preferenceRevision
+                do { _ = try await client.call(request("savePreferences"), as: MessageResponse.self) }
+                catch { self.error = error.localizedDescription }
+                if revision == preferenceRevision { break }
+            }
+        }
     }
     func run(_ label: String, _ body: @escaping @MainActor () async throws -> Void) {
         guard !busy else { return }

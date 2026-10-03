@@ -7,6 +7,8 @@
 set -euo pipefail
 MACKIT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$MACKIT_DIR"
+LIFECYCLE_VENDOR="${APP_LIFECYCLE_VENDOR:-$HOME/Dev/tools/dev/lib/tools/macapp/swift-shared/vendor-lifecycle.py}"
+if [ -f "$LIFECYCLE_VENDOR" ]; then python3 "$LIFECYCLE_VENDOR" --platform mac --target-source-dir "$MACKIT_DIR/macos/Sources"; fi
 if [ "${1:-}" = "--local" ]; then
   export MACKIT_APP_DIR="$MACKIT_DIR/build/local/app" MACKIT_RELEASE_DIR="$MACKIT_DIR/build/local/releases"
 elif [ -n "${1:-}" ]; then

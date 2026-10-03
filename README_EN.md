@@ -1,5 +1,7 @@
 # MacKit · 配置助手
 
+“Configuration and Updates…” offers optional iCloud sync and configuration export/import for your preset and component selection. Portable choices live in `~/.config/mackit/portable-preferences.json`; installation receipts, source paths, permissions, private overrides and service state stay local. On a new Mac, restored choices can be previewed before the existing install workflow. “Check for Updates…” checks the official MacKit release on demand.
+
 [中文](README.md) · [Website](https://mackit.tianli.cyou) · [Shortcut handbook](https://mackit.tianli.cyou/keys.html)
 
 A Mac configuration kit with one place to find your keys, edit native configuration, and restore what you had before.

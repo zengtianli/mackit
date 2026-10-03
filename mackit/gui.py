@@ -94,6 +94,9 @@ def key_rows(home,payload,root):
 def inventory(home,payload,root):
     config,state=cli.paths(home)
     installed=cli.read(config/"profile.json",{})
+    preference=portable_preferences(home)
+    same_profile=not installed or not preference or preference["profile"]==installed.get("profile")
+    selected_preference=preference if same_profile else None
     records=[cli.read(p) for p in sorted((state/"transactions").glob("*.json"),reverse=True)]
     transactions=[{"id":r["id"],"status":r["status"],"changed":len(r["operations"]),"profile":r["profile"]} for r in records if r.get("operations")]
     defs=[]
@@ -101,10 +104,34 @@ def inventory(home,payload,root):
         defs.append({"id":name,"label":LABELS[name],"desktop":name in ("hammerspoon","karabiner","yabai")})
     edit=cli.edit_files(home,root,aliases=False)
     data_root=root if valid_root(root) else payload
-    return {"installed":bool(installed),"profile":installed.get("profile","developer"),"selected":installed.get("components",cli.profile("developer")["components"]),
+    return {"installed":bool(installed),"profile":installed.get("profile",(preference or {}).get("profile","developer")),"selected":(selected_preference or {}).get("components",installed.get("components",cli.profile("developer")["components"])),
         "sourceRoot":str(root),"sourceVersion":(data_root/"VERSION").read_text().strip(),"appVersion":(payload/"VERSION").read_text().strip(),
         "components":defs,"profiles":{n:cli.read(data_root/"profiles"/(n+".json"))["components"] for n in ("developer","tianli")},
         "transactions":transactions,"files":edit,"keys":[snapshot_key(r) for r in key_rows(home,payload,root)],"brew":shutil.which("brew") or ""}
+
+def portable_preferences(home):
+    """Portable choices are separate from local installation receipts and source_root."""
+    value=cli.read(cli.paths(home)[0]/"portable-preferences.json")
+    if value is None:return None
+    if not isinstance(value,dict) or set(value)!={"profile","components"}:raise ValueError("同步的预设选择格式无效")
+    if value["profile"] not in ("developer","tianli"):raise ValueError("同步的预设名称无效")
+    components=value["components"]
+    if not isinstance(components,list) or any(not isinstance(c,str) or c not in cli.COMPONENTS for c in components) or len(set(components))!=len(components):raise ValueError("同步的组件选择无效")
+    return value
+
+def save_portable_preferences(request,home):
+    config,state=cli.paths(home)
+    path=config/"portable-preferences.json"
+    with cli.locked(state):
+        existing=portable_preferences(home)
+        if request.get("seed") and existing is not None:return {"message":"已保留现有便携预设选择。"}
+        if request.get("seed"):
+            saved=cli.read(config/"profile.json",{})
+            request={"profile":saved.get("profile","developer"),"components":saved.get("components",cli.profile("developer")["components"])}
+        profile=request.get("profile");components=request.get("components")
+        if profile not in ("developer","tianli") or not isinstance(components,list) or any(not isinstance(c,str) or c not in cli.COMPONENTS for c in components) or len(set(components))!=len(components):raise ValueError("预设或组件选择无效")
+        cli.dump(path,{"profile":profile,"components":sorted(components)})
+    return {"message":"已记住预设与组件选择；未安装或启动任何组件。"}
 
 def snapshot_key(row):
     """A catalog row for the App. "clash" is the canonical key a new window hotkey must not reuse
@@ -169,6 +196,7 @@ def dispatch(request,home):
     action=request.get("action","snapshot")
     if not isinstance(action,str):raise ValueError("未知操作")
     if action=="snapshot":return inventory(home,payload,root)
+    if action=="savePreferences":return save_portable_preferences(request,home)
     if action.startswith("window"):return window_action(action,request,home,payload,root)
     args=arguments(request,home)
     if action=="dependencies":return {"dependencies":dependencies(cli.selection(args,home)[1],home)}

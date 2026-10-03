@@ -1,5 +1,7 @@
 # MacKit · 配置助手
 
+菜单“配置与更新…”提供可选的 iCloud 配置同步及导出、导入，记住预设和组件选择。便携选择独立保存在 `~/.config/mackit/portable-preferences.json`；安装回执、来源路径、权限、私有覆盖和服务状态不迁移。新电脑恢复选择后，仍可先预览，再按原流程安装配置。菜单“检查更新…”按需查询 MacKit 正式发行版本。
+
 [English](README_EN.md) · [产品主页](https://mackit.tianli.cyou) · [快捷键手册](https://mackit.tianli.cyou/keys.html)
 
 把 Mac 的终端、编辑器与桌面快捷键整理成一套找得到、改得明白、能恢复的配置。
