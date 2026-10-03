@@ -58,6 +58,11 @@ shutil.copytree(ROOT / 'dist/releases', out / 'downloads', dirs_exist_ok=True)
 # Portal-facing numbers, published at the homepage root with this page (products.yaml id: mackit).
 facts = product_facts.from_repo(ROOT, product_id='mackit', icon='icon.png')
 assert facts['version'] == version, f"facts.json version {facts['version']} (sop.release) differs from VERSION {version}"
+if historical:
+    facts.update(download_bytes=package.stat().st_size, measured_version=perf['version'],
+                 historical_reference=True, download_source='verified current DMG')
+    facts['card_line'] = f"当前下载 {package.stat().st_size / 1_000_000:.1f} MB · 历史实测 {perf['version']}（{perf['measured_at']}）：" + facts['card_line']
+    facts['card_text'] = product_facts.card_text(facts['card_line'])
 product_facts.write(out, facts)
 import subprocess
 subprocess.run([sys.executable, str(Path.home() / 'Apps/apps-portal/site/perf_block.py'), str(ROOT)], check=True)
