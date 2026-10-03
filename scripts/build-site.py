@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
@@ -23,7 +24,11 @@ from product_icons import render_icon
 render_icon(ROOT / 'icon/AppIcon.icns', out / 'icon.png')
 (out / 'icon.svg').unlink(missing_ok=True)
 perf = json.loads((ROOT / 'perf/lightweight.json').read_text())
-block = standalone_section(ROOT / 'perf/lightweight.json', version, accent='#476d59')
+measured_version = perf['version'].split(' ')[0]
+historical = measured_version != version and os.environ.get('APP_RELEASE_KEEP_HISTORY') == '1'
+block = standalone_section(ROOT / 'perf/lightweight.json', measured_version if historical else version, accent='#476d59')
+if historical:
+    block = block.replace('资源占用与响应速度。', f'历史实测 · v{measured_version}。').replace('数字来自所列设备实测，版本更新后重新测量。', f'以下为 v{measured_version} 的历史实测，不代表当前 v{version}；本轮未重复采样。')
 package = ROOT / 'dist/releases' / f'MacKit-{version}-arm64.dmg'
 page = (ROOT / 'site/index.template.html').read_text()
 page = page.replace('icon.svg', 'icon.png').replace('type="image/svg+xml"', 'type="image/png"')
