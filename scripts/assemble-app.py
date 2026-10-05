@@ -32,7 +32,9 @@ identity=os.environ.get("MACKIT_SIGN_IDENTITY","-")
 if identity!="-":subprocess.run(["codesign","--force","--options","runtime","--timestamp","--sign",identity,str(libpython)],check=True)
 python_license=subprocess.check_output([str(ROOT/"build/app-venv/bin/python"),"-c","import sys;from pathlib import Path;print(Path(sys.base_prefix)/'lib/python3.12/LICENSE.txt')"],text=True).strip()
 shutil.copy2(python_license,resources/"Python-LICENSE.txt")
-plist=(ROOT/"macos/Info.plist").read_text().replace("__VERSION__",version)
-(app/"Contents/Info.plist").write_text(plist)
-plistlib.loads(plist.encode())
+plist=plistlib.loads((ROOT/"macos/Info.plist").read_text().replace("__VERSION__",version).encode())
+# A local acceptance build can retain the public semantic version without replacing its release assets.
+if os.environ.get("MACKIT_BUILD_NUMBER"):
+    plist["CFBundleVersion"] = os.environ["MACKIT_BUILD_NUMBER"]
+(app/"Contents/Info.plist").write_bytes(plistlib.dumps(plist))
 print(app)

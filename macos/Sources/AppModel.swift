@@ -27,7 +27,9 @@ import SwiftUI
     @Published var windowSaved = WindowDraft()
     let client: EngineClient
     let demo: Bool
-    init(home: String = NSHomeDirectory()) {
+    let readOnly: Bool
+    init(home: String = NSHomeDirectory(), readOnly: Bool = false) {
+        self.readOnly = readOnly
         client = EngineClient(home: home); demo = home != NSHomeDirectory()
         // 验证通道：`-page window` 等启动参数直接落到某页（生产路径上为空，同 iOS 的 `-tab`）。
         if let name = UserDefaults.standard.string(forKey: "page"), let target = Page.allCases.first(where: { "\($0)" == name }) { page = target }
@@ -55,12 +57,12 @@ import SwiftUI
         profile = name; selected = Set(snapshot?.profiles[name] ?? []); invalidate(); rememberPreferences()
     }
     func seedPortablePreferences() {
-        guard !demo else { return }
+        guard !demo, !readOnly else { return }
         Task { do { _ = try await client.call(["action":"savePreferences","seed":true], as: MessageResponse.self) } catch { self.error = error.localizedDescription } }
     }
     /// A single writer drains the latest selection; a cloud restore never applies Mac system configuration.
     func rememberPreferences() {
-        guard !demo else { return }
+        guard !demo, !readOnly else { return }
         preferenceRevision += 1
         guard preferenceWriter == nil else { return }
         preferenceWriter = Task {

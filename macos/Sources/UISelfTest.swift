@@ -3,12 +3,61 @@ import SwiftUI
 
 @main enum MacKitMain {
     static func main() {
+        if CommandLine.arguments.contains("--background-measure"), LaneSignal.quiet {
+            MainActor.assumeIsolated {
+                let app = NSApplication.shared
+                app.setActivationPolicy(.prohibited)
+                Task { await QuietMeasure.run() }
+                app.run()
+            }
+            return
+        }
         guard CommandLine.arguments.contains("--ui-self-test") else { MacKitApp.main(); return }
         MainActor.assumeIsolated {
             let app = NSApplication.shared
             app.setActivationPolicy(.prohibited)
             Task { await UISelfTest.run() }
             app.run()
+        }
+    }
+}
+
+/// Read the production snapshot and render the initial view without preferences or system writes.
+@MainActor private enum QuietMeasure {
+    static var window: NSWindow?
+    static var model: AppModel?
+    static func run() async {
+        let deadline = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
+            fputs("MacKit quiet readiness timed out\n", stderr)
+            exit(1)
+        }
+        do {
+            let state = AppModel(readOnly: true)
+            model = state
+            try await state.refreshSnapshot(reset: true)
+            guard let snapshot = state.snapshot, !snapshot.components.isEmpty else {
+                throw EngineError.message("Missing production configuration snapshot")
+            }
+            let view = NSHostingView(rootView: ContentView().environmentObject(state))
+            let frame = NSRect(x: 0, y: 0, width: 1080, height: 790)
+            let host = NSWindow(contentRect: frame, styleMask: [.titled], backing: .buffered, defer: false)
+            host.contentView = view
+            window = host
+            view.frame = frame
+            view.layoutSubtreeIfNeeded()
+            guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
+                throw EngineError.message("Cannot render the production initial view")
+            }
+            view.cacheDisplay(in: view.bounds, to: bitmap)
+            guard bitmap.pixelsWide > 0, bitmap.pixelsHigh > 0 else {
+                throw EngineError.message("Empty production initial view")
+            }
+            deadline.invalidate()
+            LaneSignal.ready("configuration")
+        } catch {
+            deadline.invalidate()
+            fputs("MacKit quiet readiness failed: \(error.localizedDescription)\n", stderr)
+            exit(1)
         }
     }
 }
