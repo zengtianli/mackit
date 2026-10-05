@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-10-04T02:21:46+08:00",
+  "built_at": "2026-10-05T13:38:33+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.mackit",
     "version": "0.3.6",
-    "build": "0.3.6",
+    "build": "636",
     "executable": "Contents/MacOS/MacKit",
-    "sha256": "28d72437f7151a580d9095b6f2b33ae9721829325e0b0ac49a4b781449c709a6",
+    "sha256": "3960d8ac618751531f2c00bb9d18db3ac3fb4208e4686bb2481539f83b8d40b6",
     "icon": {
       "path": "Contents/Resources/AppIcon.icns",
       "sha256": "b9fc6599fa7699befc9d53bf281afd66d5f44966a3eb05afb97e70f5b1f8d840"
@@ -29,18 +29,19 @@
       "LICENSE",
       "THIRD_PARTY.md"
     ],
-    "sha256": "8be22624dc8bc60803f4173c0efbd5d350139d1494b53bb25d4620d5a257c9e7",
-    "file_count": 171,
+    "sha256": "02105839fdf0762a993119c3f8e7a49b372292ee8a8b4f50137b0cb2bf4d8247",
+    "file_count": 172,
     "files": {
+      "macos/Sources/LaneSignal.swift": "e7e68ac41417ddd06e7049a7bd4e01a92d52305bc999cd6ddd323178c64a2ce8",
       "macos/Sources/AppConfiguration.swift": "66d1b04072dbcbcbbc556afb79be1181396fc8bd1a6940d5960adea742219edc",
       "macos/Sources/EngineClient.swift": "af79b71c2953ab04a986abadd4b9e8cea2223263c01b90ed1e0dcc219d2d6376",
       "macos/Sources/AppLifecycleUI.swift": "c5bfb42bb97555125d3822a98ab0bab71adf368f0de1439f170f0dddb7456974",
-      "macos/Sources/AppModel.swift": "99a6b0ae522b2c67f4025ba6afafa936a6b32cee4444819b37fbea647e32ac74",
-      "macos/Sources/AppLifecycle.swift": "07adaba8327f855b9a497346384ece9f8a526089c1c2f987b8873ab95a4fec3c",
+      "macos/Sources/AppModel.swift": "fdc3ee9ad3c2c75ff2052697deb6c2cff12ccc4a6ce18afd9583926cf874a5b6",
+      "macos/Sources/AppLifecycle.swift": "3033bc6f87a69a2402ff1cda2c8196a4abd677222582c75d21302a65626c2d89",
       "macos/Sources/WindowPage.swift": "cfc8aedcce5d9a22dc9bf666868824818226ff11a042627be3eda169f4714aac",
       "macos/Sources/Models.swift": "f938956d02fbcae8db5915732702de99fc3a09656d5dbeeac986e062ad29075d",
       "macos/Sources/MacKitApp.swift": "1bb47303618187f103beccd44b3edffac9e450adc2fcb23acc727844b19f3f98",
-      "macos/Sources/UISelfTest.swift": "b854f80a849fe1b7917f52eef5dc3f1158b7c3668160348ab92f45fecda19a79",
+      "macos/Sources/UISelfTest.swift": "937bef0bd01f4c45bb2f6be018d91056b21323a37b2f8a5f44c1623a8c1aacab",
       "macos/Sources/ContentView.swift": "08ab821def209eeefcd737965c418f82d1f3aa837d9956a7b718f77931ed6fb0",
       "macos/Info.plist": "ea894342ae971d05e4c821b2c8f283e1c97558efb755a7fa4a0a8a03d0ec41df",
       "icon/preview-64.png": "70bccd4ec41eafa5559cd02d24d4ac2b56de6338c64422ce9a747c9bcafebd34",
@@ -199,14 +200,14 @@
       "VERSION": "6d7ff4be0be7debf12dc50067f10057f5d85815ef89e542bc291bc2c893cbbbb",
       "scripts/build-app.sh": "ddbe07181d26813d403cad8631698bbee7812b010ebf3ba6228ab389f1ef6ba3",
       "scripts/build-release.py": "edb3998fd63f8ac11a8d391f980fb52d16c3dc1625485ed87a44cd8d0b2303af",
-      "scripts/assemble-app.py": "67db1c466dfd0acfd4b3fa453c6c7668a1ae6c90a9fc278d01d8077e39a0227c",
+      "scripts/assemble-app.py": "5b24ae53fb1b9cf74d4a22f795f6e0bf0d3eb1f81019875bd49cedcb07a66a46",
       "install.sh": "f1171c9bd8a1e3324ad375fb4aa2e697bfb6bbf6372f50bf2bf762890d1f7a1e",
       "LICENSE": "32d956a78128aab2c92a84743d0762ad9ae831597a6099796526af7232dc25ad",
       "THIRD_PARTY.md": "d80a0f2dbdc2df240bd8f337a12ab78741ce42800cc332c231567d9e78e38beb"
     },
-    "commit": "d3df03d969f98934328f36b487a05c61ec8f647c",
+    "commit": "f2f9094e105ac819d02dab699a20e9f089d3855d",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },
-  "build_command_sha256": "1463b59eb3e1a8a0700dfac0866a3b953bfa0eafaaa28f4799ff06872f7a7353"
+  "build_command_sha256": "8f62004fd6cdf08b6ad3b5a68b9f27775bca8b64551f4464d4d1e41b4d8b0b18"
 }

@@ -21,13 +21,13 @@ The local acceptance build is 0.3.6 (636); the public download remains 0.3.6 (0.
 <!-- lightweight:start -->
 ## Resource use
 
-| Download | Idle memory | Idle CPU | Cold launch to window |
+| Download | Idle memory | Idle CPU | Speed |
 |---|---|---|---|
-| **11.9 MB** (installed 23.9 MB) | **49.3 MB** | **0%** | **395 ms** |
+| **12.1 MB** (installed 24.2 MB) | **48.2 MB** | **0%** | **571 ms** |
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
-<sub>v0.3.5 (0.3.5) · Mac16,12 / Apple M4 / macOS 27.2 · Real local configuration: 14 components and 1,017 shortcut declarations, including existing external keymaps · measured 2026-10-01. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+<sub>v0.3.6 (636) · Mac16,12 / Apple M4 / macOS 27.2 · The installed GUI reads the production configuration snapshot and renders the initial view offscreen, without preference or system writes. Download bytes are from the existing public 0.3.6 DMG; runtime measurements identify the local acceptance build. · measured 2026-10-05. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
 1. Open the DMG and drag **MacKit** to **Applications**.
