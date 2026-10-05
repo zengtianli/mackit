@@ -8,13 +8,15 @@
 
 **原生 macOS App + CLI；自带运行环境，关闭 App 后不常驻。** 管理 zsh、Neovim、Hammerspoon、Ghostty、tmux、Yazi、Karabiner、yabai/skhd；每个组件的自定义快捷键集中在自己的 keymaps 文件。
 
-本次 v0.3.5 把 App 改名为 **MacKit**（显示名 MacKit · 配置助手），并让 App 每一页都有对应命令（`status`、`prepare`、`plan`/`apply`、`deps`、`keys`、`file`、`window`、`restore`、`link`），供 Agent 与脚本调用（见[命令行：给 Agent 与脚本](#命令行给-agent-与脚本)）；配置内容、快捷键与安装语义保持原状，从旧版升级见下文。
+从 v0.3.5 起，App 名为 **MacKit**（显示名 MacKit · 配置助手），每一页都有对应命令（`status`、`prepare`、`plan`/`apply`、`deps`、`keys`、`file`、`window`、`restore`、`link`），供 Agent 与脚本调用（见[命令行：给 Agent 与脚本](#命令行给-agent-与脚本)）；配置内容、快捷键与安装语义保持原状，从旧版升级见下文。
 
 ## 下载 App（推荐）
 
-[下载 MacKit 0.3.5 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.5/MacKit-0.3.5-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.6 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.6/MacKit-0.3.6-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
+
+本地验收构建为 0.3.6 (636)，公开下载仍为 0.3.6 (0.3.6)。下列下载大小取公开 DMG，运行指标以实测所列构建为准。
 
 <!-- lightweight:start -->
 ## 资源占用

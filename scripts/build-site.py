@@ -25,10 +25,17 @@ render_icon(ROOT / 'icon/AppIcon.icns', out / 'icon.png')
 (out / 'icon.svg').unlink(missing_ok=True)
 perf = json.loads((ROOT / 'perf/lightweight.json').read_text())
 measured_version = perf['version'].split(' ')[0]
+release = json.loads((ROOT / 'perf/release.json').read_text())
+measured_build = perf['version'].partition(' (')[2].removesuffix(')')
+local_measurement = (measured_version == version and measured_build
+                     and measured_build != str(release.get('build', '')))
 historical = measured_version != version and os.environ.get('APP_RELEASE_KEEP_HISTORY') == '1'
 block = standalone_section(ROOT / 'perf/lightweight.json', measured_version if historical else version, accent='#476d59')
 if historical:
     block = block.replace('资源占用与响应速度。', f'历史实测 · v{measured_version}。').replace('数字来自所列设备实测，版本更新后重新测量。', f'以下为 v{measured_version} 的历史实测，不代表当前 v{version}；本轮未重复采样。')
+elif local_measurement:
+    block = (f"<p>本地验收构建 {perf['version']} 的运行实测；公开下载仍为 "
+             f"{release['version']} ({release['build']})。下载大小取公开 DMG，运行指标属于本地验收构建。</p>" + block)
 package = ROOT / 'dist/releases' / f'MacKit-{version}-arm64.dmg'
 page = (ROOT / 'site/index.template.html').read_text()
 page = page.replace('icon.svg', 'icon.png').replace('type="image/svg+xml"', 'type="image/png"')
@@ -62,6 +69,11 @@ if historical:
     facts.update(download_bytes=package.stat().st_size, measured_version=perf['version'],
                  historical_reference=True, download_source='verified current DMG')
     facts['card_line'] = f"当前下载 {package.stat().st_size / 1_000_000:.1f} MB · 历史实测 {perf['version']}（{perf['measured_at']}）：" + facts['card_line']
+    facts['card_text'] = product_facts.card_text(facts['card_line'])
+elif local_measurement:
+    facts.update(measurement_scope='local acceptance build', measurement_version=perf['version'],
+                 release_download_bytes=package.stat().st_size)
+    facts['card_line'] = f"本地验收构建 {perf['version']} 实测 · " + facts['card_line']
     facts['card_text'] = product_facts.card_text(facts['card_line'])
 product_facts.write(out, facts)
 import subprocess

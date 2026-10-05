@@ -12,6 +12,9 @@ key_scripts:
 - scripts/build-app.sh
 homepage: https://mackit.tianli.cyou
 sop:
+  account:
+    mode: none
+    rationale: 本地Mac配置工具，没有产品账号或注册登录；系统权限和Apple系统服务由macOS管理。
   platforms:
     mac: {}
     iphone:
@@ -50,6 +53,11 @@ sop:
   measure:
     app: installed
     download: dist/releases/MacKit-{short}-arm64.dmg
+    ready_signal: os_log
+    quiet_launch: [--background-measure]
+    in_use: true
+    data: 当前装机GUI只读加载本机配置快照并离屏绘制首屏；不保存偏好或更改系统配置。下载大小取现有0.3.6公开DMG，运行数据属于明确标记的本地验收构建。
+    data_en: The installed GUI reads the production configuration snapshot and renders the initial view offscreen, without preference or system writes. Download bytes are from the existing public 0.3.6 DMG; runtime measurements identify the local acceptance build.
   promo_url: https://mackit.tianli.cyou/
   site_build: ~/Dev/.venv/bin/python scripts/build-site.py
   site_deploy: bash scripts/deploy-site.sh

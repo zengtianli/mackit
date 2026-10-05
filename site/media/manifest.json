@@ -31,6 +31,20 @@
     "GUI permission dialogs"
   ],
   "reused_for": {
+    "0.3.6": {
+      "reviewed_at": "2026-10-05",
+      "reason": "沿用明确标注0.1.0的真实CLI回放及0.3.5的App截图。当前ContentView与窗口页布局、演示所覆盖的命令接口未改变；生产界面源码另经native_ui的31项断言及5页离屏截图验证。0.3.6新增的偏好同步菜单、权限弹框和本地静默测量分支不在旧素材覆盖范围内，不把旧素材称为新录。",
+      "ui_change": "当前布局沿用；本轮只增加独立只读测量分支和偏好写入保护，正常交互默认值保持。",
+      "local_ui_validation": {
+        "target_build": "0.3.6 (636)",
+        "method": "当前生产界面源码与既有冻结引擎的隔离进程内验收",
+        "input_sha256": "20e22d04b63ab0e8c2147d299b68bc0089df9ac134cc7de0d12db5e4691e7d85",
+        "ui_source_sha256": "e0abb69387d40a2e08068183d3c5133bd484e4d9b01d3fd40ea64f2e6ad33200",
+        "evidence": "../../perf/acceptance/run-leocwrob/native_ui.json",
+        "checks_passed": 31,
+        "offscreen_captures": 5
+      }
+    },
     "0.3.5": {
       "reviewed_at": "2026-10-01",
       "reason": "0.3.5 把 App 改名为 MacKit（窗口标题 MacKit · 配置助手）并为每页补命令行。App 截图 app.png / window.png / window-hotkeys.png 已用 scripts/capture-media.py 从已装 0.3.5 离屏重录（生产界面源码 + 已装发行引擎，记录 perf/media-capture.json）。视频与 terminal.png 仍是明确标注的 0.1.0 CLI 回放：其中的 keys、edit --print、plan、apply、doctor、restore 用法在 0.3.5 未变，不把旧回放称为新录。",
