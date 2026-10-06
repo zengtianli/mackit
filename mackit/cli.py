@@ -498,13 +498,6 @@ def run(argv,payload):
  s=subs.add_parser("keys",help="Search the shortcut catalog, or check a candidate key for conflicts");s.add_argument("query",nargs="?")
  s.add_argument("--component",help="e.g. nvim, hammerspoon, initials, keyboard-maestro");s.add_argument("--profile",choices=["developer","tianli"]);s.add_argument("--json",action="store_true")
  s.add_argument("--conflicts-with",metavar="KEY",help="Global keys that already use KEY, as the 窗口 page warns (e.g. ctrl+alt+h)")
- s=subs.add_parser("menu",help="Current App menu commands: native search panel, read-only scan and exact-path execution")
- menus=s.add_subparsers(dest="menu_command",required=True,metavar="ACTION")
- for verb in ("status","show","scan","execute"):
-  t=menus.add_parser(verb,help={"status":"Read native accessibility permission (no prompt)","show":"Open the native menu search panel", "scan":"Read all menu commands and current states without showing UI", "execute":"Execute a unique full menu path in the frontmost App"}[verb])
-  t.add_argument("--json",action="store_true")
-  if verb in ("scan","execute"):t.add_argument("--pid",type=int,help="Target App process; execute requires that App to be frontmost")
-  if verb=="execute":t.add_argument("--path-json",required=True,help='Exact full path, e.g. ["View","Show Status Bar"]')
  s=subs.add_parser("file",help="List, read or write editable config files with digest checks and backups")
  f=s.add_subparsers(dest="file_command",required=True,metavar="ACTION")
  t=f.add_parser("list",help="Editable ids and paths");t.add_argument("--json",action="store_true")
@@ -549,10 +542,6 @@ def run(argv,payload):
   if args.command=="window":return window_command(args,home) or 0
   if args.command=="file":return file_command(args,home) or 0
   if args.command=="prepare":return prepare_command(args,home,payload) or 0
-  if args.command=="menu":
-   from mackit import menu
-   result=menu.command(args,home,payload)
-   emit(args,result,json.dumps(result,ensure_ascii=False,indent=2));return 0
   if getattr(sys,"frozen",False) or isolated(home):prepare_root(home,args.command)
   if args.command=="plan":
    p=plan(args,home);p["token"]=plan_token(p);p["source_ready"]=READ_ROOT is None

@@ -46,8 +46,6 @@ sop:
   - macos/Sources/AppModel.swift
   - macos/Sources/EngineClient.swift
   - macos/Sources/UISelfTest.swift
-  - macos/Sources/MenuSearch.swift
-  - macos/Sources/MenuSearchPanel.swift
   media:
   - site/media
   media_meta: site/media/manifest.json

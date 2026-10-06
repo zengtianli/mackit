@@ -138,9 +138,3 @@ tests/         隔离安装和原生配置验证
 详见[配置与恢复](docs/configuration.md)、[实际验证范围](docs/validation.md)。源码声明检查不能定位所有第三方 App 的抢键。
 
 MIT；第三方代码保留其原许可，见 [THIRD_PARTY.md](THIRD_PARTY.md)。
-
-## 当前 App 菜单搜索
-
-原生按需面板：只搜索当前 App 的菜单和各级子菜单，显示路径、快捷键与禁用状态，↑↓ 选择、回车执行、Esc 关闭；支持中文和 `exp pdf` 等分词模糊搜索，不依赖 Raycast。每次呼出重新读取，关闭后进程退出。
-
-`mackit menu show` 打开面板，`mackit menu scan --json` 纯读取，`mackit menu status --json` 检查权限。在「窗口 → skhd 快捷键」录制呼出键，动作选「搜索当前 App 菜单（MacKit）」；默认不注册新全局键。详见[菜单搜索与验收边界](docs/menu-search.md)。
