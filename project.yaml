@@ -27,6 +27,103 @@ sop:
       not_applicable: visionOS 不提供当前套件依赖的 Mac 本机配置树、Homebrew、launchd、Hammerspoon 与 Karabiner 环境。
   cli:
     commands: [mackit]
+  agent_cli:
+    readback: mackit status
+    features:
+    - name: 侧栏状态（已连接现有配置、版本号）
+      command: mackit status
+    - name: 工具栏「刷新」（⌘R）
+      command: mackit status
+    - name: 切换五个页面（侧栏、MacKit 菜单 ⌘1–⌘5）
+      human: 只在窗口里有意义；每页的内容各有读命令
+    - name: 工具栏「使用帮助」
+      human: 只在窗口里有意义（打开主页）
+    - name: 菜单「打开在线手册」
+      human: 只在窗口里有意义（打开网页）
+    - name: 菜单「搜索快捷键」（⌘F）
+      command: mackit keys
+    - name: 使用预设
+      command: mackit select
+    - name: 组件勾选（自动记住选择）
+      command: mackit select
+    - name: 预览配置变化（先准备配置源）
+      command: mackit prepare
+    - name: 即将应用的配置（预览列表）
+      command: mackit plan
+    - name: 备份并安装配置
+      command: mackit apply
+    - name: 软件与依赖（各项是否已装）
+      command: mackit deps
+    - name: 安装缺失软件与依赖
+      command: mackit deps
+    - name: 软件安装运行记录
+      command: mackit deps
+    - name: 安装 Homebrew…
+      human: 系统安装器要管理员密码；安装包地址在 mackit deps 的 JSON 里
+    - name: Homebrew 官网、Karabiner 安装器链接
+      human: 只在窗口里有意义（打开网页）
+    - name: 辅助功能设置、输入监控设置
+      human: 系统授权只能真人在系统设置里开
+    - name: 搜索快捷键
+      command: mackit keys
+    - name: 按组件筛选快捷键
+      command: mackit keys
+    - name: 显示编码跳行
+      command: mackit keys
+    - name: 点快捷键来源（打开 GitHub 源文件或在 Finder 显示）
+      human: 只在窗口里有意义；来源路径在 mackit keys 的结果里
+    - name: 配置文件列表
+      command: mackit file list
+    - name: 读取文件
+      command: mackit file read
+    - name: 备份并保存（⌘S）
+      command: mackit file write
+    - name: 编辑 Karabiner 规则（配置文件页的 karabiner：列出、查看、添加、删除、启用、停用）
+      command: mackit karabiner rule
+    - name: 在 Finder 显示配置文件
+      human: 只在窗口里有意义；路径在 mackit file list 的结果里
+    - name: 放弃未保存修改（配置文件、窗口两页的草稿，含退出时的提示）
+      human: 只在窗口里有意义；命令没有草稿，不保存就没有改动
+    - name: 检查配置
+      command: mackit doctor
+    - name: 当前配置（配置源位置、配置版本、预设）
+      command: mackit status
+    - name: 安装恢复记录
+      command: mackit status
+    - name: 恢复最近一次安装…
+      command: mackit restore
+    - name: 打开备份目录
+      human: 只在窗口里有意义；目录是 ~/.local/state/mackit
+    - name: 窗口页运行状态（yabai、skhd、当前运行值）与「重新读取」
+      command: mackit window status
+    - name: 启动、停止 yabai 与 skhd
+      command: mackit window service
+    - name: yabai 设置（布局、间隙与边距、鼠标、外观共 19 项）
+      command: mackit window set
+    - name: skhd 快捷键（添加、改动作或命令、备注、删除）
+      command: mackit window hotkey
+    - name: 录制一个组合键
+      human: 要真人按键；命令里用 --key 直接写组合键
+    - name: 快捷键冲突提示
+      command: mackit keys
+    - name: 应用规则（添加、接管、置顶、桌面、删除）
+      command: mackit window rule
+    - name: 保存并立即生效（⌘S）
+      command: mackit window save
+    - name: 只保存（⇧⌘S）
+      command: mackit window save
+    - name: 配置与更新窗口里的当前版本
+      command: mackit status
+    - name: 检查更新
+      missing: 发行版本检查只在共享的 AppLifecycleUI（Swift）里，没有命令入口
+    - name: 升级到新版…
+      missing: 应用内升级只在共享的 AppLifecycleUI（Swift）里，没有命令入口；本机维护用 scripts/install-app.py
+    - name: 使用 iCloud 记住配置
+      missing: 开关与同步只在共享的 AppConfiguration（Swift）里，没有命令入口
+    - name: 导出配置…
+      missing: 导出信封格式只在共享的 AppConfiguration（Swift）里；同一份预设与组件选择可用 mackit status 读
+    - name: 导入配置…
+      missing: 导入信封格式只在共享的 AppConfiguration（Swift）里；同一份预设与组件选择可用 mackit select 写
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
   test_inputs:
   - tests/**

@@ -215,7 +215,18 @@ def apply(args,home):
    {"source":str(bundled_cli() or generation/"mackit"),"target":str(home/".local/bin/mackit")}]
   record={"id":tx,"status":"installing","profile":p["profile"],"components":p["components"],"operations":[]}
   link_entries(home,state,tx,record,entries,generation)
-  print(json.dumps({"ok":True,"transaction":tx,"changed":len(record["operations"]),"profile":p["profile"],"restore":"mackit restore "+tx},ensure_ascii=False))
+ result={"ok":True,"transaction":tx,"changed":len(record["operations"]),"profile":p["profile"],"restore":"mackit restore "+tx}
+ if "karabiner" in p["components"]:result["karabiner"]=karabiner_reload(home,state,tx,record["operations"])
+ print(json.dumps(result,ensure_ascii=False))
+def karabiner_reload(home,state,tx,operations):
+ """After apply re-pointed ~/.config/karabiner: make the running Karabiner read the new file and confirm it from
+ its log (one bounded wait). Skipped, with the reason, when nothing changed, on an isolated --home, or when
+ Karabiner is not installed or not running."""
+ from mackit import karabiner
+ skipped={"attempted":False,"reloaded":False,"nudged":[],"waited_ms":0,"log":str(karabiner.LOG),"line":""}
+ if not any(Path(op["target"])==home/".config/karabiner" for op in operations):return {**skipped,"reason":"unchanged"}
+ if isolated(home):return {**skipped,"reason":"isolated_home"}
+ return karabiner.reload(state,skip=tx)
 def command_link(home):
  """Where ~/.local/bin/mackit points, and whether that is this command (an App rename leaves old links behind)."""
  link=home/".local/bin/mackit";current=bundled_cli()
@@ -435,6 +446,91 @@ def file_command(args,home):
  out={"ok":True,**{k:v for k,v in result.items() if k!="content"},"bytes":len(content.encode())}
  emit(args,out,result["message"]+(" Backup: "+result["backup"] if result.get("backup") else ""))
 
+def karabiner_source(home):
+ """The Karabiner source file the 配置文件 page edits (the built-in copy until a source is prepared)."""
+ from mackit import gui
+ root=gui.source_root(home,ROOT);ready=gui.valid_root(root)
+ path=(root if ready else ROOT)/"components"/EDIT["karabiner"]
+ raw=path.read_bytes()
+ return path,raw.decode("utf-8"),hashlib.sha256(raw).hexdigest(),ready and gui.writable(root,home)
+
+def karabiner_command(args,home):
+ """Karabiner rules: read, add, remove, enable, disable. Saves go through the 配置文件 page's own save for the id
+ karabiner (path guard, digest check, lock, editor-backups); --apply then runs the same apply as the App."""
+ from mackit import gui, karabiner
+ verb=args.karabiner_command
+ if verb=="reload":
+  if isolated(home):raise ValueError("An isolated --home never touches the running Karabiner.")
+  result=karabiner.reload(paths(home)[1])
+  if not result["reloaded"]:
+   why={"not_installed":"Karabiner-Elements is not installed.","not_running":"Karabiner is not running.","no_generation":"No applied Karabiner configuration yet (mackit apply --components karabiner).",
+    "log_unreadable":"Asked Karabiner to re-read, but "+result["log"]+" cannot be read to confirm it.",
+    "not_confirmed":"Asked Karabiner to re-read, but no new \""+karabiner.MARK+"\" line appeared in "+result["log"]+" within the wait."}[result["reason"]]
+   raise Failure(why,reload=result)
+  return emit(args,{"ok":True,"reload":result},"Karabiner re-read its configuration: "+result["line"])
+ path,text,digest,editable=karabiner_source(home)
+ data=karabiner.parse(text);profile=karabiner.profile_of(data);rules=karabiner.rules_of(profile)
+ if verb=="status":
+  link=home/".config/karabiner";_,state=paths(home)
+  value={"installed":karabiner.installed(),"running":karabiner.running(),"source":str(path),"editable":editable,"digest":digest,
+   "profile":str(profile.get("name","")),"rules":len(rules),"enabled":sum(karabiner.enabled(r) for r in rules),
+   "simpleModifications":len(profile.get("simple_modifications") or []),"shellCommands":sum(karabiner.has_command(r) for r in rules),
+   "config":{"path":str(link),"target":os.readlink(link) if link.is_symlink() else "","managed":link.is_symlink() and link.resolve().is_relative_to((state/"generations").resolve())},
+   "lastReload":karabiner.last_reload()}
+  return emit(args,{"ok":True,"karabiner":value},"\n".join([
+   "Karabiner  "+("running" if value["running"] else ("installed, stopped" if value["installed"] else "not installed")),
+   f'rules: {value["rules"]} ({value["enabled"]} enabled)  simple: {value["simpleModifications"]}  editable: {editable}  digest: {digest}',
+   "source: "+str(path),"active:  "+(value["config"]["target"] or "(not installed by MacKit)"),"last re-read: "+(value["lastReload"] or "(none in the current log)")]))
+ verb=args.rule_command
+ if verb=="list":
+  rows=[karabiner.summary(r,i+1) for i,r in enumerate(rules)]
+  return emit(args,{"ok":True,"source":str(path),"digest":digest,"profile":str(profile.get("name","")),"count":len(rows),"rules":rows},
+   "\n".join(f'{r["index"]:>3} {"on " if r["enabled"] else "off"} {r["description"]}  [{", ".join(r["from"])}]' for r in rows) or "No rules.")
+ if verb=="show":
+  at=karabiner.find(rules,args.index,args.description)
+  if args.json:return emit(args,{"ok":True,"source":str(path),"digest":digest,**karabiner.summary(rules[at],at+1),"rule":rules[at]})
+  print(json.dumps(rules[at],ensure_ascii=False,indent=2));return
+ require_source(home)
+ if args.digest and args.digest!=digest:raise ValueError("karabiner.json changed since that digest. Run mackit karabiner rule list --json again and pass the new one.")
+ replaced=False;changed=True
+ if verb=="add":
+  at,replaced=karabiner.add(rules,json.loads(read_text(args.source)),args.at,args.replace)
+  note=("Replaced" if replaced else "Added")+f' rule {at+1}: {rules[at]["description"]}'
+ else:
+  at=karabiner.find(rules,args.index,args.description);name=str(rules[at].get("description",""))
+  if verb=="remove":del rules[at];note=f"Removed rule {at+1}: {name}"
+  else:
+   changed=karabiner.set_enabled(rules,at,verb=="enable")
+   note=(f"Rule {at+1} is now {verb}d: " if changed else f"Rule {at+1} was already {verb}d: ")+name
+ out={"ok":True,"action":verb,"changed":changed,"replaced":replaced,"index":at+1,"description":name if verb!="add" else rules[at]["description"],
+  "count":len(rules),"path":str(path),"digest":digest,"backup":"","applied":False}
+ if changed:
+  saved=gui.dispatch({"action":"saveFile","file":"karabiner","content":karabiner.render(data),"digest":digest},home)
+  out.update(digest=saved["digest"],backup=saved.get("backup",""))
+  if out["backup"]:note+="\nBackup: "+out["backup"]
+ if args.apply:
+  if "karabiner" not in read(paths(home)[0]/"profile.json",{}).get("components",[]):
+   out["applyNote"]="The karabiner component is not installed here; run mackit apply --components karabiner."
+  else:
+   if getattr(sys,"frozen",False) or isolated(home):prepare_root(home,"apply")
+   printed,_=gui.capture(apply,argparse.Namespace(profile=None,components="karabiner",token=None),home)
+   out["installation"]=json.loads(printed);out["applied"]=True
+   reloaded=out["installation"].get("karabiner",{})
+   out["applyNote"]="Applied as "+out["installation"]["transaction"]+"; Karabiner "+("re-read it." if reloaded.get("reloaded") else "re-read not confirmed ("+str(reloaded.get("reason"))+").")
+  note+="\n"+out["applyNote"]
+ return emit(args,out,note)
+
+def select_command(args,home):
+ """The preset picker and component checkboxes of the 安装配置 page: remembered, nothing installed."""
+ from mackit import gui
+ if not args.profile and not args.components:raise ValueError("Nothing to remember: pass --profile and/or --components.")
+ saved=read(paths(home)[0]/"profile.json",{})
+ if args.profile and saved.get("profile") and saved["profile"]!=args.profile:
+  raise ValueError("The installed preset ("+saved["profile"]+") is locked, as in the App; restore the installation before choosing another.")
+ name,selected=selection(args,home)
+ result=gui.save_portable_preferences({"profile":name,"components":selected},home)
+ emit(args,{"ok":True,"profile":name,"components":sorted(selected),"message":result["message"]},f'Remembered {name}: '+", ".join(sorted(selected)))
+
 def deps_command(args,home):
  from mackit import gui
  name,selected=selection(args,home)
@@ -467,22 +563,68 @@ def status_command(args,home,payload):
  value["commandLink"]=command_link(home)
  print(json.dumps(value,ensure_ascii=False,indent=2))
 
+class Failure(ValueError):
+ """A refused or unconfirmed operation that also has facts to report: they join the --json error object."""
+ def __init__(self,message,**extra):super().__init__(message);self.extra=extra
+class Parser(argparse.ArgumentParser):
+ """Usage errors keep argparse's stderr text and exit code 2; with --json they also print the error object."""
+ json_errors=False
+ def error(self,message):
+  if Parser.json_errors:print(json.dumps({"ok":False,"error":"usage: "+message},ensure_ascii=False))
+  super().error(message)
+HELP_EPILOG="""\
+读命令 Read commands (write nothing):
+  status · plan · doctor · deps (without --install) · keys · file list · file read · window status ·
+  karabiner status · karabiner rule list · karabiner rule show · edit (no id, or --print)
+写命令 Write commands:
+  prepare · select · apply · restore · link · deps --install · file write ·
+  window save · window set · window hotkey add|remove · window rule add|remove · window service ·
+  karabiner rule add|remove|enable|disable · karabiner reload · action · update
+  Saves check a digest (window status / file read / karabiner rule list --json), keep a copy of what
+  they replace, and print where it is. apply and restore are one recorded transaction each.
+
+--json 输出形状 Output: one object on stdout.
+  success  {"ok": true, ...command fields...}
+  failure  {"ok": false, "error": "<reason>"}   (usage errors: "usage: ..."; some add fields, e.g. "reload")
+  status, apply and doctor print JSON without the flag.
+
+退出码 Exit codes:
+  0  success (an empty search or list is still success)
+  1  the operation failed or was refused: stale digest, failed validation, unconfirmed reload,
+     doctor found issues, deps --check found something missing
+  2  usage error (unknown command or argument)
+  action returns the configured program's own exit code.
+
+仅在窗口中 Window only (no command; the facts are in the read commands):
+  record a key by pressing it (pass --key instead) · discard an unsaved draft · switch pages (⌘1-⌘5) ·
+  show in Finder / open the backup folder (paths: status, file list) · help, handbook and source links ·
+  open Accessibility / Input Monitoring settings · install Homebrew with the system installer
+  (URL: deps --json)
+暂无命令 No command yet (the shared 配置与更新 window): iCloud sync switch, import/export of the
+  remembered selection, check for updates, upgrade to a new release
+
+Without --home, commands act on this Mac and its recorded configuration source. Try writes on a
+sandbox first: mackit --home /tmp/demo prepare
+"""
 def main(argv=None):
  global ROOT,READ_ROOT
  payload=ROOT;READ_ROOT=None
  try:return run(argv,payload)
  finally:ROOT,READ_ROOT=payload,None  # one command per call; the next call starts from the App's payload again
 def run(argv,payload):
- parser=argparse.ArgumentParser(prog="mackit",description="Mac configuration you can find, understand and restore. Every command works on the same files as the MacKit App; --json gives a stable object with \"ok\", and failures exit non-zero.")
+ Parser.json_errors="--json" in (sys.argv[1:] if argv is None else argv)
+ parser=Parser(prog="mackit",formatter_class=argparse.RawDescriptionHelpFormatter,epilog=HELP_EPILOG,description="Mac configuration you can find, understand and restore. Every command works on the same files as the MacKit App; --json gives a stable object with \"ok\", and failures exit non-zero.")
  parser.add_argument("--home",type=Path,default=Path.home(),help="Target HOME (default: yours). Any other folder is a sandbox: its configuration source is prepared inside it (<HOME>/.local/share/mackit), and nothing outside it is written, installed or started")
  parser.add_argument("--version",action="version",version=(ROOT/"VERSION").read_text().strip())
  subs=parser.add_subparsers(dest="command",required=True,metavar="COMMAND")
  def selector(s):s.add_argument("--profile",choices=["developer","tianli"],help="Preset (default: the installed one, else developer)");s.add_argument("--components",help="Comma-separated component names")
  s=subs.add_parser("prepare",help="Create the configuration source the App uses, as its 预览 does (no-op when ready)")
  s.add_argument("--json",action="store_true",help="Machine-readable result")
+ s=subs.add_parser("select",help="Remember the preset and components the App's 安装配置 page shows (installs nothing)");selector(s)
+ s.add_argument("--json",action="store_true",help="Machine-readable result")
  s=subs.add_parser("plan",help="Preview what apply would link, back up or generate (read-only)");selector(s)
  s.add_argument("--json",action="store_true",help="Machine-readable plan, including the token apply --token checks")
- s=subs.add_parser("apply",help="Back up and install the selected configuration as one restorable transaction");selector(s)
+ s=subs.add_parser("apply",help="Back up and install the selected configuration as one restorable transaction; a running Karabiner is told to re-read and its log is checked (result: karabiner)");selector(s)
  s.add_argument("--token",help="Refuse unless the plan still matches this plan --json token");s.add_argument("--json",action="store_true",help="JSON result (the default output)")
  s=subs.add_parser("doctor",help="Check sources, dependencies, the command link and key conflicts (exit 1 on issues)");selector(s)
  s.add_argument("--json",action="store_true",help="JSON result (the default output)")
@@ -527,6 +669,25 @@ def run(argv,payload):
  u.add_argument("--replace",action="store_true",help="Change the app's existing rule");saving(u)
  u=r.add_parser("remove",help="Remove the app's rule");u.add_argument("--app",required=True);saving(u)
  t=w.add_parser("service",help="Start or stop yabai or skhd (real HOME only)");t.add_argument("state",choices=["start","stop"]);t.add_argument("service",choices=["yabai","skhd"]);t.add_argument("--json",action="store_true")
+ s=subs.add_parser("karabiner",help="Karabiner key-to-key rules: status, rule list/show/add/remove/enable/disable, reload")
+ k=s.add_subparsers(dest="karabiner_command",required=True,metavar="ACTION")
+ t=k.add_parser("status",help="Installed/running, source file and digest, rule counts, active generation, last re-read (read-only)");t.add_argument("--json",action="store_true")
+ t=k.add_parser("reload",help="Make the running Karabiner read its configuration again and confirm it from its log (real HOME only)");t.add_argument("--json",action="store_true")
+ t=k.add_parser("rule",help="List, show, add, remove, enable or disable a rule in components/karabiner/karabiner.json")
+ r=t.add_subparsers(dest="rule_command",required=True,metavar="ACTION")
+ def which(u):
+  g=u.add_mutually_exclusive_group(required=True);g.add_argument("--index",type=int,help="Its number in rule list (from 1)");g.add_argument("--description",help="Its exact description")
+ def writing(u):
+  u.add_argument("--digest",help="Refuse if karabiner.json changed since this digest (from rule list --json)")
+  u.add_argument("--apply",action="store_true",help="Also run apply for the karabiner component; on your own HOME a running Karabiner is then told to re-read");u.add_argument("--json",action="store_true")
+ u=r.add_parser("list",help="Every rule: number, on/off, description, the keys it starts from");u.add_argument("--json",action="store_true")
+ u=r.add_parser("show",help="One rule as JSON");which(u);u.add_argument("--json",action="store_true",help="Wrap it with index, enabled and the file digest")
+ u=r.add_parser("add",help="Add one rule object (description + manipulators); a rule with shell_command is refused")
+ u.add_argument("--from",dest="source",default="-",metavar="PATH",help="JSON file with the rule, or - for stdin (default)")
+ u.add_argument("--at",type=int,help="Insert before this number (default: append; earlier rules win)");u.add_argument("--replace",action="store_true",help="Replace the rule that has the same description");writing(u)
+ u=r.add_parser("remove",help="Delete a rule");which(u);writing(u)
+ u=r.add_parser("enable",help="Turn a rule on");which(u);writing(u)
+ u=r.add_parser("disable",help="Turn a rule off, keeping it in the file");which(u);writing(u)
  s=subs.add_parser("edit",help="Open a config in $EDITOR, or list the ids (use file read/write when not interactive)");s.add_argument("component",nargs="?");s.add_argument("--print",dest="print_path",action="store_true",help="Print the path only")
  s.add_argument("--json",action="store_true",help="With no id: the list as JSON")
  s=subs.add_parser("action",help="Run an optional action configured in ~/.config/mackit/actions.json");s.add_argument("name");s.add_argument("args",nargs=argparse.REMAINDER)
@@ -542,6 +703,8 @@ def run(argv,payload):
   if args.command=="window":return window_command(args,home) or 0
   if args.command=="file":return file_command(args,home) or 0
   if args.command=="prepare":return prepare_command(args,home,payload) or 0
+  if args.command=="karabiner":return karabiner_command(args,home) or 0
+  if args.command=="select":return select_command(args,home) or 0
   if getattr(sys,"frozen",False) or isolated(home):prepare_root(home,args.command)
   if args.command=="plan":
    p=plan(args,home);p["token"]=plan_token(p);p["source_ready"]=READ_ROOT is None
@@ -590,6 +753,6 @@ def run(argv,payload):
    print("Updated source. Review mackit plan, then mackit apply.")
   return 0
  except (ValueError,TypeError,OSError,subprocess.SubprocessError) as exc:  # TypeError: JSON input of the wrong shape
-  if getattr(args,"json",False):print(json.dumps({"ok":False,"error":str(exc)},ensure_ascii=False))
+  if getattr(args,"json",False):print(json.dumps({"ok":False,"error":str(exc),**getattr(exc,"extra",{})},ensure_ascii=False))
   print("mackit: "+str(exc),file=sys.stderr);return 1
 if __name__=="__main__":raise SystemExit(main())

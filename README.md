@@ -87,7 +87,9 @@ App 里能看到、能做的事都有对应命令（界面给人用，命令给 
 mackit status --json                          # 预设、配置源、App/配置源版本、安装记录、mackit 链接状态
 mackit prepare --json                         # 与 App「预览」相同：准备配置源（已就绪则不动），之后才能读写配置文件、改窗口设置
 mackit plan --json                            # 预览变化，附 token
+mackit select --components zsh,nvim --json     # 记住「安装配置」页的预设与组件勾选（不安装）；status 的 app.selected 读回
 mackit apply --token <token>                  # 预览后目标未变才安装；一次可恢复的安装记录（token 不符时什么都不创建）
+                                              # 含 karabiner 时结果带 karabiner：已让运行中的 Karabiner 重读，并从它的日志确认
 mackit doctor --json                          # 来源、依赖、命令链接、快捷键冲突；有问题退出 1
 mackit deps --json                            # 每个 formula/cask 是否已装；--check 缺了退出 1
 mackit deps --install                         # 只 brew install 缺的（仅真实 HOME；进度在 stderr，可随时用 deps --json 查询）
@@ -103,6 +105,11 @@ mackit window hotkey remove --key ctrl+alt+h
 mackit window rule add --app "System Settings" --manage off
 mackit window save --digest <摘要> --from window.json           # 整体替换，格式同 window status --json 的 window
 mackit window service stop skhd               # 启停 yabai / skhd（仅真实 HOME）
+mackit karabiner status --json                # Karabiner 是否在运行、规则源文件与摘要、规则数、当前生效的那一代、最近一次重读
+mackit karabiner rule list --json             # 每条规则：序号、开关、说明、起始键；rule show --index 4 看全文
+mackit karabiner rule add --from rule.json --apply   # 加一条键到键规则（带 shell_command 的拒绝）；--apply 接着生成并让 Karabiner 重读
+mackit karabiner rule disable --index 4       # enable / disable / remove 按 --index 或 --description；改前副本进 editor-backups
+mackit karabiner reload --json                # 只让运行中的 Karabiner 重读并确认（仅真实 HOME）
 mackit restore <记录> --json                  # 恢复最近一次安装记录
 mackit link                                   # 把 ~/.local/bin/mackit 指向当前 App 内的命令（有记录，可 restore）
 ```
@@ -110,6 +117,8 @@ mackit link                                   # 把 ~/.local/bin/mackit 指向�
 `--home <目录>`（不是你自己的主目录时）就是沙盒：不安装软件、不启停服务、不对运行中的 yabai/skhd 生效，也不写目录以外的文件。无论用 App 内命令还是源码目录的 `bin/mackit`，配置源都与 App 一样准备在 `<目录>/.local/share/mackit`：`plan` 只报告、不创建，`prepare` 或 `apply` 才从内置副本创建，所以窗口与配置文件的写入只落在沙盒里。沙盒若记录了目录外的配置源（0.3.5 以前的源码命令会这样），该来源只读，写入会被拒绝，换一个新目录即可。
 
 不带 `--home` 时命令作用于本机真实配置：配置源是安装时记录的目录。从 git 仓库安装（`./install.sh`）时它就是仓库本身，`mackit window …`、`mackit file write` 会改仓库里的文件，与 App 保存的效果相同。
+
+退出码：0 成功（查无结果也算）；1 操作失败或被拒绝（摘要过期、校验不过、重读未确认、doctor 或 deps --check 发现问题）；2 用法错误，此时加 `--json` 也输出 `{"ok": false, "error": "usage: …"}`。读命令、写命令、输出形状与只在窗口里做的事列在 `mackit --help` 末尾。
 
 `keys --json` 自 0.3.5 起输出 `{ok, count, rows}`，此前版本输出行数组。
 

@@ -79,7 +79,9 @@ Everything you can see or do in the app has a command (the GUI is for people, th
 mackit status --json                          # preset, source, app/source versions, transactions, mackit link state
 mackit prepare --json                         # what the app's Preview does: prepare the configuration source (no-op when ready); needed before file and window writes
 mackit plan --json                            # preview with a token
+mackit select --components zsh,nvim --json     # remember the Set up page's preset and component choice (installs nothing); read back as status app.selected
 mackit apply --token <token>                  # install only if the targets are unchanged since the preview; one restorable transaction (a stale token creates nothing)
+                                              # with karabiner selected the result has "karabiner": a running Karabiner was told to re-read, confirmed from its log
 mackit doctor --json                          # sources, dependencies, command link, key conflicts; exit 1 on issues
 mackit deps --json                            # installed state per formula/cask; --check exits 1 when something is missing
 mackit deps --install                         # brew install only what is missing (real HOME only; progress on stderr, poll deps --json)
@@ -95,6 +97,11 @@ mackit window hotkey remove --key ctrl+alt+h
 mackit window rule add --app "System Settings" --manage off
 mackit window save --digest <digest> --from window.json         # replace everything, same shape as window status --json's window
 mackit window service stop skhd               # start/stop yabai or skhd (real HOME only)
+mackit karabiner status --json                # is Karabiner running, the rule source and its digest, rule counts, the active generation, the last re-read
+mackit karabiner rule list --json             # every rule: number, on/off, description, starting keys; rule show --index 4 prints one
+mackit karabiner rule add --from rule.json --apply   # add a key-to-key rule (one with shell_command is refused); --apply regenerates and has Karabiner re-read
+mackit karabiner rule disable --index 4       # enable / disable / remove by --index or --description; the previous file goes to editor-backups
+mackit karabiner reload --json                # only make the running Karabiner re-read and confirm it (real HOME only)
 mackit restore <transaction> --json           # undo the newest transaction
 mackit link                                   # point ~/.local/bin/mackit at this app's command (recorded, restorable)
 ```
@@ -102,6 +109,8 @@ mackit link                                   # point ~/.local/bin/mackit at thi
 `--home <dir>` (any folder other than your own home) is a sandbox: no software installs, no service start/stop, nothing applied to running yabai/skhd, and no file written outside the folder. Whether you run the app's command or a source checkout's `bin/mackit`, the configuration source is prepared as the app prepares it, in `<dir>/.local/share/mackit`: `plan` reports it without creating it, and `prepare` or `apply` creates it from the built-in copy, so window and file writes land inside the sandbox. If a sandbox recorded a source outside itself (source commands before 0.3.5 did), that source is read-only there and writes are refused; start from a new folder.
 
 Without `--home`, commands act on this Mac's real configuration, whose source is the folder recorded at install time. For an install from a git checkout (`./install.sh`) that is the checkout itself, so `mackit window …` and `mackit file write` change files in the checkout, just as saving in the app does.
+
+Exit codes: 0 success (an empty result is still success); 1 the operation failed or was refused (stale digest, failed validation, unconfirmed re-read, issues from doctor or deps --check); 2 usage error, which with `--json` also prints `{"ok": false, "error": "usage: …"}`. The end of `mackit --help` lists the read commands, the write commands, the output shape and what exists only in the window.
 
 Since 0.3.5 `keys --json` prints `{ok, count, rows}`; earlier versions printed a bare array of rows.
 
