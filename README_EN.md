@@ -144,3 +144,9 @@ bash scripts/build-app.sh --local     # development app build; installs and publ
 Tests cover installation into isolated homes, idempotence, rollback, preservation of new user files and real headless Neovim numbering. Source checks do not prove which external application receives a physical key, nor do they verify macOS permissions. See [validation](docs/validation.md) for the release's tested scope.
 
 MIT for MacKit's original code. Bundled third-party components retain their licenses; see [THIRD_PARTY.md](THIRD_PARTY.md).
+
+## Current-App menu search
+
+An on-demand native panel lists and searches the active application's menu commands and nested submenus, with full paths, shortcuts and disabled states. Use arrow keys to select, Return to execute and Escape to close. Chinese text and fuzzy token queries such as `exp pdf` are supported. Menus refresh on each invocation; the panel process exits when closed. Raycast is not required.
+
+Run `mackit menu show`, `mackit menu scan --json` (read only), or `mackit menu status --json`. Record a key under Window → skhd shortcuts and select the MacKit menu-search action. No new global key is registered by default. See [usage and verification scope](docs/menu-search.en.md).

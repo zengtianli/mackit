@@ -44,6 +44,7 @@ RULE_KEYS = {"manage": ["off", "on"], "sticky": ["on", "off"]}
 
 SCRIPTS = "$HOME/.config/yabai/scripts"
 ACTIONS = {  # id -> (label, command). Commands are fixed; the app only picks an id.
+    "menu-search": ("搜索当前 App 菜单（MacKit）", '"/Applications/MacKit.app/Contents/MacOS/MacKit" --menu-search'),
     **{f"grid-top-{i}": (f"上半屏第 {i} 格", f"{SCRIPTS}/window/position.sh grid top {i}") for i in range(1, 5)},
     **{f"grid-bottom-{i}": (f"下半屏第 {i} 格", f"{SCRIPTS}/window/position.sh grid bottom {i}") for i in range(1, 5)},
     "left": ("左半屏", f"{SCRIPTS}/window/position.sh left"),

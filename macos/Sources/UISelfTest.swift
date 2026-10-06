@@ -3,6 +3,17 @@ import SwiftUI
 
 @main enum MacKitMain {
     static func main() {
+        if MenuSearchCLI.readOnly() { return }
+        if CommandLine.arguments.contains("--menu-search") || CommandLine.arguments.contains("--menu-self-test") {
+            MainActor.assumeIsolated {
+                let app = NSApplication.shared
+                let test = CommandLine.arguments.contains("--menu-self-test")
+                app.setActivationPolicy(test ? .prohibited : .accessory)
+                if test { MenuSearchPanel.selfTest() }
+                else { MenuSearchPanel.launch(); app.run() }
+            }
+            return
+        }
         if CommandLine.arguments.contains("--background-measure"), LaneSignal.quiet {
             MainActor.assumeIsolated {
                 let app = NSApplication.shared

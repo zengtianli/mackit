@@ -9,6 +9,7 @@ Migration from 'Tianli MacKit.app' (the name used up to 0.3.4, same bundle id):
 the old copy is moved to ~/.Trash/mackit-rename-<stamp>/, not deleted.
 """
 import datetime
+import argparse
 import hashlib
 import json
 import os
@@ -68,16 +69,26 @@ def migrate_legacy(applications, target, home, stamp, run=subprocess.run):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, help="Explicit build to install")
+    parser.add_argument("--receipt", type=Path, help="Receipt binding this build's identity and SHA256")
+    parser.add_argument("--output", type=Path, help="Installation receipt output")
+    parser.add_argument("--local", action="store_true", help="Install a signed local acceptance build; no notarization or release claim")
+    args = parser.parse_args()
     applications = Path("/Applications")
-    source = ROOT / "build/app" / NAME
+    source = (args.source or ROOT / "build/app" / NAME).resolve()
+    if args.local and source != (ROOT / "build/local/app" / NAME).resolve():
+        raise SystemExit("--local accepts only this product's build/local/app/MacKit.app.")
     target = applications / NAME
-    receipt = json.loads((ROOT / "perf/build-receipt.json").read_text())
+    receipt_path = args.receipt or ROOT / "perf/build-receipt.json"
+    receipt = json.loads(receipt_path.read_text())
     version = (ROOT / "VERSION").read_text().strip()
     expected = inspect(source)
     assert expected["version"] == version
     assert all(expected[k] == receipt["artifact"][k] for k in expected)
     subprocess.run(["codesign", "--verify", "--deep", "--strict", str(source)], check=True)
-    subprocess.run(["xcrun", "stapler", "validate", str(source)], check=True)
+    if not args.local:
+        subprocess.run(["xcrun", "stapler", "validate", str(source)], check=True)
     for app in [target, *(applications / n for n in LEGACY_NAMES)]:
         if app.exists() and running(app):
             raise SystemExit(f"{app.name} is running; preserve its session and retry after it closes.")
@@ -105,12 +116,15 @@ def main():
                 os.rename(backup, target)
             raise
     subprocess.run(["codesign", "--verify", "--deep", "--strict", str(target)], check=True)
-    subprocess.run(["xcrun", "stapler", "validate", str(target)], check=True)
+    if not args.local:
+        subprocess.run(["xcrun", "stapler", "validate", str(target)], check=True)
     migration = migrate_legacy(applications, target, Path.home(), stamp)
-    result = {"version": version, "artifact": inspect(target), "build_receipt": "perf/build-receipt.json",
+    result = {"version": version, "artifact": inspect(target), "build_receipt": str(receipt_path),
               "installed_app": str(target), "legacy_migration": migration,
-              "launched": False}
-    (ROOT / f"perf/install-receipt-{version}.json").write_text(json.dumps(result, indent=2) + "\n")
+              "launched": False, "local_acceptance": args.local, "notarization_validated": not args.local}
+    output = args.output or ROOT / f"perf/install-receipt-{version}.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))
 
 
