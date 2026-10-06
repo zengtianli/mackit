@@ -1,7 +1,16 @@
--- 声明式快捷键配置（SoT：条数以本表为准，菜单栏 ⌨ 动态统计，勿在注释/文档写死数字）
--- 一行一个快捷键，自动绑定到对应模块函数；hotkey_overrides.json 可单条停用
+-- 动作声明表（SoT：条数以本表为准，菜单栏 ⌨ 动态统计，勿在注释/文档写死数字）
+-- 现状（2026-10-06 起）：Karabiner 只做键到键的映射，动作键由 skhd 绑定并执行、弹系统通知
+--（components/yabai/config/skhd/hotkeys.json 与 components/yabai/scripts/actions/），
+-- 不经 hs 命令行、不调 mackit_run；本人决定不再使用 Hammerspoon，本机已退出，启动清单也不再拉起它。
+-- 本表因此不被任何按键调用，只在两种情况下还有用：
+--   1) 用 mackit restore 回到“Karabiner 监听、Hammerspoon 执行”的那一代配置时，规则按这里的 module.func 调用；
+--   2) 有人手动打开 Hammerspoon 时，菜单栏和帮助卡照此显示。
+-- 本人确认直连版本各键都正常后，本表和 modules/ 里对应的动作可以整体删除（见 handoffs/current.md）。
+-- Hammerspoon 自己不监听任何按键（tests/test_native.py 核对）。
+-- 键到键的映射（⌘H 删除、Ctrl+HJKL 方向键、右 Option → Hyper、打开系统设置）整条写在 Karabiner，不进本表。
 -- 历史：2026-04-18 大迁 Raycast；2026-06-13 前端收敛部分迁回（copy/compress/file_print/
 --       display/brew/lid 等现均在本表）；2026-07-12 砍 run_scripts_parallel/restartApp 死键位
+--       2026-10-05 按键监听全部迁到 Karabiner，本表只留动作声明；同日晚 Karabiner 改为直接执行
 
 local M = {
 	-- ═══════════════════════════════════════════════════════════════════════
@@ -43,46 +52,6 @@ local M = {
 	-- ═══════════════════════════════════════════════════════════════════════
 	-- 文件操作（Finder 专用）
 	-- ═══════════════════════════════════════════════════════════════════════
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "n",
-		desc = "复制文件名",
-		module = "system",
-		func = "copy_filenames",
-		scope = "finder"
-	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "c",
-		desc = "复制文件名+内容",
-		module = "system",
-		func = "copy_names_and_content",
-		scope = "finder"
-	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "z",
-		desc = "压缩选中文件",
-		module = "system",
-		func = "compress",
-		scope = "finder"
-	},
-	{
-		mods = { "ctrl", "alt" },
-		key = "v",
-		desc = "粘贴到 Finder",
-		module = "system",
-		func = "paste_to_finder",
-		scope = "finder"
-	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "9",
-		desc = "打印选中文件（默认 app 打开弹打印窗口）",
-		module = "system",
-		func = "file_print",
-		scope = "finder"
-	},
 
 	-- ═══════════════════════════════════════════════════════════════════════
 	-- 媒体控制（全局）
@@ -103,43 +72,11 @@ local M = {
 		func = "nextTrack",
 		scope = "global"
 	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "l",
-		desc = "上一首",
-		module = "media",
-		func = "previousTrack",
-		scope = "global"
-	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "p",
-		desc = "系统媒体播放/暂停",
-		module = "media",
-		func = "systemPlayPause",
-		scope = "global"
-	},
 
 	-- ═══════════════════════════════════════════════════════════════════════
 	-- 系统工具（全局）
 	-- ═══════════════════════════════════════════════════════════════════════
-	{
-		mods = { "cmd", "alt" },
-		key = ",",
-		desc = "打开系统设置",
-		module = "system",
-		func = "openSettings",
-		scope = "global"
-	},
 	-- 2026-06-13 前端收敛:display/brew/lid 从 raycast 迁入 hammerspoon(原 system.lua 函数已存在,补绑定)
-	{
-		mods = { "cmd", "ctrl", "alt" },
-		key = "4",
-		desc = "外接显示器 1080p ↔ 最高原生分辨率 轮换",
-		module = "system",
-		func = "display_toggle",
-		scope = "global"
-	},
 	{
 		mods = { "cmd", "ctrl", "alt" },
 		key = "l",
@@ -176,14 +113,6 @@ local M = {
 		func = "toggle_yabai",
 		scope = "global"
 	},
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "g",
-		desc = "切换当前 space layout (bsp ↔ float)",
-		module = "window",
-		func = "toggle_space_layout",
-		scope = "global"
-	},
 	-- 2026-06-13 精简：删 toggle_float(f)/organize(o)/restart_yabai(e) 三个低频动作
 	-- (restart 走 CLI `yabai --restart-service`；float/organize 日常用不上)
 	{
@@ -196,44 +125,8 @@ local M = {
 	},
 
 	-- ═══════════════════════════════════════════════════════════════════════
-	-- 按键重映射（从 Karabiner 迁移，无 HUD，打字高频触发）
+	-- 帮助（Hyper = 右 Option，由 Karabiner 映射为 ⇧⌘⌃）
 	-- ═══════════════════════════════════════════════════════════════════════
-	{
-		mods = { "cmd" },
-		key = "h",
-		desc = "删除字符",
-		module = "keymap",
-		func = "delete_char",
-		scope = "global"
-	},
-	{
-		mods = { "cmd", "alt" },
-		key = "h",
-		desc = "删除单词",
-		module = "keymap",
-		func = "delete_word",
-		scope = "global"
-	},
-	{
-		mods = { "cmd", "ctrl" },
-		key = "h",
-		desc = "删除到行首",
-		module = "keymap",
-		func = "delete_to_line_start",
-		scope = "global"
-	},
-
-	-- ═══════════════════════════════════════════════════════════════════════
-	-- 帮助（Hyper = Right Option）
-	-- ═══════════════════════════════════════════════════════════════════════
-	{
-		mods = { "cmd", "ctrl", "shift" },
-		key = "h",
-		desc = "显示快捷键帮助",
-		module = "_hotkey_manager",
-		func = "show_help",
-		scope = "global"
-	},
 }
 
 M.right_command = {
@@ -245,12 +138,6 @@ M.right_command = {
 	s = "moomoo", -- s=stock 股票 (m 已让给 Music)
 	c = "Sift", -- c 原为 Cardinal；2026-09-23 换成替代它的 Sift，右⌘+C 习惯不变
 }
-M.ctrl_vim = {
-	[4]  = { {}, "left" },                -- h → 左
-	[38] = { {}, "down" },                -- j → 下
-	[40] = { {}, "up" },                  -- k → 上
-	[37] = { {}, "right" },               -- l → 右
-}
-M.hyper_keycode = 61
-M.wechat = {mods={"ctrl","alt"}, key="w", desc="打开微信"}
+-- 仅微信未运行时生效：Karabiner 按变量 mackit_wechat_launch 决定截下还是放行（modules/apps.lua 维护）
+M.wechat = {mods={"ctrl","alt"}, key="w", desc="打开微信", module="apps", func="wechat_launch"}
 return M

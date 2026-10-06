@@ -81,10 +81,10 @@ def local_rows(home: Path) -> tuple[list[dict], list[str]]:
     return rows + keyboard_maestro_rows(home), issues
 
 
-# Right Option acts as Hyper (⇧⌘⌃) through Hammerspoon (components/hammerspoon/modules/keymap.lua).
+# Right Option acts as Hyper (⇧⌘⌃) through Karabiner (components/karabiner/karabiner.json).
 HYPER = {"cmd", "ctrl", "shift"}
 ORDER = ["right-cmd", "cmd", "ctrl", "alt", "shift"]
-# Hammerspoon skips its Ctrl+HJKL keys in these apps (modules/keymap.lua terminal_apps).
+# Karabiner skips its Ctrl+HJKL keys in these apps (the rule's frontmost_application_unless list).
 TERMINALS = {"terminal", "iterm", "iterm2", "ghostty", "alacritty", "kitty", "warp"}
 
 

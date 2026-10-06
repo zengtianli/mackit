@@ -120,7 +120,7 @@ mackit link                                   # 把 ~/.local/bin/mackit 指向�
 - **developer**：保留 Neovim 原生移动和 Ctrl-W 窗口键，默认只安装终端组件。
 - **tianli**：保留 S 保存、Q 退出、J/K 移动15行、空格 Leader，以及桌面的右侧修饰键习惯。使用 `--profile tianli` 选择。
 
-Hammerspoon 在 developer 预设下默认不开全局键，可从菜单栏逐项启用。配置安装不代替 macOS 权限授权，也不会自动启动窗口管理服务。
+0.3.6 之后的源码里按键分两层（随 tianli 预设安装）：Karabiner 只做键到键的映射，凡是要运行脚本或打开应用的键都由 skhd 绑定，每个动作以系统通知反馈；不经过 Hammerspoon，Hammerspoon 不运行时这些键照常可用。个人脚本只通过 `~/.config/mackit/bin/` 下的同名可执行文件接入，文件不存在时对应按键不做任何事。配置安装不代替 macOS 权限授权，也不会自动启动窗口管理服务。
 
 个人目录、账号、历史、Git 身份与设备标识不随开源包分发。本机覆盖放在 `~/.config/mackit/`，更新时保留。安装会备份既有文件与软链；若安装后你换成了新的配置，恢复命令会先拒绝覆盖新内容。
 

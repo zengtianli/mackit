@@ -5,18 +5,6 @@ local settings = require("lib.settings")
 local M = {}
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- 系统设置
--- ═══════════════════════════════════════════════════════════════════════════
-
-function M.openSettings()
-    local success = hs.application.launchOrFocus("System Settings")
-    if not success then
-        hs.application.launchOrFocus("System Preferences")
-    end
-    utils.display("System", "打开系统设置", "success")
-end
-
--- ═══════════════════════════════════════════════════════════════════════════
 -- 文件压缩
 -- ═══════════════════════════════════════════════════════════════════════════
 

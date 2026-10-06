@@ -264,7 +264,7 @@ class CanonicalKeyTests(unittest.TestCase):
     def test_combo_forms(self):
         self.assertEqual(localkeys.combo("ctrl + shift - g"), "ctrl+shift+g")
         self.assertEqual(localkeys.combo("⇧⌘H"), "cmd+shift+h")
-        self.assertEqual(localkeys.combo("hyper+y"), "cmd+ctrl+shift+y")  # Right Option → ⇧⌘⌃ (Hammerspoon)
+        self.assertEqual(localkeys.combo("hyper+y"), "cmd+ctrl+shift+y")  # Right Option → ⇧⌘⌃ (Karabiner)
         self.assertEqual(localkeys.combo("left-cmd+c"), "cmd+c")
         self.assertEqual(localkeys.combo("right-cmd+c"), "right-cmd+c")
         self.assertIsNone(localkeys.combo("space"))

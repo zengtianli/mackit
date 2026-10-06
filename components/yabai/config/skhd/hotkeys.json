@@ -42,5 +42,55 @@
   {
     "key": "ctrl+shift+space",
     "action": "full"
+  },
+  {
+    "key": "cmd+ctrl+shift+t",
+    "command": "$HOME/.config/yabai/scripts/actions/finder-terminal.sh",
+    "note": "Finder：在当前目录打开终端"
+  },
+  {
+    "key": "cmd+ctrl+shift+;",
+    "command": "$HOME/.config/yabai/scripts/actions/music.sh toggle",
+    "note": "Music 播放/暂停"
+  },
+  {
+    "key": "cmd+ctrl+shift+'",
+    "command": "$HOME/.config/yabai/scripts/actions/music.sh next",
+    "note": "Music 下一首"
+  },
+  {
+    "key": "cmd+alt+,",
+    "command": "/usr/bin/open -b com.apple.systempreferences",
+    "note": "打开系统设置"
+  },
+  {
+    "key": "cmd+ctrl+alt+l",
+    "command": "$HOME/.config/yabai/scripts/actions/local.sh lid-sleep",
+    "note": "合盖休眠开关"
+  },
+  {
+    "key": "cmd+ctrl+alt+b",
+    "command": "$HOME/.config/yabai/scripts/actions/local.sh brew-maintain",
+    "note": "软件更新"
+  },
+  {
+    "key": "cmd+ctrl+alt+p",
+    "command": "$HOME/.config/yabai/scripts/actions/local.sh smart-push",
+    "note": "全仓推送"
+  },
+  {
+    "key": "cmd+ctrl+shift+y",
+    "command": "$HOME/.config/yabai/scripts/actions/yabai-service.sh",
+    "note": "启停 yabai"
+  },
+  {
+    "key": "cmd+ctrl+shift+m",
+    "command": "$HOME/.config/yabai/scripts/actions/mouse-follows-focus.sh",
+    "note": "鼠标跟焦开关"
+  },
+  {
+    "key": "cmd+shift+v",
+    "command": "$HOME/.config/yabai/scripts/actions/code-fence-paste.sh",
+    "note": "剪贴板包成代码块粘贴"
   }
 ]

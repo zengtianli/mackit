@@ -1,14 +1,14 @@
--- 快捷键管理器
--- 自动绑定 config/hotkeys.lua 中定义的快捷键
--- 支持通过 hotkey_overrides.json 禁用单条快捷键（M3）
+-- 动作分发器
+-- Hammerspoon 自己不监听按键：Karabiner 监听后经 hs 命令行调 mackit_run("<module>.<func>")，
+-- 这里只执行 keymaps.lua 声明过、且未被停用的动作
+-- 支持通过 hotkey_overrides.json 停用单条动作（M3）
 
 local utils = require("lib.utils")
 
 local M = {}
 
--- 存储应用专用热键
-local app_hotkeys = {}
-local app_watcher = nil
+-- "<module>.<func>" → { fn = 包装后的动作, scope = 声明的 scope }；init() 重建
+local actions = {}
 
 -- 读取 hotkey_overrides.json，返回 {id: {enabled=bool}} 的 map
 -- id 格式: "<scope>:<mods>:<key>"，例如 "global:cmd+ctrl+shift:1"
@@ -29,9 +29,14 @@ local function load_overrides()
 end
 
 -- id 格式 "<scope>:<mods>:<key>"；菜单栏/网页端写 override 必须复用此函数，
--- 否则算出的 id 与绑定端不一致 → toggle 写了但不生效（暴露为 M.* 供 menubar 复用）
+-- 否则算出的 id 与分发端不一致 → toggle 写了但不生效（暴露为 M.* 供 menubar 复用）
 function M.hotkey_id(hk)
     return (hk.scope or "global") .. ":" .. table.concat(hk.mods, "+") .. ":" .. hk.key
+end
+
+-- Karabiner 规则里写的动作 id
+function M.action_id(hk)
+    return hk.module .. "." .. hk.func
 end
 
 -- 快捷键显示（如 "⌘⌃⇧;"），给 HUD 前缀 + 菜单栏用
@@ -58,7 +63,7 @@ local function log_usage(hk)
     f:close()
 end
 
--- 包一层 fn：按下时把 hotkey 显示写进 utils.current_hotkey，异步 HUD 也能带前缀
+-- 包一层 fn：执行时把按键显示写进 utils.current_hotkey，异步 HUD 也能带前缀
 local function wrap_with_context(fn, hk)
     local label = M.hotkey_display(hk)
     return function()
@@ -73,57 +78,9 @@ local function wrap_with_context(fn, hk)
     end
 end
 
--- 清理监听器
+-- 重载前清空动作表
 function M.cleanup()
-    if app_watcher then
-        app_watcher:stop()
-        app_watcher = nil
-    end
-    app_hotkeys = {}
-end
-
--- 注册应用专用热键
-local function register_app_hotkey(appName, mods, key, desc, fn)
-    if not app_hotkeys[appName] then
-        app_hotkeys[appName] = {}
-    end
-
-    -- 第 3 参数 nil 避免 HS 自动弹 "<mods><key>: <desc>" HUD（desc 留给 show_help 用）
-    local hotkey = hs.hotkey.new(mods, key, nil, fn)
-    if hotkey then
-        table.insert(app_hotkeys[appName], hotkey)
-
-        -- 根据当前前台应用决定是否启用
-        if hs.application.frontmostApplication():name() == appName then
-            hotkey:enable()
-        end
-    end
-end
-
--- 启动应用监听器
-local function start_app_watcher()
-    if app_watcher or not next(app_hotkeys) then return end
-
-    app_watcher = hs.application.watcher.new(function(appName, eventType, _)
-        if eventType == hs.application.watcher.activated then
-            for registered_app, hotkeys in pairs(app_hotkeys) do
-                for _, hotkey in ipairs(hotkeys) do
-                    if registered_app == appName then
-                        hotkey:enable()
-                    else
-                        hotkey:disable()
-                    end
-                end
-            end
-        elseif eventType == hs.application.watcher.deactivated then
-            if app_hotkeys[appName] then
-                for _, hotkey in ipairs(app_hotkeys[appName]) do
-                    hotkey:disable()
-                end
-            end
-        end
-    end)
-    app_watcher:start()
+    actions = {}
 end
 
 -- 显示快捷键帮助（统一走 utils.card 卡片：标题 + 分组行）
@@ -169,24 +126,43 @@ function M.is_enabled(ov)
  return require("lib.settings").enable_shortcuts
 end
 
--- 初始化所有快捷键
+local function finder_frontmost()
+    local app = hs.application.frontmostApplication()
+    return app ~= nil and app:bundleID() == "com.apple.finder"
+end
+
+-- Karabiner 的入口：hs -c 'mackit_run("<module>.<func>")'
+-- 未声明、已停用、或 Finder 专用动作不在 Finder 前台时返回 false，不执行。
+-- 先返回再执行：命令行不等动作跑完。
+function M.run(id)
+    local action = actions[id]
+    if not action then
+        utils.log("HotkeyManager", "未声明或已停用的动作: " .. tostring(id))
+        return false
+    end
+    if action.scope == "finder" and not finder_frontmost() then return false end
+    hs.timer.doAfter(0, action.fn)
+    return true
+end
+
+-- 只读查询：该动作当前是否会被执行（给回读与测试用）
+function M.is_runnable(id)
+    return actions[id] ~= nil
+end
+
+-- 登记全部已启用的动作，返回数量（不含微信键，它由 settings.wechat 单独开关）
 function M.init()
     local hotkey_config = require("keymaps")
+    local settings = require("lib.settings")
     local overrides = load_overrides()
     local count = 0
     local skipped = 0
 
     -- 加载模块缓存
     local modules = {}
+    actions = {}
 
-    for _, hk in ipairs(hotkey_config) do
-        -- 网页端启停 override
-        local ov = overrides[M.hotkey_id(hk)]
-        if not M.is_enabled(ov) then
-            skipped = skipped + 1
-            goto continue
-        end
-
+    local function register(hk)
         -- 获取模块
         local mod
         if hk.module == "_hotkey_manager" then
@@ -203,31 +179,31 @@ function M.init()
         local fn = mod and mod[hk.func]
         if not fn then
             utils.log("HotkeyManager", "函数未找到: " .. hk.module .. "." .. hk.func)
-            goto continue
+            return false
         end
 
-        -- 绑定快捷键（包一层把 hotkey label 注入到 utils.current_hotkey）
-        local wrapped = wrap_with_context(fn, hk)
-        if hk.scope == "finder" then
-            register_app_hotkey("Finder", hk.mods, hk.key, hk.desc, wrapped)
-        else
-            hs.hotkey.bind(hk.mods, hk.key, nil, wrapped)
-        end
-        count = count + 1
-
-        ::continue::
+        -- 包一层把按键 label 注入到 utils.current_hotkey
+        actions[M.action_id(hk)] = { fn = wrap_with_context(fn, hk), scope = hk.scope }
+        return true
     end
 
-    -- 启动应用监听
-    start_app_watcher()
+    for _, hk in ipairs(hotkey_config) do
+        -- 菜单栏/网页端启停 override
+        if not M.is_enabled(overrides[M.hotkey_id(hk)]) then
+            skipped = skipped + 1
+        elseif register(hk) then
+            count = count + 1
+        end
+    end
+
+    if settings.wechat and hotkey_config.wechat then register(hotkey_config.wechat) end
 
     if skipped > 0 then
-        utils.log("HotkeyManager", string.format("已注册 %d 个快捷键，跳过 %d 个（override disabled）", count, skipped))
+        utils.log("HotkeyManager", string.format("已登记 %d 个动作，跳过 %d 个（override disabled）", count, skipped))
     else
-        utils.log("HotkeyManager", "已注册 " .. count .. " 个快捷键")
+        utils.log("HotkeyManager", "已登记 " .. count .. " 个动作")
     end
     return count
 end
 
 return M
-

@@ -35,14 +35,36 @@ for mode,group in data.items():
       key=" ".join(item["on"]) if isinstance(item["on"],list) else item["on"]
       add("yazi",mode,key,item.get("desc") or str(item.get("run","")),str(p.relative_to(ROOT)))
 p=ROOT/"components/yabai/config/skhd/skhdrc"
+label=""
 for line in p.read_text().splitlines():
- if not line.strip() or line.startswith("#") or ":" not in line:continue
- key,cmd=line.split(":",1);add("yabai","global",key.strip(),cmd.strip().split("position.sh")[-1],str(p.relative_to(ROOT)))
+ # MacKit writes each binding's label as the comment line above it.
+ if line.startswith("# "):label=line[2:].strip();continue
+ if not line.strip() or ":" not in line:label="";continue
+ key,cmd=line.split(":",1);add("yabai","global",key.strip(),label or cmd.strip(),str(p.relative_to(ROOT)));label=""
 p=ROOT/"components/karabiner/karabiner.json"
+KARABINER_MODS={"command":"cmd","control":"ctrl","option":"alt","shift":"shift","fn":"fn"}
+KARABINER_KEYS={"semicolon":";","quote":"'","comma":","}
+def karabiner_key(source):
+ """An exact chord in the form localkeys.normalize reads; the raw `from` JSON for layers and buttons."""
+ mods=source.get("modifiers",{});code=source.get("key_code")
+ held=[KARABINER_MODS.get(m.removeprefix("left_").removeprefix("right_")) for m in mods.get("mandatory",[])]
+ if not code or None in held or "any" in mods.get("optional",[]):return json.dumps(source,ensure_ascii=False)
+ return "+".join(held+[KARABINER_KEYS.get(code,code.replace("_","-"))])
+def karabiner_mode(rule,conditions):
+ """Where the key is held: only 'global' and 'outside-terminals' rows compete for a system-wide key."""
+ if rule.get("enabled",True) is False:return "disabled"
+ mode="global"
+ for c in conditions:
+  if c["type"]=="frontmost_application_if":mode="finder" if any("finder" in b for b in c.get("bundle_identifiers",[])) else "app"
+  elif c["type"]=="frontmost_application_unless":mode="outside-terminals"
+  elif c["type"]=="variable_if" and c.get("name")=="mackit_wechat_launch":mode="wechat-not-running"
+  elif c["type"]=="variable_if" and c.get("name")=="tab pressed" and c.get("value")==1:mode="tab-layer"
+ return mode
 for profile in json.loads(p.read_text())["profiles"]:
  for rule in profile.get("complex_modifications",{}).get("rules",[]):
   for mapping in rule.get("manipulators",[]):
-   add("karabiner","global",json.dumps(mapping.get("from",{}),ensure_ascii=False),rule.get("description",""),str(p.relative_to(ROOT)),profile="tianli",condition=json.dumps(mapping.get("conditions",[]),ensure_ascii=False))
+   conditions=mapping.get("conditions",[])
+   add("karabiner",karabiner_mode(rule,conditions),karabiner_key(mapping.get("from",{})),mapping.get("description") or rule.get("description",""),str(p.relative_to(ROOT)),profile="tianli",condition=json.dumps(conditions,ensure_ascii=False))
 rows.sort(key=lambda r:(r["component"],r["mode"],r["key"],r.get("profile","")))
 (ROOT/"data").mkdir(exist_ok=True);(ROOT/"data/keys.json").write_text(json.dumps(rows,ensure_ascii=False,indent=2,sort_keys=True)+"\n")
 e=html.escape

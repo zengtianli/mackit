@@ -86,43 +86,47 @@ function M.open_finder_here()
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- 微信快捷键（特殊处理：只在微信未运行时生效）
+-- 微信键 ⌃⌥W（只在微信未运行时生效）
+-- 按键由 Karabiner 监听：变量 mackit_wechat_launch 为 1 时截下并调 apps.wechat_launch，
+-- 为 0 或未设置时原样放行，微信自己的全局快捷键照常收到。
+-- 本模块按微信的启动/退出维护这个变量；Hammerspoon 退出或重载前置 0，按键不会被白白吃掉。
 -- ═══════════════════════════════════════════════════════════════════════════
 
-local wechat_hotkey = nil
+local KARABINER_CLI = "/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli"
 local wechat_watcher = nil
 
-function M.init_wechat_hotkey()
-    wechat_hotkey = hs.hotkey.new(require("keymaps").wechat.mods, require("keymaps").wechat.key, function()
-        local app = hs.application.find("WeChat")
-        if not app then
-            -- 微信未运行，启动它
-            hs.application.open("WeChat")
-            hs.timer.doAfter(0.5, function()
-                hs.eventtap.keyStroke({}, "return")
-            end)
-        end
-        -- 微信已运行，不做任何事，让快捷键穿透给微信
+local function set_wechat_launch(on)
+    if not hs.fs.attributes(KARABINER_CLI) then return end
+    hs.execute(string.format([['%s' --set-variables '{"mackit_wechat_launch":%d}']], KARABINER_CLI, on and 1 or 0))
+end
+
+function M.wechat_launch()
+    if hs.application.find("WeChat") then return end
+    hs.application.open("WeChat")
+    hs.timer.doAfter(0.5, function()
+        hs.eventtap.keyStroke({}, "return")
     end)
+end
+
+-- enabled == false：功能关闭，只把变量清 0
+function M.init_wechat_hotkey(enabled)
+    if enabled == false then return set_wechat_launch(false) end
 
     -- 监听微信启动/退出
-    wechat_watcher = hs.application.watcher.new(function(appName, eventType, app)
+    wechat_watcher = hs.application.watcher.new(function(appName, eventType)
         if appName == "WeChat" then
             if eventType == hs.application.watcher.launched then
-                if wechat_hotkey then wechat_hotkey:disable() end
+                set_wechat_launch(false)
             elseif eventType == hs.application.watcher.terminated then
-                if wechat_hotkey then wechat_hotkey:enable() end
+                set_wechat_launch(true)
             end
         end
     end)
     wechat_watcher:start()
 
     -- 初始状态
-    if hs.application.find("WeChat") then
-        wechat_hotkey:disable()
-    else
-        wechat_hotkey:enable()
-    end
+    set_wechat_launch(not hs.application.find("WeChat"))
+    hs.shutdownCallback = function() set_wechat_launch(false) end
 end
 
 return M

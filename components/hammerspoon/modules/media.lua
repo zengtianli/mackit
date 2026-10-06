@@ -46,10 +46,4 @@ function M.previousTrack()
     utils.display("Music", "上一首", "success")
 end
 
-function M.systemPlayPause()
-    hs.eventtap.event.newSystemKeyEvent("PLAY", true):post()
-    hs.eventtap.event.newSystemKeyEvent("PLAY", false):post()
-    utils.display("System", "媒体播放/暂停", "success")
-end
-
 return M

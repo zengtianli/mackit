@@ -22,3 +22,23 @@ ctrl + shift - g : $HOME/.config/yabai/scripts/window/position.sh left
 ctrl + shift - 0x29 : $HOME/.config/yabai/scripts/window/position.sh right
 # 全屏
 ctrl + shift - space : $HOME/.config/yabai/scripts/window/position.sh full
+# Finder：在当前目录打开终端
+cmd + ctrl + shift - t : $HOME/.config/yabai/scripts/actions/finder-terminal.sh
+# Music 播放/暂停
+cmd + ctrl + shift - 0x29 : $HOME/.config/yabai/scripts/actions/music.sh toggle
+# Music 下一首
+cmd + ctrl + shift - 0x27 : $HOME/.config/yabai/scripts/actions/music.sh next
+# 打开系统设置
+cmd + alt - 0x2B : /usr/bin/open -b com.apple.systempreferences
+# 合盖休眠开关
+cmd + ctrl + alt - l : $HOME/.config/yabai/scripts/actions/local.sh lid-sleep
+# 软件更新
+cmd + ctrl + alt - b : $HOME/.config/yabai/scripts/actions/local.sh brew-maintain
+# 全仓推送
+cmd + ctrl + alt - p : $HOME/.config/yabai/scripts/actions/local.sh smart-push
+# 启停 yabai
+cmd + ctrl + shift - y : $HOME/.config/yabai/scripts/actions/yabai-service.sh
+# 鼠标跟焦开关
+cmd + ctrl + shift - m : $HOME/.config/yabai/scripts/actions/mouse-follows-focus.sh
+# 剪贴板包成代码块粘贴
+cmd + shift - v : $HOME/.config/yabai/scripts/actions/code-fence-paste.sh

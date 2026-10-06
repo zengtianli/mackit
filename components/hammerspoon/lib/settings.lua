@@ -6,7 +6,7 @@ local M = {profile=profile.profile or "developer", config_dir=hs.configdir,
  python_path=hs.fs.attributes("/opt/homebrew/bin/python3") and "/opt/homebrew/bin/python3" or "/usr/local/bin/python3",
  overrides_path=base .. "/hotkey_overrides.json", local_dir=base, commands={}}
 M.enable_shortcuts = M.profile == "tianli"
-M.hyper, M.vim_nav, M.wechat = M.enable_shortcuts, M.enable_shortcuts, M.enable_shortcuts
+M.wechat = M.enable_shortcuts
 local custom=base .. "/hammerspoon.lua"
 if hs.fs.attributes(custom) then
  local ok, values=pcall(dofile,custom)
@@ -14,6 +14,6 @@ if hs.fs.attributes(custom) then
 end
 local overrides=hs.json.read(M.overrides_path) or {}
 for key,value in pairs(overrides.features or {}) do
- if key=="hyper" or key=="vim_nav" or key=="wechat" then M[key]=value end
+ if key=="wechat" then M[key]=value end
 end
 return M

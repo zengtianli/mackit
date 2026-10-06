@@ -4,7 +4,7 @@ Optional window manager and hotkey daemon. Install with `mackit apply --componen
 
 - `config/settings.json`: yabai settings and app rules. MacKit generates `config/yabairc` from it.
 - `config/skhd/hotkeys.json`: skhd bindings (a catalog action or a one-line command per key). MacKit generates `config/skhd/skhdrc` from it.
-- `scripts/`: actions called by the bindings; `config/scripts` links to this directory.
+- `scripts/`: actions called by the bindings; `config/scripts` links to this directory. `scripts/actions/` holds the keys that are not about windows (Finder terminal, Music, code-fence paste, personal scripts through `local.sh`): Karabiner only maps keys, so every key that runs a program is bound here.
 
 Change them in the MacKit app's 窗口 (Windows) page or with `mackit window`: `status`, `set KEY=VALUE`, `hotkey add|remove`, `rule add|remove` and `save`. Both validate the values, back up the previous files and rewrite `yabairc` and `skhdrc` together, so edit the JSON sources, not the generated files; hand edits to `yabairc` or `skhdrc` are overwritten on the next save.
 

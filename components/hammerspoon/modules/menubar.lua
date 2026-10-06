@@ -1,9 +1,10 @@
--- 菜单栏控制中心：常驻 ⌨ 图标 → 下拉列全部快捷键（分组 + 勾选）
--- 点一条 = 切该快捷键启停（写 hotkey_overrides.json，pathwatcher 自动热加载）
+-- 菜单栏控制中心：常驻 ⌨ 图标 → 下拉列全部按键动作（分组 + 勾选）
+-- 点一条 = 切该动作启停（写 hotkey_overrides.json，pathwatcher 自动热加载）
+-- 按键由 Karabiner 监听：停用后按键仍被截走，只是不执行动作
 --
 -- 轻量：无 timer / 无轮询；菜单按函数惰性构建，仅点开时读一次 override 状态。
 -- 唯一常驻成本 = 一个菜单栏项（进程内，约 +1MB，不开新进程）。
--- 复用 hotkey_manager.hotkey_id / hotkey_display，保证写的 id 与绑定端一致。
+-- 复用 hotkey_manager.hotkey_id / hotkey_display，保证写的 id 与分发端一致。
 
 local utils = require("lib.utils")
 local hkm   = require("lib.hotkey_manager")
@@ -37,7 +38,7 @@ local function write_overrides(data)
 end
 
 -- 切某条启停：缺省/true 视为启用。关 → 写 {enabled=false}；开 → 删 override 回归默认。
--- 写文件即触发 init.lua 的 pathwatcher → hs.reload()，菜单与绑定一并重建（不在此显式 reload，避免双重）。
+-- 写文件即触发 init.lua 的 pathwatcher → hs.reload()，菜单与动作表一并重建（不在此显式 reload，避免双重）。
 function M.toggle(hk)
     local id   = hkm.hotkey_id(hk)
     local data = read_overrides()
@@ -73,8 +74,9 @@ function M.build_menu()
     end
 
     local items = {}
-    table.insert(items, { title = string.format("Hammerspoon · %d 条快捷键%s",
+    table.insert(items, { title = string.format("Hammerspoon · %d 个按键动作%s",
         #hotkeys, disabled > 0 and ("（停用 " .. disabled .. "）") or ""), disabled = true })
+    table.insert(items, { title = "按键由 Karabiner 监听；停用只是不执行", disabled = true })
     table.insert(items, { title = "-" })
 
     local function add_group(key, header)
@@ -95,17 +97,18 @@ function M.build_menu()
     add_group("finder", "Finder 专用")
     add_group("global", "全局")
 
-    local features={}
-    for _,feature in ipairs({{"hyper","右 Option → Hyper"},{"vim_nav","Ctrl+HJKL 导航（终端除外）"},{"wechat","微信启动快捷键"}}) do
-        local name,label=feature[1],feature[2]
-        table.insert(features,{title=label,checked=settings[name],fn=function()
-            local data=read_overrides()
-            data.features=data.features or {}
-            data.features[name]=not settings[name]
+    -- 右 Option → Hyper、Ctrl+HJKL、⌘H 删除等键到键映射在 Karabiner，这里只剩微信键的开关
+    local wechat = hotkeys.wechat
+    table.insert(items, {
+        title   = string.format("%s   %s（仅微信未运行时）", hkm.hotkey_display(wechat), wechat.desc),
+        checked = settings.wechat,
+        fn      = function()
+            local data = read_overrides()
+            data.features = data.features or {}
+            data.features.wechat = not settings.wechat
             write_overrides(data)
-        end})
-    end
-    table.insert(items,{title="键盘规则",menu=features})
+        end,
+    })
 
     table.insert(items, { title = "设置", menu = {
         { title = "终端    " .. settings.preferred_terminal, disabled = true },

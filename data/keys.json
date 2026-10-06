@@ -9,206 +9,6 @@
   },
   {
     "component": "hammerspoon",
-    "description": "在当前目录打开新 Finder 窗口",
-    "key": "cmd+alt+n",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "打印选中文件（默认 app 打开弹打印窗口）",
-    "key": "cmd+ctrl+shift+9",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "复制文件名+内容",
-    "key": "cmd+ctrl+shift+c",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "Nvim 编辑文件",
-    "key": "cmd+ctrl+shift+i",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "复制文件名",
-    "key": "cmd+ctrl+shift+n",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "终端在此处打开",
-    "key": "cmd+ctrl+shift+t",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "压缩选中文件",
-    "key": "cmd+ctrl+shift+z",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "创建新文件夹",
-    "key": "cmd+shift+n",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "粘贴到 Finder",
-    "key": "ctrl+alt+v",
-    "mode": "finder",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "打开系统设置",
-    "key": "cmd+alt+,",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "删除单词",
-    "key": "cmd+alt+h",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "外接显示器 1080p ↔ 最高原生分辨率 轮换",
-    "key": "cmd+ctrl+alt+4",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "Homebrew 全量维护",
-    "key": "cmd+ctrl+alt+b",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "合盖休眠开关(防睡)",
-    "key": "cmd+ctrl+alt+l",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "全仓 smart-push(批量 commit&push 所有改动 repo)",
-    "key": "cmd+ctrl+alt+p",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "删除到行首",
-    "key": "cmd+ctrl+h",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "下一首",
-    "key": "cmd+ctrl+shift+'",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "播放/暂停",
-    "key": "cmd+ctrl+shift+;",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "切换当前 space layout (bsp ↔ float)",
-    "key": "cmd+ctrl+shift+g",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "显示快捷键帮助",
-    "key": "cmd+ctrl+shift+h",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "上一首",
-    "key": "cmd+ctrl+shift+l",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "切换鼠标跟焦 (mouse follows focus)",
-    "key": "cmd+ctrl+shift+m",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "系统媒体播放/暂停",
-    "key": "cmd+ctrl+shift+p",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "启停 Yabai",
-    "key": "cmd+ctrl+shift+y",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "删除字符",
-    "key": "cmd+h",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
     "description": "切换 Dia",
     "key": "right-cmd+b",
     "mode": "global",
@@ -264,59 +64,11 @@
     "source": "components/hammerspoon/keymaps.lua"
   },
   {
-    "component": "hammerspoon",
-    "description": "映射为 Cmd+Ctrl+Shift",
-    "key": "right-option",
-    "mode": "global",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "left",
-    "key": "ctrl+h",
-    "mode": "outside-terminals",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "down",
-    "key": "ctrl+j",
-    "mode": "outside-terminals",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "up",
-    "key": "ctrl+k",
-    "mode": "outside-terminals",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "right",
-    "key": "ctrl+l",
-    "mode": "outside-terminals",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
-    "component": "hammerspoon",
-    "description": "打开微信",
-    "key": "ctrl+alt+w",
-    "mode": "wechat-not-running",
-    "profile": "tianli",
-    "source": "components/hammerspoon/keymaps.lua"
-  },
-  {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"b\", \"modifiers\": {\"optional\": [\"any\"]}}",
-    "mode": "global",
+    "condition": "[{\"bundle_identifiers\": [\"^com\\\\.apple\\\\.Safari$\"], \"type\": \"frontmost_application_if\"}]",
+    "description": "Safari ⇧⌘C → 复制当前网址（⌘L 选中地址栏、⌘C 复制、Esc 退出地址栏）",
+    "key": "cmd+shift+c",
+    "mode": "app",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
@@ -325,15 +77,42 @@
     "condition": "[]",
     "description": "fn : (HYPER) SHIFT+COMMAND+kCOMMAND",
     "key": "{\"key_code\": \"fn\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "disabled",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[]",
+    "description": "⌥⌘H → 删除单词",
+    "key": "cmd+alt+h",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"g\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[]",
+    "description": "⌃⌘H → 删到行首",
+    "key": "cmd+ctrl+h",
+    "mode": "global",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[]",
+    "description": "⇧⌘⌃P → 系统媒体播放/暂停",
+    "key": "cmd+ctrl+shift+p",
+    "mode": "global",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[]",
+    "description": "⌘H → 删除字符",
+    "key": "cmd+h",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
@@ -341,53 +120,53 @@
   {
     "component": "karabiner",
     "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 0}]",
-    "description": "Cmd+fn+H → Forward Delete (其余已迁移到 Hammerspoon)",
-    "key": "{\"key_code\": \"h\", \"modifiers\": {\"mandatory\": [\"fn\", \"command\"]}}",
+    "description": "Cmd+fn+H → Forward Delete",
+    "key": "fn+cmd+h",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"h\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[{\"input_sources\": [{\"input_mode_id\": \"^com\\\\.apple\\\\.inputmethod\\\\.SCIM\\\\.ITABC$\"}], \"type\": \"input_source_if\"}]",
+    "description": "左 Shift 单击：拼音 → ABC",
+    "key": "left-shift",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"j\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[{\"input_sources\": [{\"input_source_id\": \"^com\\\\.apple\\\\.keylayout\\\\.ABC$\"}], \"type\": \"input_source_if\"}]",
+    "description": "左 Shift 单击：ABC → 拼音",
+    "key": "left-shift",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"k\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[{\"input_sources\": [{\"input_mode_id\": \"^com\\\\.apple\\\\.inputmethod\\\\.SCIM\\\\.ITABC$\"}], \"type\": \"input_source_if\"}]",
+    "description": "右 Shift 单击：拼音 → ABC",
+    "key": "right-shift",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"l\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[{\"input_sources\": [{\"input_source_id\": \"^com\\\\.apple\\\\.keylayout\\\\.ABC$\"}], \"type\": \"input_source_if\"}]",
+    "description": "右 Shift 单击：ABC → 拼音",
+    "key": "right-shift",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"semicolon\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[]",
+    "description": "右 Option 按住 = ⇧⌘⌃",
+    "key": "{\"key_code\": \"right_option\", \"modifiers\": {\"optional\": [\"any\"]}}",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
@@ -403,19 +182,118 @@
   },
   {
     "component": "karabiner",
-    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
-    "description": "Tab + Vim keys (hjkl/wb/g;)",
-    "key": "{\"key_code\": \"w\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "condition": "[]",
+    "description": "Ctrl + Left Click to Left Click",
+    "key": "{\"modifiers\": {\"mandatory\": [\"left_control\"], \"optional\": [\"caps_lock\"]}, \"pointing_button\": \"button1\"}",
     "mode": "global",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
   {
     "component": "karabiner",
-    "condition": "[]",
-    "description": "Ctrl + Left Click to Left Click",
-    "key": "{\"modifiers\": {\"mandatory\": [\"left_control\"], \"optional\": [\"caps_lock\"]}, \"pointing_button\": \"button1\"}",
-    "mode": "global",
+    "condition": "[{\"bundle_identifiers\": [\"^com\\\\.apple\\\\.Terminal$\", \"^com\\\\.googlecode\\\\.iterm2$\", \"^com\\\\.mitchellh\\\\.ghostty$\", \"^org\\\\.alacritty$\", \"^net\\\\.kovidgoyal\\\\.kitty$\", \"^dev\\\\.warp\\\\.Warp-Stable$\"], \"type\": \"frontmost_application_unless\"}]",
+    "description": "⌃H → ←（终端除外）",
+    "key": "ctrl+h",
+    "mode": "outside-terminals",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"bundle_identifiers\": [\"^com\\\\.apple\\\\.Terminal$\", \"^com\\\\.googlecode\\\\.iterm2$\", \"^com\\\\.mitchellh\\\\.ghostty$\", \"^org\\\\.alacritty$\", \"^net\\\\.kovidgoyal\\\\.kitty$\", \"^dev\\\\.warp\\\\.Warp-Stable$\"], \"type\": \"frontmost_application_unless\"}]",
+    "description": "⌃J → ↓（终端除外）",
+    "key": "ctrl+j",
+    "mode": "outside-terminals",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"bundle_identifiers\": [\"^com\\\\.apple\\\\.Terminal$\", \"^com\\\\.googlecode\\\\.iterm2$\", \"^com\\\\.mitchellh\\\\.ghostty$\", \"^org\\\\.alacritty$\", \"^net\\\\.kovidgoyal\\\\.kitty$\", \"^dev\\\\.warp\\\\.Warp-Stable$\"], \"type\": \"frontmost_application_unless\"}]",
+    "description": "⌃K → ↑（终端除外）",
+    "key": "ctrl+k",
+    "mode": "outside-terminals",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"bundle_identifiers\": [\"^com\\\\.apple\\\\.Terminal$\", \"^com\\\\.googlecode\\\\.iterm2$\", \"^com\\\\.mitchellh\\\\.ghostty$\", \"^org\\\\.alacritty$\", \"^net\\\\.kovidgoyal\\\\.kitty$\", \"^dev\\\\.warp\\\\.Warp-Stable$\"], \"type\": \"frontmost_application_unless\"}]",
+    "description": "⌃L → →（终端除外）",
+    "key": "ctrl+l",
+    "mode": "outside-terminals",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"b\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"g\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"h\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"j\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"k\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"l\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"semicolon\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
+    "profile": "tianli",
+    "source": "components/karabiner/karabiner.json"
+  },
+  {
+    "component": "karabiner",
+    "condition": "[{\"name\": \"tab pressed\", \"type\": \"variable_if\", \"value\": 1}]",
+    "description": "Tab + Vim keys (hjkl/wb/g;)",
+    "key": "{\"key_code\": \"w\", \"modifiers\": {\"optional\": [\"any\"]}}",
+    "mode": "tab-layer",
     "profile": "tianli",
     "source": "components/karabiner/karabiner.json"
   },
@@ -5345,77 +5223,147 @@
   },
   {
     "component": "yabai",
-    "description": " right",
+    "description": "打开系统设置",
+    "key": "cmd + alt - 0x2B",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "软件更新",
+    "key": "cmd + ctrl + alt - b",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "合盖休眠开关",
+    "key": "cmd + ctrl + alt - l",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "全仓推送",
+    "key": "cmd + ctrl + alt - p",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "Music 下一首",
+    "key": "cmd + ctrl + shift - 0x27",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "Music 播放/暂停",
+    "key": "cmd + ctrl + shift - 0x29",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "鼠标跟焦开关",
+    "key": "cmd + ctrl + shift - m",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "Finder：在当前目录打开终端",
+    "key": "cmd + ctrl + shift - t",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "启停 yabai",
+    "key": "cmd + ctrl + shift - y",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "剪贴板包成代码块粘贴",
+    "key": "cmd + shift - v",
+    "mode": "global",
+    "source": "components/yabai/config/skhd/skhdrc"
+  },
+  {
+    "component": "yabai",
+    "description": "右半屏",
     "key": "ctrl + shift - 0x29",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " left",
+    "description": "左半屏",
     "key": "ctrl + shift - g",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid bottom 1",
+    "description": "下半屏第 1 格",
     "key": "ctrl + shift - h",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid top 3",
+    "description": "上半屏第 3 格",
     "key": "ctrl + shift - i",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid bottom 2",
+    "description": "下半屏第 2 格",
     "key": "ctrl + shift - j",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid bottom 3",
+    "description": "下半屏第 3 格",
     "key": "ctrl + shift - k",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid bottom 4",
+    "description": "下半屏第 4 格",
     "key": "ctrl + shift - l",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid top 4",
+    "description": "上半屏第 4 格",
     "key": "ctrl + shift - o",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " full",
+    "description": "全屏",
     "key": "ctrl + shift - space",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid top 2",
+    "description": "上半屏第 2 格",
     "key": "ctrl + shift - u",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"
   },
   {
     "component": "yabai",
-    "description": " grid top 1",
+    "description": "上半屏第 1 格",
     "key": "ctrl + shift - y",
     "mode": "global",
     "source": "components/yabai/config/skhd/skhdrc"

@@ -112,7 +112,7 @@ GUI-only: recording a key by pressing it (the CLI takes the key name), Reveal in
 - **developer**: native Neovim movement and Ctrl-W window commands; optional desktop integrations are not installed by default.
 - **tianli**: S/Q save/quit, J/K move 15 lines, Space leader, Option-S tmux prefix and right-side modifier conventions. Select with `--profile tianli`. Business commands, credentials, history, Git identity and device identifiers are excluded from the release.
 
-Hammerspoon starts with global shortcuts disabled in the developer profile. Enable individual shortcuts and keyboard rules through its menu bar. Installing configuration does not grant Accessibility/Input Monitoring permission or start background services.
+In the source after 0.3.6 the keys are split in two layers (installed with the tianli profile): Karabiner only maps keys to keys, and every key that runs a script or opens an app is an skhd binding that reports with a macOS notification. Nothing goes through Hammerspoon, so the keys work with Hammerspoon closed. Personal scripts are reached only through executables of the same name in `~/.config/mackit/bin/`; when a file is missing its key does nothing. Installing configuration does not grant Accessibility/Input Monitoring permission or start background services.
 
 ## Where to edit
 

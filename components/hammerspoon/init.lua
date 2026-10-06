@@ -9,10 +9,10 @@ local function reload(files)
 end
 ConfigWatcher=hs.pathwatcher.new(hs.fs.pathToAbsolute(hs.configdir),reload):start()
 LocalWatcher=hs.pathwatcher.new(settings.local_dir,reload):start()
-if settings.hyper then require("modules.keymap").init_hyper() end
-if settings.vim_nav then require("modules.keymap").init_vim_nav() end
 manager.init()
-if settings.wechat then require("modules.apps").init_wechat_hotkey() end
-if settings.commands.office_cleanup then require("modules.office_cleanup").init() end
+-- Karabiner 监听按键，经 hs 命令行调用声明过的动作：hs -c 'mackit_run("<module>.<func>")'
+mackit_run=manager.run
+if settings.enable_shortcuts or settings.wechat then require("modules.apps").init_wechat_hotkey(settings.wechat) end
+-- Office 锁文件清理已改由 launchd 作业 com.tianli.office-lock-clean 承担（Cadence 管理，2026-10-05）
 if settings.ac_awake then require("modules.system").init_ac_awake() end
 require("modules.menubar").init()
