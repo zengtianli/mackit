@@ -116,17 +116,14 @@ private final class MenuCommandTable: NSTableView {
         scroll.setContentHuggingPriority(.defaultLow, for: .vertical)
     }
 
-    static func launch() {
-        do {
-            let target = try MenuReader.target(pid: MenuSearchCLI.pid())
-            let controller = MenuSearchPanel()
-            guard controller.acquireLock() else { exit(0) }
-            current = controller
-            controller.reader = MenuReader(target: target)
-            controller.appLabel.stringValue = target.localizedName ?? "当前 App"
-            controller.present()
-            controller.refresh()
-        } catch { MenuSearchCLI.emit(["error": error.localizedDescription]); exit(1) }
+    static func launch(target: NSRunningApplication) {
+        let controller = MenuSearchPanel()
+        guard controller.acquireLock() else { exit(0) }
+        current = controller
+        controller.reader = MenuReader(target: target)
+        controller.appLabel.stringValue = target.localizedName ?? "当前 App"
+        controller.present()
+        controller.refresh()
     }
 
     private func acquireLock() -> Bool {

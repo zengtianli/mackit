@@ -8,9 +8,16 @@ import SwiftUI
             MainActor.assumeIsolated {
                 let app = NSApplication.shared
                 let test = CommandLine.arguments.contains("--menu-self-test")
-                app.setActivationPolicy(test ? .prohibited : .accessory)
+                app.setActivationPolicy(.prohibited)
                 if test { MenuSearchPanel.selfTest() }
-                else { MenuSearchPanel.launch(); app.run() }
+                else {
+                    do {
+                        // Capture before AppKit completes its activation/launch sequence.
+                        let delegate = MenuSearchStartup(target: try MenuReader.target(pid: MenuSearchCLI.pid()))
+                        app.delegate = delegate
+                        withExtendedLifetime(delegate) { app.run() }
+                    } catch { MenuSearchCLI.emit(["error": error.localizedDescription]); exit(1) }
+                }
             }
             return
         }
@@ -29,6 +36,23 @@ import SwiftUI
             app.setActivationPolicy(.prohibited)
             Task { await UISelfTest.run() }
             app.run()
+        }
+    }
+}
+
+/// Present only after AppKit has finished launching, so launch-time focus changes
+/// cannot dismiss a panel that has already become key.
+@MainActor private final class MenuSearchStartup: NSObject, NSApplicationDelegate {
+    let target: NSRunningApplication
+    init(target: NSRunningApplication) { self.target = target }
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        DispatchQueue.main.async { [self] in
+            guard NSApp.setActivationPolicy(.accessory) else {
+                MenuSearchCLI.emit(["error": "无法启动菜单搜索面板。"])
+                NSApp.terminate(nil)
+                return
+            }
+            MenuSearchPanel.launch(target: target)
         }
     }
 }

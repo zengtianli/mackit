@@ -51,10 +51,13 @@ class MenuTests(unittest.TestCase):
             self.assertEqual(cli.main(["--home", home, "menu", "scan", "--json"]), 1)
             self.assertFalse(json.loads(out.getvalue())["ok"])
 
-    def test_action_is_available_without_default_global_binding(self):
-        self.assertIn("--menu-search", window.ACTIONS["menu-search"][1])
-        bindings = window.load(cli.ROOT)["hotkeys"]
-        self.assertFalse(any(row.get("action") == "menu-search" for row in bindings))
+    def test_action_renders_in_isolated_hotkey_fixture(self):
+        bindings = window.clean_hotkeys([{"key": "alt+m", "action": "menu-search"}])
+        self.assertEqual(bindings, [{"key": "alt+m", "action": "menu-search"}])
+        self.assertIn(
+            'alt - m : "/Applications/MacKit.app/Contents/MacOS/MacKit" --menu-search\n',
+            window.render_skhdrc(bindings),
+        )
 
 
 if __name__ == "__main__":
