@@ -76,12 +76,12 @@ Choose components: `./install.sh --apply --components zsh,nvim,tmux`. Existing f
 Everything you can see or do in the app has a command (the GUI is for people, the CLI for agents). Both call one engine: `mackit/cli.py` owns planning, installing and restoring, and `mackit/gui.py` with `mackit/window.py` is the business layer behind each app page. Commands reuse the same validation, digest locks, backups and transaction records rather than a second implementation. Read commands take `--json` for a stable object with `"ok"` and never write state; failures exit non-zero, and with `--json` print `{"ok": false, "error": …}`.
 
 ```sh
-mackit status --json                          # preset, source, app/source versions, transactions, mackit link state
+mackit status --json                          # preset, source, app/source versions and build number (app.appBuild), transactions, mackit link state
 mackit prepare --json                         # what the app's Preview does: prepare the configuration source (no-op when ready); needed before file and window writes
 mackit plan --json                            # preview with a token
 mackit select --components zsh,nvim --json     # remember the Set up page's preset and component choice (installs nothing); read back as status app.selected
 mackit apply --token <token>                  # install only if the targets are unchanged since the preview; one restorable transaction (a stale token creates nothing)
-                                              # with karabiner selected the result has "karabiner": a running Karabiner was told to re-read, confirmed from its log
+                                              # with karabiner selected the result has "karabiner": a running Karabiner is told to re-read only when the file is newer than its last load, confirmed from its log
 mackit doctor --json                          # sources, dependencies, command link, key conflicts; exit 1 on issues
 mackit deps --json                            # installed state per formula/cask; --check exits 1 when something is missing
 mackit deps --install                         # brew install only what is missing (real HOME only; progress on stderr, poll deps --json)
@@ -97,11 +97,11 @@ mackit window hotkey remove --key ctrl+alt+h
 mackit window rule add --app "System Settings" --manage off
 mackit window save --digest <digest> --from window.json         # replace everything, same shape as window status --json's window
 mackit window service stop skhd               # start/stop yabai or skhd (real HOME only)
-mackit karabiner status --json                # is Karabiner running, the rule source and its digest, rule counts, the active generation, the last re-read
+mackit karabiner status --json                # is Karabiner running, the rule source and its digest, rule counts, the active generation, the last re-read, whether the active file was loaded since it last changed (loaded.current)
 mackit karabiner rule list --json             # every rule: number, on/off, description, starting keys; rule show --index 4 prints one
 mackit karabiner rule add --from rule.json --apply   # add a key-to-key rule (one with shell_command is refused); --apply regenerates and has Karabiner re-read
 mackit karabiner rule disable --index 4       # enable / disable / remove by --index or --description; the previous file goes to editor-backups
-mackit karabiner reload --json                # only make the running Karabiner re-read and confirm it (real HOME only)
+mackit karabiner reload --json                # does nothing when the log already shows the active file loaded (already_current, exit 0); otherwise asks for a re-read and confirms it, exit 1 when unconfirmed (real HOME only)
 mackit restore <transaction> --json           # undo the newest transaction
 mackit link                                   # point ~/.local/bin/mackit at this app's command (recorded, restorable)
 ```
@@ -110,7 +110,7 @@ mackit link                                   # point ~/.local/bin/mackit at thi
 
 Without `--home`, commands act on this Mac's real configuration, whose source is the folder recorded at install time. For an install from a git checkout (`./install.sh`) that is the checkout itself, so `mackit window …` and `mackit file write` change files in the checkout, just as saving in the app does.
 
-Exit codes: 0 success (an empty result is still success); 1 the operation failed or was refused (stale digest, failed validation, unconfirmed re-read, issues from doctor or deps --check); 2 usage error, which with `--json` also prints `{"ok": false, "error": "usage: …"}`. The end of `mackit --help` lists the read commands, the write commands, the output shape and what exists only in the window.
+Exit codes: 0 success (an empty result is still success); 1 the operation failed or was refused (stale digest, failed validation, an unconfirmed `karabiner reload`, issues from doctor or deps --check); 2 usage error, which with `--json` also prints `{"ok": false, "error": "usage: …"}`. `apply` and `--apply` exit 0 whenever the install itself worked; what happened to Karabiner is the `karabiner` object of the result: `reloaded` true means its log holds a load newer than this change; `reason` `already_current` means the log already shows a load after the active file last changed, so no new line is expected; `not_confirmed` with `expected` true means the file is newer than the last load, a re-read was requested and no line came, and with `expected` null that the log holds no earlier load to compare with. The `karabiner` and `select` commands fail with `{"ok": false, "error": {"code": "…", "message": "…"}}`; the other commands keep a one-sentence `error`. The end of `mackit --help` lists the read commands, the write commands, the output shape and what exists only in the window.
 
 Since 0.3.5 `keys --json` prints `{ok, count, rows}`; earlier versions printed a bare array of rows.
 

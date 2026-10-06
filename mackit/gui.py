@@ -81,6 +81,14 @@ def capture(fn,*args):
     with contextlib.redirect_stdout(out):rc=fn(*args)
     return out.getvalue(),rc
 
+def karabiner_note(result):
+    """What the 安装配置 page adds to its banner about Karabiner after an install ("" when there is nothing to do)."""
+    if not isinstance(result,dict):return ""
+    if result.get("reloaded"):return " Karabiner 已读入新的键盘规则。"
+    if result.get("reason") in ("not_confirmed","log_unreadable","no_generation"):
+        return " Karabiner 是否已读入新的键盘规则未能确认：请在终端运行 mackit karabiner reload，或退出后重新打开 Karabiner-Elements。"
+    return ""
+
 def plan_result(args,home):
     p=cli.plan(args,home)
     return {"plan":p,"token":cli.plan_token(p),"dependencies":dependencies(p["components"],home)}
@@ -213,7 +221,8 @@ def dispatch(request,home):
             current=plan_result(args,home)
             if request.get("token")!=current["token"]:raise ValueError("配置或选择已变化，请重新预览后安装。")
             out,_=capture(cli.apply,args,home)
-            return {"installation":json.loads(out),"message":"配置已安装，原配置已备份。重新打开终端和相关应用后生效。"}
+            installation=json.loads(out)
+            return {"installation":installation,"message":"配置已安装，原配置已备份。重新打开终端和相关应用后生效。"+karabiner_note(installation.get("karabiner"))}
         if action=="doctor":
             out,_=capture(cli.doctor,args,home)
             return {"diagnosis":json.loads(out)}

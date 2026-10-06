@@ -30,7 +30,7 @@ sop:
   agent_cli:
     readback: mackit status
     features:
-    - name: 侧栏状态（已连接现有配置、版本号）
+    - name: 侧栏状态（已连接现有配置或从这里配置新电脑、版本号、隔离演示目录标记）
       command: mackit status
     - name: 工具栏「刷新」（⌘R）
       command: mackit status
@@ -40,6 +40,12 @@ sop:
       human: 只在窗口里有意义（打开主页）
     - name: 菜单「打开在线手册」
       human: 只在窗口里有意义（打开网页）
+    - name: App 菜单「配置与更新…」
+      human: 只在窗口里有意义（打开配置与更新窗口；窗口里的各项另列在下面）
+    - name: 忙碌进度条与成功、错误横幅
+      human: 只在窗口里有意义（窗口自己那次操作的进度与结果）；命令的结果在各自输出的 message、error 和退出码里
+    - name: 退出时的「操作进行中 / 继续等待」提示
+      human: 只在窗口里有意义；命令在前台跑到自己退出，没有可拦的退出
     - name: 菜单「搜索快捷键」（⌘F）
       command: mackit keys
     - name: 使用预设
@@ -50,7 +56,7 @@ sop:
       command: mackit prepare
     - name: 即将应用的配置（预览列表）
       command: mackit plan
-    - name: 备份并安装配置
+    - name: 备份并安装配置（含安装后 Karabiner 是否读入新规则的提示）
       command: mackit apply
     - name: 软件与依赖（各项是否已装）
       command: mackit deps
@@ -104,7 +110,7 @@ sop:
       command: mackit window hotkey
     - name: 录制一个组合键
       human: 要真人按键；命令里用 --key 直接写组合键
-    - name: 快捷键冲突提示
+    - name: 快捷键冲突与重复提示
       command: mackit keys
     - name: 应用规则（添加、接管、置顶、桌面、删除）
       command: mackit window rule
@@ -112,18 +118,18 @@ sop:
       command: mackit window save
     - name: 只保存（⇧⌘S）
       command: mackit window save
-    - name: 配置与更新窗口里的当前版本
+    - name: 配置与更新窗口里的当前版本与构建号
       command: mackit status
-    - name: 检查更新
-      missing: 发行版本检查只在共享的 AppLifecycleUI（Swift）里，没有命令入口
+    - name: 检查更新（App 菜单「检查更新…」与配置与更新窗口里的按钮）
+      missing: 共享生命周期模块暂无命令入口
     - name: 升级到新版…
-      missing: 应用内升级只在共享的 AppLifecycleUI（Swift）里，没有命令入口；本机维护用 scripts/install-app.py
+      missing: 共享生命周期模块暂无命令入口
     - name: 使用 iCloud 记住配置
-      missing: 开关与同步只在共享的 AppConfiguration（Swift）里，没有命令入口
+      missing: 共享生命周期模块暂无命令入口
     - name: 导出配置…
-      missing: 导出信封格式只在共享的 AppConfiguration（Swift）里；同一份预设与组件选择可用 mackit status 读
+      missing: 共享生命周期模块暂无命令入口；同一份预设与组件选择可用 mackit status 读
     - name: 导入配置…
-      missing: 导入信封格式只在共享的 AppConfiguration（Swift）里；同一份预设与组件选择可用 mackit select 写
+      missing: 共享生命周期模块暂无命令入口；同一份预设与组件选择可用 mackit select 写
   test: ~/Dev/.venv/bin/python -m unittest discover -s tests
   test_inputs:
   - tests/**
