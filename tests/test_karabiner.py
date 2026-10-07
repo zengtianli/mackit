@@ -336,12 +336,13 @@ class CliTests(unittest.TestCase):
 
     def test_help_states_the_contract_and_usage_errors_answer_in_json(self):
         top = self.cli("--help").stdout
-        for text in ("读命令", "写命令", "--json", '{"ok": false, "error"', '"error": {"code"', "退出码", "仅在窗口中", "暂无命令", "karabiner rule add|remove|enable|disable",
+        for text in ("读命令", "写命令", "--json", '{"ok": false, "error"', '"error": {"code"', "退出码", "仅在窗口中", "karabiner rule add|remove|enable|disable",
                      "karabiner reload", "select", "already_current", "not_confirmed", "app.appBuild",
                      # every human entry of project.yaml's sop.agent_cli is named under 仅在窗口中
                      "switch pages", "使用帮助", "打开在线手册", "Karabiner installer", "install Homebrew", "Input Monitoring", "shortcut's source",
                      "config file in Finder", "backup folder", "record a key", "unsaved draft", "操作进行中", "progress bar", "配置与更新…"):
             self.assertIn(text, top)
+        self.assertNotIn("暂无命令", top)  # every item of the App has a command or is listed under 仅在窗口中: project.yaml has no missing entry
         for args in (["karabiner"], ["karabiner", "rule"], ["karabiner", "rule", "add"], ["karabiner", "rule", "enable"], ["select"]):
             self.cli(*args, "--help")
         wrong = self.cli("karabiner", "rule", "bogus", "--json", code=2)

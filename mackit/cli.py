@@ -582,25 +582,34 @@ def status_command(args,home,payload):
  value["commandLink"]=command_link(home)
  print(json.dumps(value,ensure_ascii=False,indent=2))
 
-# `config …` and `update check` are the items of the App's 配置与更新… window. They belong to the App itself (its
-# preference domain, its version, its release channel), so the App executable runs them: the shared command layer
-# macos/Sources/AppLifecycleCLI.swift, entered in MacKitMain.main before any window exists (Lifecycle.command).
-# This command only forwards. The shared layer waits at most 30 seconds for one sync pass or one release lookup;
-# an import with sync on does a write and a pass.
+# `config …`, `update check` and `update install` are the items of the App's 配置与更新… window. They belong to the App
+# itself (its preference domain, its version, its release channel, the bundle on disk), so the App executable runs
+# them: the shared command layer macos/Sources/AppLifecycleCLI.swift, entered in MacKitMain.main before any window
+# exists (Lifecycle.command). This command only forwards. The shared layer waits at most 30 seconds for one sync pass
+# or one release lookup; an import with sync on does a write and a pass.
 LIFECYCLE_SECONDS=60
-# The shared layer's own help lines for `mackit` (AppLifecycleCLI.helpRead / helpWrite / helpNoCommand), verbatim.
+# `update install` is the long one. The shared layer bounds each of its own steps (AppLifecycleCLI.Product: timeout 30 for
+# the release lookup, upgradeTimeout 330 for the download and its verification, quitTimeout 20 for a running App to
+# quit, upgradeTimeout 330 again for the replacement) and answers by itself when one of them runs out. The forwarding
+# waits longer than all of them together, so that answer always arrives; it is a last resort, not the limit.
+LIFECYCLE_INSTALL_SECONDS=30+330+20+330+40
+# The shared layer's own help lines for `mackit` (AppLifecycleCLI.helpRead / helpWrite), verbatim.
 # tests/test_lifecycle_cli.py looks each of them up in what the compiled App prints for `config --help`.
 LIFECYCLE_READS=(
- "  config status              「使用 iCloud 记住配置」开关、当前可迁移的配置项、App 是否在运行（只读）",
+ "  config status              「使用 iCloud 记住配置」开关、开关下面那句同步状态、当前可迁移的配置项、App 是否在运行（只读）",
  "  update check               检查更新：当前版本、此渠道最新版本、有没有新版、怎么升级（只读；私有渠道读 iCloud Drive 里的发行记录，公开渠道联网读发行记录）")
 LIFECYCLE_WRITES=(
  "  config export -o <file>        导出配置：与窗口「导出配置…」同一份文件；不改设置，只写你指定的那个文件（--force 覆盖；-o - 输出到标准输出，不写文件）",
  "  config import <file> --yes     导入配置：先备份原配置再覆盖，与窗口「导入配置…」相同",
- "  config sync on|off --yes       拨动「使用 iCloud 记住配置」（--dry-run 只看会不会变；用 mackit config status 回读）")
-LIFECYCLE_NO_COMMAND="升级到新版 / 下载新版（命令不做静默安装：update check 给出新版、按钮名、安装包地址与步骤，替换并重启 App 仍在「配置与更新…」窗口确认）"
+ "  config sync on|off --yes       拨动「使用 iCloud 记住配置」（--dry-run 只看会不会变；用 mackit config status 回读）",
+ "  update install --yes           升级到新版：与窗口「升级到新版…」同一条路——验证发行包与签名、替换当前 App，运行中的先退出、换好再重开；配置保留，替换失败回滚（--dry-run 只看会做什么；用 mackit update check 回读）")
+def lifecycle_seconds(words):
+ """How long the forwarding waits for the App executable. `words` is what lifecycle_words returned: --home, the
+ home, then the command. Only `update install` gets the long wait."""
+ return LIFECYCLE_INSTALL_SECONDS if [w for w in words[2:] if not w.startswith("-")][:2]==["update","install"] else LIFECYCLE_SECONDS
 def lifecycle_words(given):
  """The words to hand to the App executable when it is the one that answers, else None: `config …`, or `update`
- followed by a word (`update check`). Plain `mackit update` stays the source-checkout pull it always was. Only
+ followed by a word (`update check`, `update install`). Plain `mackit update` stays the source-checkout pull it always was. Only
  --home may come before the command. It is always passed on, as an absolute path: the App refuses a home that is
  not this Mac's own, so a sandbox (or a changed $HOME) never reaches the owner's switch or iCloud copy."""
  home=None;i=0
@@ -634,19 +643,26 @@ def lifecycle_failure(words,code,message):
   print(json.dumps({"ok":False,"command":" ".join(rest[:2]),"error":{"code":code,"message":message}},ensure_ascii=False))
  print("mackit: "+message,file=sys.stderr);return 1
 def lifecycle_command(words):
- """`mackit config …` and `mackit update check`: the words go to the App executable unchanged and its stdout,
- stderr and exit code come back unchanged; nothing is parsed or re-implemented here. No window is opened and a
- running MacKit is not touched: it follows on its own (AppLifecycleCLI.follow)."""
+ """`mackit config …`, `mackit update check` and `mackit update install`: the words go to the App executable
+ unchanged and its stdout, stderr and exit code come back unchanged; nothing is parsed or re-implemented here. No
+ window is opened. A running MacKit follows config changes on its own (AppLifecycleCLI.follow); only
+ `update install --yes` asks it to quit, as the window's own 升级到新版… does.
+
+ `update install --yes` replaces the whole MacKit.app, and this command runs from inside it. Everything used after
+ the App executable returns is already loaded before it starts (relay, json, the failure text): by then the files
+ this process was started from have been moved to the Trash and the same paths hold the new version."""
  binary=lifecycle_binary()
  if binary is None:
-  return lifecycle_failure(words,"app_missing","config and update check are answered by the MacKit App itself, and this command is not inside a MacKit.app. Run the App's own command (MacKit.app/Contents/Resources/core/bin/mackit, linked as ~/.local/bin/mackit).")
- try:done=subprocess.run([str(binary),*words],stdin=subprocess.DEVNULL,capture_output=True,timeout=LIFECYCLE_SECONDS)
+  return lifecycle_failure(words,"app_missing","config, update check and update install are answered by the MacKit App itself, and this command is not inside a MacKit.app. Run the App's own command (MacKit.app/Contents/Resources/core/bin/mackit, linked as ~/.local/bin/mackit).")
+ seconds=lifecycle_seconds(words)
+ readback="mackit update check" if words[2:3]==["update"] else "mackit config status"
+ try:done=subprocess.run([str(binary),*words],stdin=subprocess.DEVNULL,capture_output=True,timeout=seconds)
  except subprocess.TimeoutExpired:
-  return lifecycle_failure(words,"timeout",f"No answer within {LIFECYCLE_SECONDS} seconds; the App executable was stopped. Read the state back with mackit config status before sending the command again.")
+  return lifecycle_failure(words,"timeout",f"No answer within {seconds} seconds; the App executable was stopped. Read the state back with {readback} before sending the command again.")
  except OSError as exc:
   return lifecycle_failure(words,"app_missing",f"Cannot run {binary}: {exc}")
  if done.returncode<0:
-  return lifecycle_failure(words,"app_failed",f"The App executable was ended by signal {-done.returncode} and gave no result. Read the state back with mackit config status.")
+  return lifecycle_failure(words,"app_failed",f"The App executable was ended by signal {-done.returncode} and gave no result. Read the state back with {readback}.")
  relay(sys.stdout,done.stdout);relay(sys.stderr,done.stderr)
  return done.returncode
 
@@ -686,7 +702,8 @@ HELP_EPILOG="""\
   karabiner rule add|remove|enable|disable · karabiner reload · action · update
   Saves check a digest (window status / file read / karabiner rule list --json), keep a copy of what
   they replace, and print where it is. apply and restore are one recorded transaction each.
-  From the App's 配置与更新… window (sync and import need --yes; import backs up what it replaces):
+  From the App's 配置与更新… window (sync, import and update install need --yes; import backs up what
+  it replaces; update install replaces MacKit.app itself and can take minutes: --dry-run first):
 @LIFECYCLE_WRITES@
 
 --json 输出形状 Output: one object on stdout.
@@ -696,11 +713,21 @@ HELP_EPILOG="""\
            (codes: usage, not_found, exists, ambiguous, stale_digest, invalid_rule, shell_command,
            invalid_json, not_prepared, preset_locked, isolated_home, not_confirmed, not_running, ...;
            karabiner reload adds "reload")
-           config and update check (answered by the App): {"ok": false, "command": "<verb sub>",
-           "error": {"code", "message"}} (codes: usage, confirmation_required, file_exists, not_found,
-           import_rejected, export_failed, sync_incomplete, check_incomplete, no_settings, failed;
+           config, update check and update install (answered by the App): {"ok": false,
+           "command": "<verb sub>", "error": {"code", "message"}} (codes: usage,
+           confirmation_required, file_exists, not_found, import_rejected, export_failed,
+           sync_incomplete, check_incomplete, no_settings, failed; update install adds manual_install,
+           needs_product_installer, upgrade_failed, app_busy, replace_failed, cleanup_failed;
            MacKit's own: isolated_home, isolation_incomplete; when the forwarding itself fails:
            app_missing, app_failed, timeout)
+  config status: has_settings, sync_enabled, sync_status {text, at, from, live}, keys, app_running,
+    problem. sync_status is the sentence under the window's switch; from is app (the running App
+    shows it now, live true), record (the App is not running: the last pass left it, at says when)
+    or derived (no usable record: what a window shows before its first pass).
+  update install: installed, state (installed | up_to_date | ahead_of_channel), message, current,
+    latest, source, app_running; once installed also previous, backup (null), old_app_cleanup
+    (trashed: the replaced App is in the Trash), relaunched; --dry-run gives would_install {from, to},
+    installation, will_quit_app, will_relaunch and installs nothing.
   status, apply and doctor print JSON without the flag. status: installed, transactions, commandLink,
   app.selected, app.appVersion, app.appBuild (the build number the App's own window shows).
   apply with karabiner selected adds "karabiner": {reloaded, current, expected, reason, nudged, line}:
@@ -716,8 +743,11 @@ HELP_EPILOG="""\
      deps --check found something missing, karabiner reload not confirmed. apply and --apply still
      exit 0 when the install itself worked: read karabiner.reloaded / karabiner.current / reason.
   2  usage error (unknown command or argument)
-     also config import / config sync without --yes (confirmation_required), and config export onto
-     an existing file without --force (file_exists)
+     also config import / config sync / update install without --yes (confirmation_required), and
+     config export onto an existing file without --force (file_exists)
+     update install exits 0 when there is nothing newer (installed false); 1 with one of its codes
+     above when it did not finish (the current App is kept or rolled back; cleanup_failed: the new
+     version is in place, the old bundle could not be moved to the Trash).
   action returns the configured program's own exit code.
 
 仅在窗口中 Window only (no command; the facts are in the read commands):
@@ -733,19 +763,15 @@ HELP_EPILOG="""\
   discard an unsaved draft, and the unsaved-changes prompt on quit (commands hold no draft)
   the 操作进行中 prompt when quitting during an operation (a command runs to its own exit)
   the progress bar and the success / error banners (a command prints its result and exit code)
-  menu 配置与更新… (opens that window; its items are config … and update check above)
-暂无命令 No command yet:
-  @LIFECYCLE_NO_COMMAND@
-  the live sync status line beside 使用 iCloud 记住配置 (held by the running App; config sync on and
-  config import report their own pass only)
+  menu 配置与更新… (opens that window; its items are config … and update check / update install above)
 
 Without --home, commands act on this Mac and its recorded configuration source. Try writes on a
 sandbox first: mackit --home /tmp/demo prepare
-config and update check act on the App itself (its preference domain, its iCloud copy, its release
-channel): a sandbox --home has none of these and config answers isolated_home there.
+config, update check and update install act on the App itself (its preference domain, its iCloud
+copy, its release channel, the installed MacKit.app): a sandbox --home has none of these. config and
+update install answer isolated_home there and touch nothing; update check still reads the channel.
 """
-HELP_EPILOG=(HELP_EPILOG.replace("@LIFECYCLE_READS@","\n".join(LIFECYCLE_READS)).replace("@LIFECYCLE_WRITES@","\n".join(LIFECYCLE_WRITES))
- .replace("@LIFECYCLE_NO_COMMAND@",LIFECYCLE_NO_COMMAND))
+HELP_EPILOG=HELP_EPILOG.replace("@LIFECYCLE_READS@","\n".join(LIFECYCLE_READS)).replace("@LIFECYCLE_WRITES@","\n".join(LIFECYCLE_WRITES))
 def main(argv=None):
  global ROOT,READ_ROOT
  payload=ROOT;READ_ROOT=None
@@ -834,9 +860,9 @@ def run(argv,payload):
  s=subs.add_parser("edit",help="Open a config in $EDITOR, or list the ids (use file read/write when not interactive)");s.add_argument("component",nargs="?");s.add_argument("--print",dest="print_path",action="store_true",help="Print the path only")
  s.add_argument("--json",action="store_true",help="With no id: the list as JSON")
  s=subs.add_parser("action",help="Run an optional action configured in ~/.config/mackit/actions.json");s.add_argument("name");s.add_argument("args",nargs=argparse.REMAINDER)
- subs.add_parser("update",help="git pull --ff-only a clean source checkout; update check asks the App's release channel for a newer version (read-only)",
-  epilog="mackit update check [--json] is answered by the App: current and latest version, whether there is a newer one, how to upgrade. See mackit config --help.")
- s=subs.add_parser("config",help="The App's 配置与更新… window as commands: status, export, import, sync on|off (answered by the App; mackit config --help)")
+ subs.add_parser("update",help="git pull --ff-only a clean source checkout; update check asks the App's release channel for a newer version (read-only); update install --yes upgrades the installed App to it",
+  epilog="mackit update check [--json] is answered by the App: current and latest version, whether there is a newer one, how to upgrade. mackit update install --yes [--dry-run] [--json] is the window's 升级到新版…: it verifies the release and its signature, replaces MacKit.app (a running one quits first and is reopened), keeps the configuration and rolls back when the replacement fails. See mackit config --help.")
+ s=subs.add_parser("config",help="The App's 配置与更新… window as commands: status (with the sync status sentence), export, import, sync on|off (answered by the App; mackit config --help)")
  s.add_argument("words",nargs=argparse.REMAINDER)
  subs.add_parser("gui")  # the App's stdin JSON bridge; deliberately not listed
  args=parser.parse_args(argv);home=args.home.expanduser().absolute()

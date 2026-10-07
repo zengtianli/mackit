@@ -112,11 +112,12 @@ mackit karabiner rule disable --index 4       # enable / disable / remove 按 --
 mackit karabiner reload --json                # 日志显示已读入当前文件就什么都不动（already_current，退出 0）；否则让它重读并确认，没确认退出 1（仅真实 HOME）
 mackit restore <记录> --json                  # 恢复最近一次安装记录
 mackit link                                   # 把 ~/.local/bin/mackit 指向当前 App 内的命令（有记录，可 restore）
-mackit config status --json                   # 「配置与更新…」窗口：iCloud 开关、可迁移的配置项（预设与组件选择）、App 是否在运行（只读）
+mackit config status --json                   # 「配置与更新…」窗口：iCloud 开关、开关下面那句同步状态、可迁移的配置项（预设与组件选择）、App 是否在运行（只读）
 mackit config export -o selection.json        # 导出配置：与窗口「导出配置…」同一份文件（--force 覆盖；-o - 输出到标准输出）
 mackit config import selection.json --yes     # 导入配置：先备份原配置再覆盖；只记住选择，不安装
 mackit config sync on --yes                   # 拨动「使用 iCloud 记住配置」（off 关闭；--dry-run 只看会不会变）；config status 读回
 mackit update check --json                    # 检查更新：当前版本与构建号、正式发行的最新版本、有没有新版、怎么升级（只读，联网读发行记录）
+mackit update install --dry-run --json        # 升级到新版会做什么（只读）；去掉 --dry-run 换成 --yes 才执行：验证发行包与签名、替换 MacKit.app，update check 读回
 ```
 
 `--home <目录>`（不是你自己的主目录时）就是沙盒：不安装软件、不启停服务、不对运行中的 yabai/skhd 生效，也不写目录以外的文件。无论用 App 内命令还是源码目录的 `bin/mackit`，配置源都与 App 一样准备在 `<目录>/.local/share/mackit`：`plan` 只报告、不创建，`prepare` 或 `apply` 才从内置副本创建，所以窗口与配置文件的写入只落在沙盒里。沙盒若记录了目录外的配置源（0.3.5 以前的源码命令会这样），该来源只读，写入会被拒绝，换一个新目录即可。
@@ -125,7 +126,7 @@ mackit update check --json                    # 检查更新：当前版本与�
 
 退出码：0 成功（查无结果也算）；1 操作失败或被拒绝（摘要过期、校验不过、`karabiner reload` 未确认、doctor 或 deps --check 发现问题）；2 用法错误，此时加 `--json` 也输出 `{"ok": false, "error": "usage: …"}`。`apply` 与 `--apply` 只要安装本身成功就退出 0，Karabiner 的情况看结果里的 `karabiner`：`reloaded` 为真是日志里有比这次改动更新的读入记录；`reason` 为 `already_current` 是日志显示生效文件改动后已经读入过，不该再有新记录；`not_confirmed` 且 `expected` 为真是文件比上次读入新、已让它重读却没等到记录，`expected` 为 null 是日志里没有更早的读入记录可比。`karabiner` 与 `select` 两组命令的失败输出是 `{"ok": false, "error": {"code": "…", "message": "…"}}`，其余命令的 `error` 仍是一句话。读命令、写命令、输出形状与只在窗口里做的事列在 `mackit --help` 末尾。
 
-`config …` 与 `update check` 是 App「配置与更新…」窗口里的几项。它们属于 App 本身（偏好域、版本、发行渠道），由 App 的可执行文件应答，`mackit` 只原样转交，所以要用 App 内的命令（`~/.local/bin/mackit`）；源码目录的 `bin/mackit` 会回答 `app_missing`。命令与窗口读写同一份设置：命令拨了开关或导入了选择，开着的窗口自己跟随。它们不开窗口、不抢焦点、不做静默安装：有新版时 `update check` 给出按钮名、安装包地址和步骤，替换并重启 App 仍在窗口里确认。失败输出是 `{"ok": false, "command": "…", "error": {"code": "…", "message": "…"}}`；退出码 2 除了参数不对（`usage`），还有 `import`、`sync` 缺 `--yes`（`confirmation_required`）和导出目标已存在又没加 `--force`（`file_exists`）。完整的输出字段与错误码见 `mackit config --help`。这组设置不在任何 `--home` 目录里（开关在 App 的偏好域，备份在 Application Support，副本在 iCloud Drive），沙盒 `--home` 下 `config` 回答 `isolated_home`。窗口里那句实时同步状态和「升级到新版…」没有命令。原有的 `mackit update`（不带子命令，对源码目录执行 `git pull --ff-only`）不变。
+`config …`、`update check` 与 `update install` 是 App「配置与更新…」窗口里的几项。它们属于 App 本身（偏好域、版本、发行渠道、装着的那个 App），由 App 的可执行文件应答，`mackit` 只原样转交，所以要用 App 内的命令（`~/.local/bin/mackit`）；源码目录的 `bin/mackit` 会回答 `app_missing`。命令与窗口读写同一份设置：命令拨了开关或导入了选择，开着的窗口自己跟随。它们不开窗口、不抢焦点。`config status` 的 `sync_status` 是开关下面那句同步状态：App 在运行时是它此刻显示的那句（`from` 为 `app`、`live` 为真），没在运行时是上一次同步留下的那句和时间（`record`），没有可用记录时是窗口打开时的初值（`derived`）。`update install --yes` 与窗口的「升级到新版…」是同一条路：验证发行包与签名，运行中的 MacKit 先退出，替换 `MacKit.app` 后再重开，配置保留，替换失败回滚，换下来的旧 App 移到废纸篓；没有新版时退出 0（`installed` 为假），先看会做什么用 `--dry-run`，做完用 `update check` 读回。它可能要几分钟（下载与验证各有上限）。未完成时退出 1，`error.code` 说明停在哪：`check_incomplete`、`manual_install`（这个安装位置或渠道不能由命令替换，给出安装包地址）、`upgrade_failed`、`app_busy`、`replace_failed`、`cleanup_failed`（新版已装好，旧包没能移走）。失败输出是 `{"ok": false, "command": "…", "error": {"code": "…", "message": "…"}}`；退出码 2 除了参数不对（`usage`），还有 `import`、`sync`、`update install` 缺 `--yes`（`confirmation_required`）和导出目标已存在又没加 `--force`（`file_exists`）。完整的输出字段与错误码见 `mackit config --help`。这组设置不在任何 `--home` 目录里（开关在 App 的偏好域，备份在 Application Support，副本在 iCloud Drive），沙盒 `--home` 下 `config` 回答 `isolated_home`；`update install` 替换的是本机装着的 App，在沙盒 `--home` 下同样回答 `isolated_home`、什么都不动，`update check` 照常可读。原有的 `mackit update`（不带子命令，对源码目录执行 `git pull --ff-only`）不变。
 
 `keys --json` 自 0.3.5 起输出 `{ok, count, rows}`，此前版本输出行数组。
 

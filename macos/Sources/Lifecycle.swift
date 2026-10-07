@@ -3,7 +3,8 @@ import SwiftUI
 
 // MacKit's side of the shared「配置与更新…」layer (AppLifecycle*.swift are byte copies of swift-shared). This file is the
 // one place that names the product, its release channel and its portable settings. The window (MacKitApp.init) and
-// the commands `mackit config …` / `mackit update check` are both built from it, so they read and write one thing.
+// the commands `mackit config …` / `mackit update check` / `mackit update install` are both built from it, so they
+// read and write one thing and upgrade through one installer.
 // The command line is the Python engine: it forwards those words to this executable (mackit/cli.py lifecycle_command),
 // which answers in `command(_:)` before any NSApplication exists.
 enum Lifecycle {
@@ -28,10 +29,12 @@ enum Lifecycle {
     struct Store { let defaults: UserDefaults; let home: URL }
 
     enum Refusal: Error {
-        case isolationIncomplete, sandboxHome
+        case isolationIncomplete, sandboxHome, sandboxUpgrade
         var code: String { self == .isolationIncomplete ? "isolation_incomplete" : "isolated_home" }
         var message: String {
             switch self {
+            case .sandboxUpgrade:
+                return "升级替换的是这台 Mac 上装着的 MacKit.app，它不在 --home 目录里：沙盒 HOME 不替换任何 App，也不让运行中的 MacKit 退出。去掉 --home 在本机运行（先加 --dry-run 只看会做什么）；\(Lifecycle.command) update check 在沙盒 HOME 下照常可读。"
             case .isolationIncomplete:
                 return "APP_LIFECYCLE_SUPPORT_DIR 已设置（隔离运行）：还需要 \(Lifecycle.suiteVariable)（以 \(Lifecycle.suitePrefix) 开头的一次性偏好域）和 --home <临时目录>（不能是你自己的 HOME），隔离运行才不会碰到你自己的设置。"
             case .sandboxHome:
@@ -115,7 +118,8 @@ enum Lifecycle {
 
     /// `MacKit [--home <dir>] config …` and `MacKit [--home <dir>] update …`, the words after `mackit` as the engine
     /// forwards them. Returns the exit code, or nil when the arguments are not one of these (the caller starts the app).
-    /// Nothing here creates an NSApplication: no window, no Dock icon, no prompt; a running MacKit is left alone.
+    /// Nothing here creates an NSApplication: no window, no Dock icon, no prompt. A running MacKit is left alone by
+    /// every command but `update install --yes`, which asks it to quit and reopens it, as the window's own button does.
     static func command(_ arguments: [String]) -> Int32? {
         var words = Array(arguments.dropFirst())
         var home: String?
@@ -124,9 +128,15 @@ enum Lifecycle {
         switch store(home: home) {
         case .success(let store):
             return AppLifecycleCLI.run(words, product: product(store))
-        case .failure(let refusal):
-            // `update check` reads this bundle's version and the release channel, and the help reads nothing: neither needs the settings.
-            if words.first == "update" || words.contains("--help") || words.contains("-h") { return AppLifecycleCLI.run(words, product: product(nil)) }
+        case .failure(var refusal):
+            // `update check` reads this bundle's version and the release channel, and the help reads nothing: neither needs
+            // the settings. `update install` is not a read: it replaces the installed App and quits a running one, which a
+            // sandbox --home promises never to do, so it is refused there like the settings are (--dry-run included).
+            let installs = words.first == "update" && words.dropFirst().first(where: { !$0.hasPrefix("-") }) == "install"
+            if words.contains("--help") || words.contains("-h") || (words.first == "update" && !installs) {
+                return AppLifecycleCLI.run(words, product: product(nil))
+            }
+            if installs, refusal == .sandboxHome { refusal = .sandboxUpgrade }
             let positionals = words.dropFirst().filter { !$0.hasPrefix("-") }
             let name = (words.first ?? "") + " " + (positionals.first ?? "status")
             if words.contains("--json"),

@@ -123,11 +123,11 @@ sop:
     - name: 检查更新（App 菜单「检查更新…」与配置与更新窗口里的按钮）
       command: mackit update check
     - name: 升级到新版…
-      missing: 命令不做静默安装：mackit update check 给出新版、按钮名、安装包地址与步骤，替换并重启 App 仍在「配置与更新…」窗口确认
+      command: mackit update install
     - name: 使用 iCloud 记住配置
       command: mackit config sync
     - name: 使用 iCloud 记住配置旁那句实时同步状态
-      missing: 实时状态由运行中的 App 持有，命令读不到；mackit config sync on 与 mackit config import 只回报自己那一次同步的结果
+      command: mackit config status
     - name: 导出配置…
       command: mackit config export
     - name: 导入配置…
