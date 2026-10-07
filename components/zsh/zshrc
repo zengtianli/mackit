@@ -1,5 +1,23 @@
 # MacKit shell entry: plugins -> options/actions -> private additions -> keys.
 # MACKIT_ROOT is set by the installer-generated ~/.zshrc.
+# A terminal started from inside a Claude Code session (`open` hands the app the
+# caller's environment) passes that session's markers to every tab: Claude then
+# runs as a child session and saves no transcript, and git gets a no-op editor.
+# Keep them only when a Claude process really is an ancestor of this shell.
+if [[ -n ${CLAUDECODE-}${CLAUDE_CODE_CHILD_SESSION-} ]]; then
+  () {
+    local pid=$PPID ppid comm
+    while (( pid > 1 )); do
+      (( pid == ${CLAUDE_PID:-0} )) && return
+      read -r ppid comm <<<"$(ps -o ppid=,comm= -p $pid 2>/dev/null)"
+      [[ ${comm:t} == claude ]] && return
+      pid=${ppid:-0}
+    done
+    unset CLAUDECODE CLAUDE_PID AI_AGENT NoDefaultCurrentDirectoryInExePath COREPACK_ENABLE_AUTO_PIN \
+      CLAUDE_CODE_{CHILD_SESSION,ENTRYPOINT,EXECPATH,SESSION_ID,SESSION_ATTENDED,MESSAGING_SOCKET,MESSAGING_TOKEN}
+    [[ ${GIT_EDITOR-} == true ]] && unset GIT_EDITOR
+  }
+fi
 typeset -g MACKIT_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/mackit"
 typeset -g MACKIT_PROFILE="${MACKIT_PROFILE:-developer}"
 [[ -r "$MACKIT_CONFIG/profile.zsh" ]] && source "$MACKIT_CONFIG/profile.zsh"
