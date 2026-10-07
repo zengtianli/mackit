@@ -4,6 +4,16 @@ name_zh: 配置助手
 display_name: MacKit · 配置助手
 form: macos
 lifecycle: active
+compatibility:
+  schema: 1
+  dependencies:
+  - id: keyboard
+    probe: keyboard
+    consumers: [Apps/mackit]
+    source_files: [bin/mackit]
+    check_entry: mackit status --json; original config symlink targets and responsibility registry
+    repair_entry: bin/mackit
+    evidence_refs: [mac-pair/queue/20261007-0959-键盘分层在-mini-生效.reply.md]
 origin: own
 description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件、窗口管理与备份恢复；App 各页都有供 Agent 调用的命令
 bundle_id: cyou.tianli.mackit
