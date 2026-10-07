@@ -73,11 +73,20 @@ class ReloadTests(unittest.TestCase):
         return karabiner_answers
 
     def test_a_changed_file_is_nudged_and_confirmed_from_a_new_log_line(self):
+        self.point("20260103-000000-cccccc")  # apply just made this one and re-pointed the link at it
         before = self.intact()
         self.assertEqual(karabiner.loaded(self.link, self.log)["current"], False)  # the link is newer than the last load
-        result = self.reload(self.answer(), skip="20260103-000000-cccccc")
+        watched, away = self.state / "generations/20260102-000000-bbbbbb/karabiner", []
+
+        def karabiner_answers():
+            away.append(not watched.exists())
+            self.answer()()
+        result = self.reload(karabiner_answers, skip="20260103-000000-cccccc")
         self.assertEqual((result["attempted"], result["reloaded"], result["current"], result["expected"], result["reason"]), (True, True, True, True, ""))
-        self.assertEqual(result["nudged"], ["20260102-000000-bbbbbb", "20260101-000000-aaaaaa"])  # not the one apply just made
+        # A rename undone at once goes unnoticed by Karabiner (measured 2026-10-07), so the directory stays away for a moment.
+        self.assertTrue(away[0])
+        # Newest first, not the one apply just made, and the older ones are left alone once one answered.
+        self.assertEqual(result["nudged"], ["20260102-000000-bbbbbb"])
         self.assertIn("new core_configuration is updated.", result["line"])  # the old line does not count
         self.assertEqual(self.intact(), before)  # every directory is back under its own name
 
@@ -85,7 +94,8 @@ class ReloadTests(unittest.TestCase):
         result = self.reload()  # the link changed after the last logged load, the nudge is sent, no line comes
         self.assertEqual((result["attempted"], result["reloaded"], result["current"], result["expected"], result["reason"]),
                          (True, False, False, True, "not_confirmed"))
-        self.assertEqual(len(result["nudged"]), 3)
+        # The directory the link points at is never renamed: for that moment the active configuration would be missing.
+        self.assertEqual(result["nudged"], ["20260103-000000-cccccc", "20260101-000000-aaaaaa"])
         self.assertLessEqual(result["waited_ms"], 2200)
         self.assertGreaterEqual(result["waited_ms"], 2000)
 
@@ -170,7 +180,7 @@ class ReloadTests(unittest.TestCase):
         result = self.reload(log=Path(self.temp.name) / "missing.log")
         self.assertEqual((result["attempted"], result["reloaded"], result["reason"]), (True, False, "log_unreadable"))
         self.assertTrue(stray.is_dir())
-        self.assertEqual(len(result["nudged"]), 3)
+        self.assertEqual(len(result["nudged"]), 2)  # every generation but the active one
 
     def test_a_rotated_log_is_read_from_its_start(self):
         self.log.write_text("x" * 500 + "\n")
@@ -257,6 +267,10 @@ class CliTests(unittest.TestCase):
         self.assertEqual((exists["code"], "--replace" in exists["message"]), ("exists", True))
         refused = self.rule("add", stdin=json.dumps(COMMAND_RULE), code=1)["error"]
         self.assertEqual((refused["code"], "shell_command" in refused["message"]), ("shell_command", True))
+        # Opening an application is starting a program too, whichever way the rule spells it.
+        opener = {"description": "open an app", "manipulators": [{"type": "basic", "from": {"key_code": "f16"},
+                  "to": [{"software_function": {"open_application": {"bundle_identifier": "com.apple.Safari"}}}]}]}
+        self.assertEqual(self.rule("add", stdin=json.dumps(opener), code=1)["error"]["code"], "shell_command")
         self.assertEqual(self.rule("add", stdin="not json", code=1)["error"]["code"], "invalid_json")
         self.assertEqual(self.rule("add", stdin=json.dumps({"description": "x"}), code=1)["error"]["code"], "invalid_rule")
         self.assertEqual(self.rule("show", "--index", "99", code=1)["error"]["code"], "not_found")

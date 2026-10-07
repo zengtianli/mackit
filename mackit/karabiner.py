@@ -18,7 +18,8 @@ MARK = "core_configuration is updated"
 INSTALLED = (Path("/Applications/Karabiner-Elements.app"), Path("/Library/Application Support/org.pqrs/Karabiner-Elements"))
 PROCESSES = ("Karabiner-Core-Service", "karabiner_console_user_server", "karabiner_grabber")
 NUDGE = ".mackit-nudge"
-NO_COMMAND = ("Karabiner only maps keys to keys here: this rule carries a shell_command. "
+HOLD = 0.2  # seconds a nudged directory stays renamed; a rename undone at once goes unnoticed (see reload)
+NO_COMMAND = ("Karabiner only maps keys to keys here: this rule carries a shell_command or opens an application. "
               "Bind a program with mackit window hotkey add --command instead.")
 STAMP = re.compile(r"^\[(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)(?:\.(\d+))?\]")
 
@@ -64,9 +65,10 @@ def rules_of(profile: dict) -> list:
 
 
 def has_command(value) -> bool:
-    """True when a shell_command sits anywhere inside (to, to_if_alone, to_delayed_action, …)."""
+    """True when something that starts a program sits anywhere inside (to, to_if_alone, to_delayed_action, …):
+    a shell_command, or software_function's open_application."""
     if isinstance(value, dict):
-        return "shell_command" in value or any(has_command(v) for v in value.values())
+        return "shell_command" in value or "open_application" in value or any(has_command(v) for v in value.values())
     if isinstance(value, list):
         return any(has_command(v) for v in value)
     return False
@@ -249,14 +251,19 @@ def loaded(link: Path, log: Path = LOG) -> dict:
 
 
 def reload(state: Path, skip: str = "", log: Path = LOG, wait: float = 5.0, recent: int = 4, link: Path | None = None,
-           before: dict | None = None, is_installed=installed, is_running=running, sleep=time.sleep, clock=time.monotonic) -> dict:
+           before: dict | None = None, is_installed=installed, is_running=running, sleep=time.sleep, clock=time.monotonic,
+           hold: float = HOLD) -> dict:
     """Make a running Karabiner read the configuration again when a re-read is due, and say which case it was.
 
     Karabiner keeps watching the directory it last loaded from while apply only re-points
     ~/.config/karabiner. Renaming a watched directory and renaming it back makes it look again, through
     the link, so at the newest file. Which generation it watches is not always the previous one, so the
-    `recent` newest generations are nudged (not `skip`, the one apply just created). One bounded wait
-    of `wait` seconds for a new log line; no retry. The caller keeps this away from an isolated --home.
+    `recent` newest generations are nudged, newest first, until one answers in the log (not `skip`, the
+    one apply just created, and never the one the link points at: while that is renamed the link dangles).
+    Each stays renamed for `hold` seconds: on 2026-10-07 two renames back to back brought no re-read,
+    and the same directory renamed by two `mv` a few milliseconds apart was re-read within half a second.
+    One bounded wait of `wait` seconds for a new log line; no retry. The caller keeps this away from an
+    isolated --home.
 
     A new log line is only expected when the active file changed after Karabiner's last logged load, so
     that is decided first (`loaded`, from `link`; `before` is what `loaded` said before apply re-pointed):
@@ -292,14 +299,21 @@ def reload(state: Path, skip: str = "", log: Path = LOG, wait: float = 5.0, rece
     for stray in generations.glob("*/karabiner" + NUDGE):  # an interrupted nudge: put the directory back
         if not (stray.parent / "karabiner").exists():
             stray.rename(stray.parent / "karabiner")
-    found = sorted((d for d in generations.glob("*/karabiner") if d.is_dir() and not d.is_symlink() and d.parent.name != skip), reverse=True)
+    active = link.resolve() if link is not None else None
+    found = sorted((d for d in generations.glob("*/karabiner") if d.is_dir() and not d.is_symlink() and d.parent.name != skip
+                    and d.resolve() != active), reverse=True)
     if not found:
         return {**result, "reason": "no_generation"}
     for directory in found[:recent]:
         moved = directory.with_name(directory.name + NUDGE)
         directory.rename(moved)
-        moved.rename(directory)
+        try:
+            sleep(hold)
+        finally:
+            moved.rename(directory)
         result["nudged"].append(directory.parent.name)
+        if offset is not None and marks(log, offset):  # the watched one answered: leave the older ones alone
+            break
     result["attempted"] = True
     if offset is None:
         return {**result, "reason": "log_unreadable"}

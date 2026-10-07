@@ -53,7 +53,15 @@ vim.cmd("qa!")
    expected={"key_code":"spacebar","modifiers":["left_control"]} if from_abc else {"select_input_source":{"input_source_id":"^com\\.apple\\.keylayout\\.ABC$"}}
    self.assertEqual(m["to_if_alone"],[expected],m)
  def karabiner_commands(self):
-  return [(m,to["shell_command"]) for m in self.karabiner_manipulators() for group in ("to","to_if_alone","to_after_key_up") for to in m.get(group,[]) if "shell_command" in to]
+  # Anything that starts a program, at any depth of a manipulator: a shell_command, or software_function's open_application.
+  def walk(value):
+   if isinstance(value,dict):
+    for k,v in value.items():
+     if k in ("shell_command","open_application"):yield v
+     else:yield from walk(v)
+   elif isinstance(value,list):
+    for v in value:yield from walk(v)
+  return [(m,c) for m in self.karabiner_manipulators() for c in walk(m)]
  def action_hotkeys(self):
   # The skhd bindings that run an action script or a plain command, by key.
   rows=json.loads((ROOT/"components/yabai/config/skhd/hotkeys.json").read_text())
