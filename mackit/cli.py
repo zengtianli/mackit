@@ -582,6 +582,74 @@ def status_command(args,home,payload):
  value["commandLink"]=command_link(home)
  print(json.dumps(value,ensure_ascii=False,indent=2))
 
+# `config …` and `update check` are the items of the App's 配置与更新… window. They belong to the App itself (its
+# preference domain, its version, its release channel), so the App executable runs them: the shared command layer
+# macos/Sources/AppLifecycleCLI.swift, entered in MacKitMain.main before any window exists (Lifecycle.command).
+# This command only forwards. The shared layer waits at most 30 seconds for one sync pass or one release lookup;
+# an import with sync on does a write and a pass.
+LIFECYCLE_SECONDS=60
+# The shared layer's own help lines for `mackit` (AppLifecycleCLI.helpRead / helpWrite / helpNoCommand), verbatim.
+# tests/test_lifecycle_cli.py looks each of them up in what the compiled App prints for `config --help`.
+LIFECYCLE_READS=(
+ "  config status              「使用 iCloud 记住配置」开关、当前可迁移的配置项、App 是否在运行（只读）",
+ "  update check               检查更新：当前版本、此渠道最新版本、有没有新版、怎么升级（只读；私有渠道读 iCloud Drive 里的发行记录，公开渠道联网读发行记录）")
+LIFECYCLE_WRITES=(
+ "  config export -o <file>        导出配置：与窗口「导出配置…」同一份文件；不改设置，只写你指定的那个文件（--force 覆盖；-o - 输出到标准输出，不写文件）",
+ "  config import <file> --yes     导入配置：先备份原配置再覆盖，与窗口「导入配置…」相同",
+ "  config sync on|off --yes       拨动「使用 iCloud 记住配置」（--dry-run 只看会不会变；用 mackit config status 回读）")
+LIFECYCLE_NO_COMMAND="升级到新版 / 下载新版（命令不做静默安装：update check 给出新版、按钮名、安装包地址与步骤，替换并重启 App 仍在「配置与更新…」窗口确认）"
+def lifecycle_words(given):
+ """The words to hand to the App executable when it is the one that answers, else None: `config …`, or `update`
+ followed by a word (`update check`). Plain `mackit update` stays the source-checkout pull it always was. Only
+ --home may come before the command. It is always passed on, as an absolute path: the App refuses a home that is
+ not this Mac's own, so a sandbox (or a changed $HOME) never reaches the owner's switch or iCloud copy."""
+ home=None;i=0
+ while i<len(given):
+  if given[i]=="--home" and i+1<len(given):home=given[i+1];i+=2
+  elif given[i].startswith("--home="):home=given[i][len("--home="):];i+=1
+  else:break
+ rest=list(given[i:])
+ if not rest or not (rest[0]=="config" or (rest[0]=="update" and any(not w.startswith("-") for w in rest[1:]))):return None
+ return ["--home",str((Path(home).expanduser() if home is not None else Path.home()).absolute())]+rest
+def lifecycle_binary():
+ """The App executable that carries the shared command layer: the one of the bundle this command ships in. From a
+ source checkout there is no bundle, and MACKIT_NATIVE may name a compiled App binary (the tests do); the App's
+ own command ignores it."""
+ if getattr(sys,"frozen",False):
+  exe=bundled_cli();app=next((p for p in exe.parents if p.suffix==".app"),None) if exe else None
+  try:binary=app/"Contents/MacOS"/plistlib.loads((app/"Contents/Info.plist").read_bytes())["CFBundleExecutable"]
+  except (OSError,ValueError,KeyError,TypeError,AttributeError):return None
+  return binary if binary.is_file() else None
+ named=os.environ.get("MACKIT_NATIVE")
+ return Path(named) if named and Path(named).is_file() else None
+def relay(stream,data):
+ """The child's bytes as they are; a text-only stream (in-process callers) gets them decoded."""
+ raw=getattr(stream,"buffer",None)
+ if raw is None:stream.write(data.decode("utf-8","replace"));return
+ stream.flush();raw.write(data);raw.flush()
+def lifecycle_failure(words,code,message):
+ """The forwarding itself failed: the shared layer's failure shape, which otherwise passes through untouched."""
+ if "--json" in words:
+  rest=[w for w in words[2:] if not w.startswith("-")]
+  print(json.dumps({"ok":False,"command":" ".join(rest[:2]),"error":{"code":code,"message":message}},ensure_ascii=False))
+ print("mackit: "+message,file=sys.stderr);return 1
+def lifecycle_command(words):
+ """`mackit config …` and `mackit update check`: the words go to the App executable unchanged and its stdout,
+ stderr and exit code come back unchanged; nothing is parsed or re-implemented here. No window is opened and a
+ running MacKit is not touched: it follows on its own (AppLifecycleCLI.follow)."""
+ binary=lifecycle_binary()
+ if binary is None:
+  return lifecycle_failure(words,"app_missing","config and update check are answered by the MacKit App itself, and this command is not inside a MacKit.app. Run the App's own command (MacKit.app/Contents/Resources/core/bin/mackit, linked as ~/.local/bin/mackit).")
+ try:done=subprocess.run([str(binary),*words],stdin=subprocess.DEVNULL,capture_output=True,timeout=LIFECYCLE_SECONDS)
+ except subprocess.TimeoutExpired:
+  return lifecycle_failure(words,"timeout",f"No answer within {LIFECYCLE_SECONDS} seconds; the App executable was stopped. Read the state back with mackit config status before sending the command again.")
+ except OSError as exc:
+  return lifecycle_failure(words,"app_missing",f"Cannot run {binary}: {exc}")
+ if done.returncode<0:
+  return lifecycle_failure(words,"app_failed",f"The App executable was ended by signal {-done.returncode} and gave no result. Read the state back with mackit config status.")
+ relay(sys.stdout,done.stdout);relay(sys.stderr,done.stderr)
+ return done.returncode
+
 class Failure(ValueError):
  """A refused or unconfirmed operation with a stable code, and facts to report: they join the --json answer."""
  def __init__(self,message,code="refused",**extra):super().__init__(message);self.code=code;self.extra=extra
@@ -610,12 +678,16 @@ HELP_EPILOG="""\
 读命令 Read commands (write nothing):
   status · plan · doctor · deps (without --install) · keys · file list · file read · window status ·
   karabiner status · karabiner rule list · karabiner rule show · edit (no id, or --print)
+  From the App's 配置与更新… window (the App itself answers; shapes and codes: mackit config --help):
+@LIFECYCLE_READS@
 写命令 Write commands:
   prepare · select · apply · restore · link · deps --install · file write ·
   window save · window set · window hotkey add|remove · window rule add|remove · window service ·
   karabiner rule add|remove|enable|disable · karabiner reload · action · update
   Saves check a digest (window status / file read / karabiner rule list --json), keep a copy of what
   they replace, and print where it is. apply and restore are one recorded transaction each.
+  From the App's 配置与更新… window (sync and import need --yes; import backs up what it replaces):
+@LIFECYCLE_WRITES@
 
 --json 输出形状 Output: one object on stdout.
   success  {"ok": true, ...command fields...}
@@ -624,6 +696,11 @@ HELP_EPILOG="""\
            (codes: usage, not_found, exists, ambiguous, stale_digest, invalid_rule, shell_command,
            invalid_json, not_prepared, preset_locked, isolated_home, not_confirmed, not_running, ...;
            karabiner reload adds "reload")
+           config and update check (answered by the App): {"ok": false, "command": "<verb sub>",
+           "error": {"code", "message"}} (codes: usage, confirmation_required, file_exists, not_found,
+           import_rejected, export_failed, sync_incomplete, check_incomplete, no_settings, failed;
+           MacKit's own: isolated_home, isolation_incomplete; when the forwarding itself fails:
+           app_missing, app_failed, timeout)
   status, apply and doctor print JSON without the flag. status: installed, transactions, commandLink,
   app.selected, app.appVersion, app.appBuild (the build number the App's own window shows).
   apply with karabiner selected adds "karabiner": {reloaded, current, expected, reason, nudged, line}:
@@ -639,6 +716,8 @@ HELP_EPILOG="""\
      deps --check found something missing, karabiner reload not confirmed. apply and --apply still
      exit 0 when the install itself worked: read karabiner.reloaded / karabiner.current / reason.
   2  usage error (unknown command or argument)
+     also config import / config sync without --yes (confirmation_required), and config export onto
+     an existing file without --force (file_exists)
   action returns the configured program's own exit code.
 
 仅在窗口中 Window only (no command; the facts are in the read commands):
@@ -654,13 +733,19 @@ HELP_EPILOG="""\
   discard an unsaved draft, and the unsaved-changes prompt on quit (commands hold no draft)
   the 操作进行中 prompt when quitting during an operation (a command runs to its own exit)
   the progress bar and the success / error banners (a command prints its result and exit code)
-  menu 配置与更新… (opens that window; its items are listed below)
-暂无命令 No command yet (the shared lifecycle module has no command entry): iCloud sync switch,
-  import / export of the remembered selection, check for updates, upgrade to a new release
+  menu 配置与更新… (opens that window; its items are config … and update check above)
+暂无命令 No command yet:
+  @LIFECYCLE_NO_COMMAND@
+  the live sync status line beside 使用 iCloud 记住配置 (held by the running App; config sync on and
+  config import report their own pass only)
 
 Without --home, commands act on this Mac and its recorded configuration source. Try writes on a
 sandbox first: mackit --home /tmp/demo prepare
+config and update check act on the App itself (its preference domain, its iCloud copy, its release
+channel): a sandbox --home has none of these and config answers isolated_home there.
 """
+HELP_EPILOG=(HELP_EPILOG.replace("@LIFECYCLE_READS@","\n".join(LIFECYCLE_READS)).replace("@LIFECYCLE_WRITES@","\n".join(LIFECYCLE_WRITES))
+ .replace("@LIFECYCLE_NO_COMMAND@",LIFECYCLE_NO_COMMAND))
 def main(argv=None):
  global ROOT,READ_ROOT
  payload=ROOT;READ_ROOT=None
@@ -668,6 +753,8 @@ def main(argv=None):
  finally:ROOT,READ_ROOT=payload,None  # one command per call; the next call starts from the App's payload again
 def run(argv,payload):
  given=sys.argv[1:] if argv is None else argv
+ forwarded=lifecycle_words(given)
+ if forwarded is not None:return lifecycle_command(forwarded)
  Parser.json_errors="--json" in given;Parser.coded=first_command(given) in CODED_ERRORS
  parser=Parser(prog="mackit",formatter_class=argparse.RawDescriptionHelpFormatter,epilog=HELP_EPILOG,description="Mac configuration you can find, understand and restore. Every command works on the same files as the MacKit App; --json gives a stable object with \"ok\", and failures exit non-zero.")
  parser.add_argument("--home",type=Path,default=Path.home(),help="Target HOME (default: yours). Any other folder is a sandbox: its configuration source is prepared inside it (<HOME>/.local/share/mackit), and nothing outside it is written, installed or started")
@@ -747,13 +834,17 @@ def run(argv,payload):
  s=subs.add_parser("edit",help="Open a config in $EDITOR, or list the ids (use file read/write when not interactive)");s.add_argument("component",nargs="?");s.add_argument("--print",dest="print_path",action="store_true",help="Print the path only")
  s.add_argument("--json",action="store_true",help="With no id: the list as JSON")
  s=subs.add_parser("action",help="Run an optional action configured in ~/.config/mackit/actions.json");s.add_argument("name");s.add_argument("args",nargs=argparse.REMAINDER)
- subs.add_parser("update",help="git pull --ff-only a clean source checkout")
+ subs.add_parser("update",help="git pull --ff-only a clean source checkout; update check asks the App's release channel for a newer version (read-only)",
+  epilog="mackit update check [--json] is answered by the App: current and latest version, whether there is a newer one, how to upgrade. See mackit config --help.")
+ s=subs.add_parser("config",help="The App's 配置与更新… window as commands: status, export, import, sync on|off (answered by the App; mackit config --help)")
+ s.add_argument("words",nargs=argparse.REMAINDER)
  subs.add_parser("gui")  # the App's stdin JSON bridge; deliberately not listed
  args=parser.parse_args(argv);home=args.home.expanduser().absolute()
  try:
   if args.command=="gui":
    from mackit.gui import main as gui_main
    return gui_main(home)
+  if args.command=="config":return lifecycle_command(["--home",str(home),"config",*args.words])
   os.environ["PATH"]=tool_path()
   # These go through the App's bridge before any source switch, so they resolve the source exactly as the App does.
   if args.command=="window":return window_command(args,home) or 0

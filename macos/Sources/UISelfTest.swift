@@ -3,6 +3,13 @@ import SwiftUI
 
 @main enum MacKitMain {
     static func main() {
+        // `mackit config …` and `mackit update check`: the engine starts this executable with the words after `mackit`
+        // (mackit/cli.py lifecycle_command) and the shared command layer answers on the window's own configuration and
+        // release channel. It returns before any NSApplication exists: no window, no Dock icon, no prompt. A MacKit
+        // that is already running is left alone; it follows through AppLifecycleCLI.follow.
+        if let code = Lifecycle.command(CommandLine.arguments) { exit(code) }
+        // The running App of tests/test_lifecycle_cli.py; refused (exit 64) outside an isolated run.
+        if CommandLine.arguments.contains(Lifecycle.probeFlag) { Lifecycle.probe(CommandLine.arguments) }
         if CommandLine.arguments.contains("--background-measure"), LaneSignal.quiet {
             MainActor.assumeIsolated {
                 let app = NSApplication.shared

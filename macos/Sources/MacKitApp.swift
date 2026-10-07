@@ -27,12 +27,9 @@ struct MacKitApp: App {
         _model=StateObject(wrappedValue:model)
         if !model.demo {
             model.seedPortablePreferences()
-            let preferences = URL(fileURLWithPath:home).appendingPathComponent(".config/mackit/portable-preferences.json")
-            let configuration = AppConfiguration(productID:"cyou.tianli.mackit",files:[AppConfigurationFile(url:preferences,keys:["profile","components"])])
-            configuration.onChange = { [weak model] in
-                Task { @MainActor in if let model, !model.busy { model.refresh() } }
-            }
-            AppLifecycleUI.install(name:"MacKit · 配置助手",configuration:configuration,updateSource:.github(repository:"zengtianli/mackit"))
+            // The「配置与更新…」window, re-reading after an import or a sync, and following `mackit config …`:
+            // one factory (Lifecycle.swift) that the command line uses too.
+            Lifecycle.installApp(model:model,store:Lifecycle.Store(defaults:Lifecycle.hostDefaults,home:URL(fileURLWithPath:home)))
         }
     }
     var body: some Scene {
