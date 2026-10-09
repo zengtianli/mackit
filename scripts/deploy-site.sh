@@ -3,8 +3,9 @@
 set -euo pipefail
 MACKIT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$MACKIT_DIR"
-python3 scripts/build-handbook.py
-python3 scripts/build-site.py
+# Built by sop.site_build and reviewed by Lintel beforehand; deploy transfers those exact bytes, never a rebuild.
+# Lintel gate: only the exact bytes Lintel checked and reviewed may leave this Mac.
+"$HOME/Dev/.venv/bin/python" "$HOME/Apps/lintel/engine/lintel.py" site gate --site mackit --bundle "$PWD/dist/site"
 source "${DEPLOY_LIB:-$HOME/Dev/tools/dev/lib/deploy}/core.sh"
 vps_load
 rsync -az --delete "$MACKIT_DIR/dist/site/" "$VPS:/var/www/mackit-next/"
