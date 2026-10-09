@@ -27,7 +27,7 @@ The local acceptance build is 0.3.6 (636); the public download remains 0.3.6 (0.
 
 Native SwiftUI; the configuration engine runs only for an action and exits, with no polling or scheduled tasks. Bundles a Python standard-library runtime with stripped symbols and no development-only files.
 
-<sub>v0.3.6 (636) · Mac16,12 / Apple M4 / macOS 27.2 · The installed GUI reads the production configuration snapshot and renders the initial view offscreen, without preference or system writes. Download bytes are from the existing public 0.3.6 DMG; runtime measurements identify the local acceptance build. · measured 2026-10-05. Measured on the listed device; re-measured for each version. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
+<sub>v0.3.6 (636) · Mac16,12 / Apple M4 / macOS 27.2 · The installed GUI reads the production configuration snapshot and renders the initial view offscreen, without preference or system writes. Download bytes are from the existing public 0.3.6 DMG; runtime measurements identify the local acceptance build. · measured 2026-10-05. Measured on the listed version and device; the current version and measurement scope are described on this page. Memory uses phys_footprint; CPU is CPU time ÷ wall time over a 60-second sampling window; sizes in decimal MB. Raw data: [perf/lightweight.json](perf/lightweight.json).</sub>
 <!-- lightweight:end -->
 
 1. Open the DMG and drag **MacKit** to **Applications**.
