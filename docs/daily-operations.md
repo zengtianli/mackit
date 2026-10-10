@@ -149,3 +149,12 @@ Launch Essential Apps 读这份清单：Ghostty、Finder、WeChat、Raycast、BL
 1. 亲手按一遍改过的键（10-06 起由 skhd 执行，照 `local/keyboard-layers/index.html` 的清单）：⇧⌘V、Finder 里 ⇧⌘⌃T、Hyper+; / Hyper+'、⌥⌘,、⌃⌥⌘L、Hyper+Y、Hyper+M，并确认系统通知弹得出来。第一次按会弹“skhd 想控制 Finder / Music / System Events”，各点一次允许。
 2. Raycast 里除上面列出的，你每天真正手动用的内置或扩展命令有哪些（数据库加密读不到；需要片段、快捷链接时在 Raycast 里导出一份）。
 3. Git 自动同步等今天被暂停的后台作业要不要恢复。
+
+## Mini 复刻 Launch Essential Apps（2026-10-10 22:40，在 Mini 本机执行）
+
+- 清单两机共用一份：Air 的 `~/Desktop` 在 iCloud 里，Mini 的 `~/Desktop/essential_apps.txt` 是指向 iCloud 云盘 `Desktop/essential_apps.txt` 的软链（SHA256 前 16 位 `8d9b647fcde5d6af`，与 Air 一致）。改任意一台，另一台跟着变。
+- Mini 已跑 `spotlight/build_launchers.py`：`~/Applications/Spotlight Commands/` 有 Launch Essential Apps、Docx to Markdown 两个启动器和 GitHub 249 条。
+- Mini 已用 Homebrew 补装 BLEUnlock 1.12.2、Itsycal 0.15.14（与 Air 同版）。
+- `~/Library/LaunchAgents/com.tianli.essential-apps.plist` 已放置（与 deploy 原版、Air 装机版逐字节相同），未立即加载，下次登录生效。
+- 只做了不拉起应用的演练（清单解析、6 个应用与 yabai/skhd 均能找到）；启动器在 Mini 上的真实首跑、BLEUnlock 配对与蓝牙权限、Itsycal 日历权限待本人操作。
+- Raycast 自身配置（脚本目录、热键、别名、扩展）在加密库里，未迁：Air 上 Export Settings & Data 导出，Mini 上 Import Settings & Data 导入；脚本目录是 `~/Dev/tools/raycast/commands`。
