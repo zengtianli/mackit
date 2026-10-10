@@ -158,3 +158,4 @@ Launch Essential Apps 读这份清单：Ghostty、Finder、WeChat、Raycast、BL
 - `~/Library/LaunchAgents/com.tianli.essential-apps.plist` 已放置（与 deploy 原版、Air 装机版逐字节相同），未立即加载，下次登录生效。
 - 只做了不拉起应用的演练（清单解析、6 个应用与 yabai/skhd 均能找到）；启动器在 Mini 上的真实首跑、BLEUnlock 配对与蓝牙权限、Itsycal 日历权限待本人操作。
 - Raycast 自身配置（脚本目录、热键、别名、扩展）在加密库里，未迁：Air 上 Export Settings & Data 导出，Mini 上 Import Settings & Data 导入；脚本目录是 `~/Dev/tools/raycast/commands`。
+- 同日扩成整机比对（应用、菜单栏、Homebrew、系统偏好、命令入口、自启项），结果、已处理项和待本人事项见 `~/mac-pair/tasks/mini-parity-20261010/output/report.md`。清单里新增“菜单栏常驻”一段（LiteGauge、Clip、Sift、MonitorControl）。
