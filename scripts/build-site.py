@@ -12,9 +12,9 @@ sys.path.insert(0, str(Path.home() / 'Apps/apps-portal/site'))
 from perf_block import standalone_section
 import product_facts
 
-version = (ROOT / 'VERSION').read_text().strip()
 release = json.loads((ROOT / 'perf/release.json').read_text())
-assert release['version'] == version, 'Release evidence must match VERSION'
+version = release['version']
+assert (ROOT / 'VERSION').read_text().strip() == version, 'Release evidence must match VERSION'
 package = next(asset for asset in release['assets']
                if asset['name'] == f'MacKit-{version}-arm64.dmg')
 release_url = f'https://github.com/zengtianli/mackit/releases/tag/v{version}'
@@ -78,8 +78,8 @@ assert not re.search(r'__[A-Z0-9_]+__', keys), 'Unfilled handbook placeholder'
 (out / 'keys.html').write_text(keys)
 shutil.copytree(media, out / 'media')
 (out / 'release.json').write_text(json.dumps(release, ensure_ascii=False, indent=2) + '\n')
-(out / 'SHA256SUMS').write_text(''.join(
-    f"{asset['sha256']}  {asset['name']}\n" for asset in release['assets']))
+# Installers and their SHA256SUMS are served by the versioned GitHub Release.
+# Keep the original release evidence here; never mirror release assets into out.
 
 # Portal-facing numbers retain the exact measurement and release scope.
 facts = product_facts.from_repo(ROOT, product_id='mackit', icon='icon.png')
