@@ -1,6 +1,6 @@
 # MacKit macOS 完整度增量审计 · 2026-10-14
 
-仅核 Apps PRD v1.0 的本轮四组要求。PRD SHA256：`254a5836124471dd2fd5f62073e8554fc75a7ab5d3408ed6c8fd4058bfa0ca8f`。安装与发行不属于本轮。
+源码整改轮仅核 Apps PRD v1.0 的四组要求。PRD SHA256：`254a5836124471dd2fd5f62073e8554fc75a7ab5d3408ed6c8fd4058bfa0ca8f`。随后独立授权的装机回读见文末；发行不属于这两轮。
 
 | 编号/适用性 | 实际问题与依据 | 最终行为/责任源 | 验证与状态 |
 | --- | --- | --- | --- |
@@ -14,3 +14,13 @@
 版本：0.3.6 (2026101401)，代码提交 `4c990b2320727c50866d4b66cac9063cd0384aa3`。冻结包 `build/local/app/MacKit.app`，原来源回执 `build/accept/completeness-20261014.json`；source SHA256 `cbc30370898d438f8f52fff549cab5eabdc449e76f874f109071c8003aad4f66`，主程序 SHA256 `a4f7e78a371ba39614c36c9f1aa7af5c3a30ceb8e1e7f2693a45eceb7681f989`。Developer ID 快签、runtime、时间戳、嵌套签名回读通过，不等于公证。
 
 证据：`local/completeness-20261014/result.json`、`agent-cli-tests.log`（20 项通过）、`lifecycle-final.log`（15 项通过）、`ui-result.json`（52 项通过、9 张图）、`ui/`（五页和配置/更新明暗图）、`grade.json`、`owner-before.json` / `owner-after.json`（177 项无变化）。隔离截图使用测试发行源，不访问本人 iCloud/GitHub；没有物理输入验收。当前真实安装仍为 0.3.6 (2026100901)，后续安装由单独任务接管。
+
+## 独立装机验收 · 2026-10-14
+
+输入复核通过后，沿原 `scripts/install-app.py --local` 安装同一冻结 0.3.6 (2026101401)，没有重新构建或签名。原 installed receipt 留在 `local/completeness-20261014/install-receipt.json`，已装原 build-receipt 复核通过。143 个包内文件/链接与候选包完全一致，App 与冻结 CLI 回读同一版本/构建，Developer ID deep/strict、runtime、Team 与时间戳一致。
+
+正常 App 经 `open -g -j` 隐藏启动，真实 PID `11540`，可执行 `/Applications/MacKit.app/Contents/MacOS/MacKit`；系统 API 验证隐藏、不激活、屏上窗口数 0。179 项生产配置/键位/服务 plist/命令链接/偏好摘要最终无变化，Profile `tianli`、14 组件、源目录和事务集合不变，自动更新三个开关关闭。启动新生成的两项系统窗口布局记录已基于装前空域哈希精确还原，不改变用户偏好。
+
+固定 installed_icon 验收 passed，证据 `perf/acceptance/run-64gzrspk/installed_icon.json`，由原 Chapter 验收器离屏读取系统实际图标并写入，不手写验收。旧版 0.3.6 (2026100901) 保留在 `build/installed-backup/20261014-211812/MacKit.app`，旧签名仍通过。
+
+装机/运行证据见同目录 `install-owner-*.json`、`install-status-*.json`、`install-readback.json`、`install-runtime.json`、`install-signature.log`、`install-update-options.json` 和 `install-window-metadata.json`。本次已安装并后台运行，无剩余必要失败；没有公证、发行、推送或安装其他设备。原源码轮记录的“未安装”保留为历史事实，当前状态由此独立装机验收更新。
