@@ -597,12 +597,13 @@ LIFECYCLE_INSTALL_SECONDS=30+330+20+330+40
 # tests/test_lifecycle_cli.py looks each of them up in what the compiled App prints for `config --help`.
 LIFECYCLE_READS=(
  "  config status              「使用 iCloud 记住配置」开关、开关下面那句同步状态、当前可迁移的配置项、App 是否在运行（只读）",
- "  update check               检查更新：当前版本、此渠道最新版本、有没有新版、怎么升级（只读；私有渠道读 iCloud Drive 里的发行记录，公开渠道联网读发行记录）")
+ "  update check               检查更新：当前版本、此渠道最新版本、有没有新版、怎么升级（不改配置或安装；记录本机检查结果；私有渠道读 iCloud Drive 里的发行记录，公开渠道联网读发行记录）")
 LIFECYCLE_WRITES=(
  "  config export -o <file>        导出配置：与窗口「导出配置…」同一份文件；不改设置，只写你指定的那个文件（--force 覆盖；-o - 输出到标准输出，不写文件）",
  "  config import <file> --yes     导入配置：先备份原配置再覆盖，与窗口「导入配置…」相同",
  "  config sync on|off --yes       拨动「使用 iCloud 记住配置」（--dry-run 只看会不会变；用 mackit config status 回读）",
- "  update install --yes           升级到新版：与窗口「升级到新版…」同一条路——验证发行包与签名、替换当前 App，运行中的先退出、换好再重开；配置保留，替换失败回滚（--dry-run 只看会做什么；用 mackit update check 回读）")
+ "  update install --yes           升级到新版：与窗口「升级到新版…」同一条路——验证发行包与签名、替换当前 App，运行中的先退出、换好再重开；配置保留，替换失败回滚（--dry-run 只看会做什么；用 mackit update check 回读）",
+ "  update options [--yes]     查看或保存自动检查/下载/安装、间隔、渠道、跳过与延后选项（--dry-run 只预演）")
 def lifecycle_seconds(words):
  """How long the forwarding waits for the App executable. `words` is what lifecycle_words returned: --home, the
  home, then the command. Only `update install` gets the long wait."""
@@ -691,7 +692,7 @@ class Parser(argparse.ArgumentParser):
   if Parser.json_errors:print(json.dumps({"ok":False,"error":{"code":"usage","message":message} if Parser.coded else "usage: "+message},ensure_ascii=False))
   super().error(message)
 HELP_EPILOG="""\
-读命令 Read commands (write nothing):
+查询命令 Query commands (update check records local history):
   status · plan · doctor · deps (without --install) · keys · file list · file read · window status ·
   karabiner status · karabiner rule list · karabiner rule show · edit (no id, or --print)
   From the App's 配置与更新… window (the App itself answers; shapes and codes: mackit config --help):

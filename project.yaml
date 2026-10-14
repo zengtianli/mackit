@@ -134,6 +134,10 @@ sop:
       command: mackit update check
     - name: 升级到新版…
       command: mackit update install
+    - name: 自动检查、检查间隔、自动下载与空闲安装（可选，新增默认关闭）
+      command: mackit update options
+    - name: 跳过指定版本与稍后提醒
+      command: mackit update options
     - name: 使用 iCloud 记住配置
       command: mackit config sync
     - name: 使用 iCloud 记住配置旁那句实时同步状态

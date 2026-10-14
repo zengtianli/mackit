@@ -26,33 +26,67 @@ enum KeyCombo {
 }
 
 /// 点一下开始录制，按下组合键即写入；Esc 取消。只监听本 App 自己的按键事件。
-struct KeyRecorder: View {
-    @Binding var key: String
-    @State private var recording = false
-    @State private var monitor: Any?
-    var body: some View {
-        Button {
-            recording ? stop() : start()
-        } label: {
-            Text(recording ? "按下组合键…（Esc 取消）" : (key.isEmpty ? "录制" : KeyCombo.display(key)))
-                .font(.system(.body, design: .monospaced).weight(.semibold)).frame(minWidth: 120)
-        }
-        .buttonStyle(.bordered).tint(recording ? .orange : nil)
-        .help("点一下后直接按下新的组合键")
-        .onDisappear(perform: stop)
+@MainActor final class KeyRecordingSession: ObservableObject {
+    @Published private(set) var recording = false
+    private var monitor: Any?
+    private var observers: [NSObjectProtocol] = []
+    func start(window: NSWindow?, focused: @escaping () -> Bool, captured: @escaping (String) -> Void) {
+        guard let window, window.isVisible, window.isKeyWindow, NSApp.isActive, focused() else { stop(); return }
+        attach(window: window, focused: focused, captured: captured)
     }
-    private func start() {
-        recording = true
-        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            if event.keyCode == 53 { stop(); return nil }
-            if let combo = KeyCombo.from(event) { key = combo; stop(); return nil }
+    private func attach(window: NSWindow, focused: @escaping () -> Bool, captured: @escaping (String) -> Void) {
+        stop(); recording = true
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self, weak window] event in
+            guard let self, let window, window.isVisible, window.isKeyWindow, NSApp.isActive, focused(), event.window === window else {
+                self?.stop(); return event
+            }
+            if event.keyCode == 53 { self.stop(); return nil }
+            if let combo = KeyCombo.from(event) { captured(combo); self.stop() }
             return nil
         }
+        for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification] {
+            observers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in self?.stop() })
+        }
+        observers.append(NotificationCenter.default.addObserver(forName: NSApplication.didResignActiveNotification, object: nil, queue: .main) { [weak self] _ in self?.stop() })
     }
-    private func stop() {
+    func stop() {
         recording = false
         if let monitor { NSEvent.removeMonitor(monitor) }
         monitor = nil
+        observers.forEach(NotificationCenter.default.removeObserver); observers.removeAll()
+    }
+    /// Private hidden window notifications exercise production cleanup, without synthesizing key events.
+    static func cleanupSelfTest() -> Bool {
+        let session = KeyRecordingSession()
+        let window = NSWindow(contentRect: .zero, styleMask: [], backing: .buffered, defer: false)
+        for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification, NSApplication.didResignActiveNotification] {
+            session.attach(window: window, focused: { false }, captured: { _ in })
+            guard session.recording, session.monitor != nil else { return false }
+            NotificationCenter.default.post(name: name, object: window)
+            guard !session.recording, session.monitor == nil, session.observers.isEmpty else { return false }
+        }
+        session.start(window: window, focused: { true }, captured: { _ in })
+        return !session.recording && session.monitor == nil && !window.isVisible
+    }
+}
+
+struct KeyRecorder: View {
+    @Binding var key: String
+    @StateObject private var session = KeyRecordingSession()
+    @FocusState private var focused: Bool
+    var body: some View {
+        Button {
+            if session.recording { session.stop() }
+            else { focused = true; session.start(window: NSApp.keyWindow, focused: { focused }, captured: { key = $0 }) }
+        } label: {
+            Text(session.recording ? "按下组合键…（Esc 取消）" : (key.isEmpty ? "录制" : KeyCombo.display(key)))
+                .font(.system(.body, design: .monospaced).weight(.semibold)).frame(minWidth: 120)
+        }
+        .buttonStyle(.bordered).tint(session.recording ? .orange : nil)
+        .focused($focused)
+        .help("点一下后直接按下新的组合键")
+        .onChange(of: focused) { _, value in if !value { session.stop() } }
+        .onDisappear(perform: session.stop)
     }
 }
 

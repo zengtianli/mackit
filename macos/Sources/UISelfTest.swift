@@ -98,6 +98,7 @@ import SwiftUI
             try await idle(model)
             checks["refresh_real_engine"] = model.snapshot?.components.count == 14 && model.snapshot?.keys.isEmpty == false
             checks["initial_state"] = model.snapshot?.installed == false && model.preview == nil && !model.busy
+            checks["recorder_focus_cleanup"] = KeyRecordingSession.cleanupSelfTest()
             let developerSelection = Set(model.snapshot?.profiles["developer"] ?? [])
             model.choose("tianli")
             checks["profile_selection"] = model.profile == "tianli" && model.selected == Set(model.snapshot?.profiles["tianli"] ?? [])
@@ -153,6 +154,31 @@ import SwiftUI
                 imageStats[path.lastPathComponent] = stats
             }
             checks["never_visible_or_key"] = !window.isVisible && !window.isKeyWindow && !NSApp.isActive
+            if Lifecycle.isolated, case .success(let store) = Lifecycle.store(home: home.path) {
+                guard Lifecycle.hostBundle.bundleIdentifier == ProcessInfo.processInfo.environment[Lifecycle.suiteVariable],
+                      Lifecycle.hostBundle.bundleIdentifier?.hasPrefix(Lifecycle.suitePrefix) == true else {
+                    throw EngineError.message("Lifecycle UI test requires a private bundle/domain")
+                }
+                let configuration = Lifecycle.installApp(model: model, store: store)
+                _ = configuration
+                for (name, appearance, updates) in [("config-light", NSAppearance.Name.aqua, false), ("config-dark", .darkAqua, false),
+                                                   ("updates-light", .aqua, true), ("updates-dark", .darkAqua, true)] {
+                    let path = destination.appendingPathComponent("native-ui-\(name).png")
+                    for (key, value) in try AppLifecycleUI.shared.offscreenSnapshot(to: path, appearance: appearance, showingUpdateOptions: updates) {
+                        checks[name + "." + key] = value
+                    }
+                    images.append(path.lastPathComponent)
+                }
+                model.busy = true
+                try await Task.sleep(for: .milliseconds(50))
+                checks["update_busy_gate"] = AppLifecycleUI.shared.canInstallUpdate?() == false
+                checks["update_cli_busy_gate"] = !Lifecycle.mayInstall(store)
+                model.busy = false
+                model.editor += "unsaved"
+                checks["update_unsaved_gate"] = AppLifecycleUI.shared.canInstallUpdate?() == false
+                model.editor = model.file?.content ?? ""
+                checks["update_clean_gate"] = AppLifecycleUI.shared.canInstallUpdate?() == true
+            }
             let appDelegate = AppDelegate(); appDelegate.model = model
             checks["clean_quit_allowed"] = appDelegate.applicationShouldTerminate(NSApp) == .terminateNow
             window.performClose(nil)

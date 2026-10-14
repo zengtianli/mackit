@@ -40,6 +40,8 @@ import SwiftUI
     }
     private var launchSnapshot: Task<Snapshot, Error>?
     private var preferenceWriter: Task<Void, Never>?
+    @Published private(set) var preferencesPending = false
+    var canInstallUpdate: Bool { !busy && !dirty && !windowDirty && !preferencesPending && launchSnapshot == nil }
     private var preferenceRevision = 0
     var dirty: Bool { file != nil && editor != file?.content }
     var windowDirty: Bool { window != nil && windowDraft != windowSaved }
@@ -65,8 +67,9 @@ import SwiftUI
         guard !demo, !readOnly else { return }
         preferenceRevision += 1
         guard preferenceWriter == nil else { return }
+        preferencesPending = true
         preferenceWriter = Task {
-            defer { preferenceWriter = nil }
+            defer { preferenceWriter = nil; preferencesPending = false }
             while true {
                 let revision = preferenceRevision
                 do { _ = try await client.call(request("savePreferences"), as: MessageResponse.self) }

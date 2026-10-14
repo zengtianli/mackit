@@ -1,5 +1,7 @@
 import AppKit
 import SwiftUI
+import Combine
+import Darwin
 
 // MacKit's side of the shared「配置与更新…」layer (AppLifecycle*.swift are byte copies of swift-shared). This file is the
 // one place that names the product, its release channel and its portable settings. The window (MacKitApp.init) and
@@ -34,9 +36,9 @@ enum Lifecycle {
         var message: String {
             switch self {
             case .sandboxUpgrade:
-                return "升级替换的是这台 Mac 上装着的 MacKit.app，它不在 --home 目录里：沙盒 HOME 不替换任何 App，也不让运行中的 MacKit 退出。去掉 --home 在本机运行（先加 --dry-run 只看会做什么）；\(Lifecycle.command) update check 在沙盒 HOME 下照常可读。"
+                return "升级替换的是这台 Mac 上装着的 MacKit.app，它不在 --home 目录里：沙盒 HOME 不替换任何 App，也不让运行中的 MacKit 退出。去掉 --home 在本机运行（先加 --dry-run 只看会做什么）。隔离验证需要私有支持目录、一次性测试 bundle 与对应偏好域。"
             case .isolationIncomplete:
-                return "APP_LIFECYCLE_SUPPORT_DIR 已设置（隔离运行）：还需要 \(Lifecycle.suiteVariable)（以 \(Lifecycle.suitePrefix) 开头的一次性偏好域）和 --home <临时目录>（不能是你自己的 HOME），隔离运行才不会碰到你自己的设置。"
+                return "APP_LIFECYCLE_SUPPORT_DIR 已设置（隔离运行）：还需要 \(Lifecycle.suiteVariable)（以 \(Lifecycle.suitePrefix) 开头的一次性偏好域）和 --home <临时目录>（不能是你自己的 HOME）。更新命令还要求测试 bundle ID 与该偏好域相同；只设置支持目录不会隔离 UserDefaults。"
             case .sandboxHome:
                 return "「配置与更新…」里的几项属于 App 本身：开关在 App 的偏好域，备份在 Application Support，副本在 iCloud Drive，都不在 --home 目录里，所以沙盒 HOME 没有这组设置（演示目录下的 App 也不装这个窗口）。去掉 --home 在本机运行；隔离试跑另设 APP_LIFECYCLE_SUPPORT_DIR、APP_LIFECYCLE_CLOUD_DIR 和 \(Lifecycle.suiteVariable)。"
             }
@@ -70,7 +72,10 @@ enum Lifecycle {
         let isOwn = home.standardizedFileURL.resolvingSymlinksInPath().path == own.standardizedFileURL.resolvingSymlinksInPath().path
         if isolated {
             guard !isOwn, let suite = ProcessInfo.processInfo.environment[suiteVariable], suite.hasPrefix(suitePrefix),
-                  suite.count > suitePrefix.count, let defaults = UserDefaults(suiteName: suite) else { return .failure(.isolationIncomplete) }
+                  suite.count > suitePrefix.count else { return .failure(.isolationIncomplete) }
+            guard let defaults = suite == hostBundle.bundleIdentifier ? hostDefaults : UserDefaults(suiteName: suite) else {
+                return .failure(.isolationIncomplete)
+            }
             return .success(Store(defaults: defaults, home: home))
         }
         guard isOwn else { return .failure(.sandboxHome) }
@@ -78,9 +83,53 @@ enum Lifecycle {
     }
 
     static func makeConfiguration(_ store: Store) -> AppConfiguration {
-        AppConfiguration(productID: productID, files: [AppConfigurationFile(url: preferencesFile(store.home), keys: ["profile", "components"])],
-                         defaults: store.defaults)
+        AppConfiguration(productID: productID, defaultsKeys: ["appUpdateOptions"],
+                         files: [AppConfigurationFile(url: preferencesFile(store.home), keys: ["profile", "components"], validateField: validatePreference)],
+                         defaults: store.defaults, validateDefault: { key, value in
+            guard key == "appUpdateOptions", let object = value as? [String: Any],
+                  Set(object.keys).isSubset(of: ["automaticCheck", "intervalHours", "automaticDownload", "automaticInstall", "channel", "skippedBuild", "remindAfter"]) else {
+                throw AppUpdateError("更新选项字段无效")
+            }
+            let options = try JSONDecoder().decode(AppUpdateOptions.self, from: JSONSerialization.data(withJSONObject: object))
+            try AppUpdatePreferences.validate(options)
+            guard !options.automaticInstall || options.automaticDownload else { throw AppUpdateError("自动安装必须同时启用自动下载") }
+        })
     }
+
+    /// Validate against the same bundled public profile declarations the engine reads.
+    static func validatePreference(_ key: String, _ value: Any) throws {
+        let bundled = hostBundle.resourceURL?.appendingPathComponent("core/profiles")
+        guard let directory = bundled.flatMap({ FileManager.default.fileExists(atPath: $0.path) ? $0 : nil }) else {
+            throw AppUpdateError("缺少随包组件声明")
+        }
+        let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil).filter { $0.pathExtension == "json" }
+        let profiles = Set(files.map { $0.deletingPathExtension().lastPathComponent })
+        let components = try files.reduce(into: Set<String>()) { result, file in
+            let object = try JSONSerialization.jsonObject(with: Data(contentsOf: file)) as? [String: Any]
+            guard let entries = object?["components"] as? [String] else { throw AppUpdateError("组件声明损坏") }
+            result.formUnion(entries)
+        }
+        switch key {
+        case "profile": guard let name = value as? String, profiles.contains(name) else { throw AppUpdateError("预设必须是已登记的名称") }
+        case "components":
+            guard let names = value as? [String], names.count == Set(names).count, Set(names).isSubset(of: components) else {
+                throw AppUpdateError("组件必须是无重复、已登记名称的字符串数组")
+            }
+        default: throw AppUpdateError("不支持的配置字段")
+        }
+    }
+
+    static func busyFile(_ store: Store) -> URL {
+        let base = ProcessInfo.processInfo.environment["APP_LIFECYCLE_SUPPORT_DIR"].map { URL(fileURLWithPath: $0) }
+            ?? store.home.appendingPathComponent("Library/Application Support/TianliApps/Configuration")
+        return base.appendingPathComponent(productID + "/update-busy.json")
+    }
+    static func mayInstall(_ store: Store) -> Bool {
+        guard let data = try? Data(contentsOf: busyFile(store)), let record = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let pid = record["pid"] as? Int32, kill(pid, 0) == 0 else { return true }
+        return record["allowed"] as? Bool == true
+    }
+    @MainActor static var busyObserver: AnyCancellable?
 
     /// AppConfiguration writes the selection file itself, not through the engine (cli.dump keeps it owner-only):
     /// put the mode back after an import or a sync wrote it.
@@ -100,6 +149,18 @@ enum Lifecycle {
             Task { @MainActor in if let model, !model.busy { model.refresh() } }
         }
         AppLifecycleUI.install(name: name, configuration: configuration, updateSource: updateSource)
+        AppLifecycleUI.shared.canInstallUpdate = { [weak model] in
+            guard let model else { return false }
+            return model.canInstallUpdate
+        }
+        func recordBusy() {
+            let url = busyFile(store)
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+            let value: [String: Any] = ["pid": Int(getpid()), "allowed": model.canInstallUpdate]
+            try? JSONSerialization.data(withJSONObject: value).write(to: url, options: .atomic)
+        }
+        recordBusy()
+        busyObserver = model.objectWillChange.sink { _ in DispatchQueue.main.async { recordBusy() } }
         // `mackit config sync on|off` and `mackit config import` run in another process. The running window follows them
         // (the switch, the status line, the imported selection) and never stores the switch itself: the command is its
         // only writer besides the window's own control.
@@ -112,7 +173,7 @@ enum Lifecycle {
     static func product(_ store: Store?) -> AppLifecycleCLI.Product {
         var product = AppLifecycleCLI.Product(command: command, name: name, configuration: store.map(makeConfiguration), updateSource: updateSource)
         product.bundle = hostBundle
-        if let store { product.changed = { keepPrivate(store) } }
+        if let store { product.changed = { keepPrivate(store) }; product.canInstallUpdate = { mayInstall(store) } }
         return product
     }
 
@@ -125,7 +186,14 @@ enum Lifecycle {
         var home: String?
         if words.count >= 2, words[0] == "--home" { home = words[1]; words.removeFirst(2) }
         guard AppLifecycleCLI.handles(words.first) else { return nil }
-        switch store(home: home) {
+        var resolved = store(home: home)
+        // Update history/options are stored by shared code in the bundle preference domain, independently of support.
+        // A private support directory alone never authorizes writes to the owner's bundle domain.
+        if isolated, words.first == "update", !words.contains("--help"), !words.contains("-h"),
+           (hostBundle.bundleIdentifier?.hasPrefix(suitePrefix) != true || hostBundle.bundleIdentifier != ProcessInfo.processInfo.environment[suiteVariable]) {
+            resolved = .failure(.isolationIncomplete)
+        }
+        switch resolved {
         case .success(let store):
             return AppLifecycleCLI.run(words, product: product(store))
         case .failure(var refusal):
@@ -133,7 +201,7 @@ enum Lifecycle {
             // the settings. `update install` is not a read: it replaces the installed App and quits a running one, which a
             // sandbox --home promises never to do, so it is refused there like the settings are (--dry-run included).
             let installs = words.first == "update" && words.dropFirst().first(where: { !$0.hasPrefix("-") }) == "install"
-            if words.contains("--help") || words.contains("-h") || (words.first == "update" && !installs) {
+            if words.contains("--help") || words.contains("-h") {
                 return AppLifecycleCLI.run(words, product: product(nil))
             }
             if installs, refusal == .sandboxHome { refusal = .sandboxUpgrade }
@@ -216,7 +284,13 @@ enum Lifecycle {
                                    "windows_on_screen": NSApp.windows.filter(\.isVisible).count,
                                    "policy_prohibited": NSApp.activationPolicy() == .prohibited, "active": NSApp.isActive,
                                    "loaded": model.snapshot != nil, "busy": model.busy, "error": model.error,
+                                   "update_switches": NSApp.windows.flatMap { switches(in: $0.contentView) }.suffix(3).map { $0.state == .on },
                                    "profile": model.profile, "components": model.selected.sorted()]
         try? JSONSerialization.data(withJSONObject: seen, options: [.sortedKeys]).write(to: state, options: .atomic)
+    }
+    static func switches(in view: NSView?) -> [NSSwitch] {
+        guard let view else { return [] }
+        if let control = view as? NSSwitch { return [control] }
+        return view.subviews.flatMap { switches(in: $0) }
     }
 }

@@ -48,7 +48,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from mackit import cli  # noqa: E402
 
-BUNDLE = "test.tianli.mackit.lifecycle"
+BUNDLE = "test.tianli.mackit.lifecycle." + uuid.uuid4().hex
 PRODUCT = "cyou.tianli.mackit"
 SUITE_PREFIX = "test.tianli.mackit."
 HEADQUARTERS = Path.home() / "Dev/tools/dev/lib/tools/macapp/swift-shared/AppLifecycleCLI.swift"
@@ -304,6 +304,11 @@ class Isolated:
         self.assertTrue(reaches(lambda s: s["enabled"] is False and s["window_switch"] is False and s["status"] == OFF))
         self.assertIsNone(stays("developer", ["starship"], 0.6))
 
+        self.call("update", "options", "--auto-check", "on", "--interval", "6", "--yes", env=live)
+        self.assertTrue(reaches(lambda s: s["update_switches"] == [True, False, False]), "running shared window follows update options")
+        self.call("update", "options", "--auto-check", "off", "--yes", env=live)
+        self.assertTrue(reaches(lambda s: s["update_switches"] == [False, False, False]), "window reflects disabled automatic checks")
+
         last = seen()
         self.assertEqual((last["policy_prohibited"], last["windows_on_screen"], last["active"], last["error"]), (True, 0, False, ""))
         self.assertGreater(last["tick"], first["tick"])
@@ -335,7 +340,8 @@ class LifecycleCommandTests(Isolated, unittest.TestCase):
         engine.parent.mkdir(parents=True)
         engine.write_text("#!/bin/sh\nexec " + shlex.quote(sys.executable) + " " + shlex.quote(str(ROOT / "bin/mackit")) + ' "$@"\n')
         engine.chmod(0o755)
-        cls.suite = SUITE_PREFIX + uuid.uuid4().hex
+        cls.suite = BUNDLE
+        shutil.copytree(ROOT / "profiles", app / "Contents/Resources/core/profiles")
         cls.home, cls.support, cls.cloud = cls.root / "home", cls.root / "support", cls.root / "cloud"
         cls.env = dict(os.environ, APP_LIFECYCLE_SUPPORT_DIR=str(cls.support), APP_LIFECYCLE_CLOUD_DIR=str(cls.cloud),
                        MACKIT_LIFECYCLE_SUITE=cls.suite, MACKIT_NATIVE=str(cls.binary), PYTHONDONTWRITEBYTECODE="1")
@@ -378,7 +384,7 @@ class LifecycleCommandTests(Isolated, unittest.TestCase):
             self.assertIn(line + "\n", shared.stdout)  # the engine's copy of the line is the shared layer's line
             self.assertIn("\n" + line + "\n", top)     # and it is listed at the start of a line in `mackit --help`
         # Every line the shared layer lists under 读 / 写 is in the engine's copy: none was added there and missed here.
-        listed = shared.stdout.split("读（不写任何文件或状态）:\n")[1].split("--json：")[0].replace("写:\n", "")
+        listed = shared.stdout.split("查询（update check 记录本机检查时间与结果）:\n")[1].split("--json：")[0].replace("写:\n", "")
         self.assertEqual(listed.splitlines(), list(cli.LIFECYCLE_READS + cli.LIFECYCLE_WRITES))
         self.assertTrue(any(line.startswith("  update install ") for line in cli.LIFECYCLE_WRITES))
         self.assertIn("同步状态", cli.LIFECYCLE_READS[0])
@@ -649,6 +655,13 @@ class LifecycleCommandTests(Isolated, unittest.TestCase):
         self.assertEqual(manual["error"]["code"], "manual_install")
         self.assertTrue(untouched())
 
+        busy = self.support / PRODUCT / "update-busy.json"
+        busy.parent.mkdir(parents=True, exist_ok=True)
+        busy.write_text(json.dumps({"pid": os.getpid(), "allowed": False}))
+        refused = self.call("update", "install", "--yes", expect=1, env=env)
+        self.assertEqual(refused["error"]["code"], "busy")
+        self.assertTrue(untouched())
+        busy.unlink()
         done = self.call("update", "install", "--yes", env=env)
         self.assertEqual((done["installed"], done["state"], done["previous"], done["current"], done["backup"], done["old_app_cleanup"], done["relaunched"]),
                          (True, "installed", old, new, None, "trashed", False), done)
@@ -668,6 +681,46 @@ class LifecycleCommandTests(Isolated, unittest.TestCase):
 
     def test_a_running_app_follows_the_command_and_never_writes_the_old_value_back(self):
         self.follow_scenario()
+
+    def test_import_validates_every_field_before_any_write(self):
+        original = self.selection.read_bytes()
+        invalid = [
+            {"file.0.profile": 1}, {"file.0.profile": "unknown"},
+            {"file.0.components": "nvim"}, {"file.0.components": ["nvim", 1]},
+            {"file.0.components": ["unknown"]}, {"file.0.components": ["nvim", "nvim"]},
+            {"file.0.profile": "tianli", "file.0.components": ["unknown"]},
+            {"defaults.appUpdateOptions": {"automaticCheck": "true"}},
+            {"defaults.appUpdateOptions": {"intervalHours": 0}},
+            {"defaults.appUpdateOptions": {"intervalHours": 1.5}},
+            {"defaults.appUpdateOptions": {"automaticInstall": True, "automaticDownload": False}},
+            {"defaults.appUpdateOptions": {"unexpected": True}},
+        ]
+        for index, values in enumerate(invalid):
+            with self.subTest(index=index):
+                incoming = self.root / "invalid.json"
+                incoming.write_text(json.dumps({"version": 1, "product": PRODUCT, "values": values}))
+                self.assertEqual(self.call("config", "import", str(incoming), "--yes", expect=1)["error"]["code"], "import_rejected")
+                self.assertEqual(self.selection.read_bytes(), original)
+                self.assertFalse((self.support / PRODUCT / "Backups").exists())
+
+    def test_update_options_use_private_bundle_domain_and_roundtrip(self):
+        initial = self.call("update", "options")["options"]
+        self.assertFalse(initial["automaticCheck"] or initial["automaticDownload"] or initial["automaticInstall"])
+        self.call("update", "options", "--interval", "6", "--auto-install", "on", "--dry-run")
+        self.assertEqual(self.call("update", "options")["options"], initial)
+        self.assertEqual(self.call("update", "options", "--interval", "0", "--yes", expect=2)["error"]["code"], "usage")
+        self.assertEqual(self.call("update", "options", "--interval", "6", expect=2)["error"]["code"], "confirmation_required")
+        self.call("update", "options", "--interval", "6", "--auto-install", "on", "--yes")
+        saved = self.call("update", "options")["options"]
+        self.assertEqual(saved["intervalHours"], 6)
+        self.assertTrue(saved["automaticInstall"] and saved["automaticDownload"])
+        self.assertFalse(saved["automaticCheck"])
+        self.assertIn("defaults.appUpdateOptions", self.exported())
+        envelope = self.root / "options.json"
+        self.call("config", "export", "-o", str(envelope))
+        self.call("update", "options", "--auto-install", "off", "--yes")
+        self.call("config", "import", str(envelope), "--yes")
+        self.assertEqual(self.call("update", "options")["options"], saved)
 
     def test_refusals(self):
         # An isolated run that does not say where the switch is kept is refused before anything is read.
@@ -694,6 +747,8 @@ class LifecycleCommandTests(Isolated, unittest.TestCase):
         self.assertEqual(self.call("update", "install", "--yes", expect=1, env=partial)["error"]["code"], "isolation_incomplete")
         self.assertEqual(self.mackit("update", "install", "--help", env=bare).returncode, 0)
         self.assertEqual(self.mackit("config", "--help", env=bare).returncode, 0)  # the help needs no settings
+        for words in (("update", "check"), ("update", "options"), ("update", "options", "--auto-check", "on", "--yes")):
+            self.assertEqual(self.call(*words, expect=1, env=bare)["error"]["code"], "isolated_home")
         self.assertEqual(json.loads(self.selection.read_text()), SEED)
         self.assertFalse(self.support.exists() or self.cloud.exists() or self.stored_switch())
         # The probe mode exists for this test only: outside an isolated run the binary exits at once, before any NSApplication.
@@ -728,10 +783,15 @@ class AssembledBundleTests(Isolated, unittest.TestCase):
         self.folder = tempfile.TemporaryDirectory(prefix="mackit-lifecycle-app-")
         self.addCleanup(self.folder.cleanup)
         self.root = Path(self.folder.name).resolve()
-        self.app = Path(ASSEMBLED)
+        self.app = self.root / "MacKit.app"
+        shutil.copytree(Path(ASSEMBLED), self.app, symlinks=True)
         self.info = plistlib.loads((self.app / "Contents/Info.plist").read_bytes())
         self.probe_binary = self.app / "Contents/MacOS" / self.info["CFBundleExecutable"]
         self.suite = SUITE_PREFIX + uuid.uuid4().hex
+        self.info["CFBundleIdentifier"] = self.suite
+        self.info["LSUIElement"] = True
+        (self.app / "Contents/Info.plist").write_bytes(plistlib.dumps(self.info))
+        sign(self.app)
         self.home, self.cloud = self.root / "home", self.root / "cloud"
         self.selection = write_selection(self.home, SEED)
         self.env = dict(os.environ, APP_LIFECYCLE_SUPPORT_DIR=str(self.root / "support"), APP_LIFECYCLE_CLOUD_DIR=str(self.cloud),
@@ -823,7 +883,8 @@ class AssembledBundleTests(Isolated, unittest.TestCase):
         old, new = {"version": version, "build": "1"}, {"version": version, "build": "2"}
         installed = copy(support / "installed/MacKit.app", "1")
         publish(self.root / "cloud/TianliApps/Updates" / BUNDLE / "isolated", copy(self.root / "next/MacKit.app", "2"), BUNDLE)
-        env = dict(self.env, APP_LIFECYCLE_NO_RELAUNCH="1")
+        env = dict(self.env, APP_LIFECYCLE_NO_RELAUNCH="1", MACKIT_LIFECYCLE_SUITE=BUNDLE)
+        self.addCleanup(forget, BUNDLE)
         command = installed / "Contents/Resources/core/bin/mackit"
 
         def run(*words, seconds=120):
