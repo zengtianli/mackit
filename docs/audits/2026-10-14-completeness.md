@@ -4,9 +4,13 @@
 
 | 编号/适用性 | 实际问题与依据 | 最终行为/责任源 | 验证与状态 |
 | --- | --- | --- | --- |
-| S03/S10 适用 | 原配置 adapter 仅允许字段名，错 profile、组件类型/名称可传入；PRD 要求完整校验后应用 | `Lifecycle.makeConfiguration` 使用 bundled profiles 原声明逐字段校验；更新选项先 typed decode、范围与字段校验；错误无部分写入 | 已实现；隔离 import 回归待跑 |
-| K04 适用 | 原 KeyRecorder 仅 onDisappear 停止；窗口失焦时 local monitor 仍存在 | `KeyRecordingSession` 只在本 App 当前可见 key window 和录制控件焦点生效，窗口失焦/关闭、App 失活、控件失焦均清理 | 已实现；私有隐藏窗口通知清理自检待跑；不合成输入 |
-| U02/U03/U06 + GUI/CLI 适用 | 旧 shared 副本未有更新选项；支持目录不能隔离 updater 的 UserDefaults | vendor 同步总部四份源；窗口和 `update options` 共用更新器，自动行为默认关闭，已有选择保留；隔离 updater 要专用测试 bundle/domain | 已实现；真实 CLI 与设置明暗离屏待跑 |
-| U07 适用 | 旧产品未接共享忙碌保护 | GUI 检查 busy/未保存文件/窗口草稿；真实 App 记录 PID + busy，CLI 同一记录拒绝安装且保留当前包；shared 原安装器不复制 | 已实现；隔离忙时拒绝、正常替换回归待跑 |
+| S03/S10 适用 | 原配置 adapter 仅允许字段名，错 profile、组件类型/名称可传入；PRD 要求完整校验后应用 | `Lifecycle.makeConfiguration` 使用 bundled profiles 原声明逐字段校验；更新选项先 typed decode、范围与字段校验；错误无部分写入 | 已实现、已验证、已构建：12 个非法导入子场景原文件与备份集合不变；合法导入/新进程读回/选项往返通过 |
+| K04 适用 | 原 KeyRecorder 仅 onDisappear 停止；窗口失焦时 local monitor 仍存在 | `KeyRecordingSession` 只在本 App 当前可见 key window 和录制控件焦点生效，窗口失焦/关闭、App 失活、控件失焦均清理 | 已实现、已验证、已构建：真实隐藏 NSWindow 的失焦/关闭/失活通知清理 monitor 与 observers；不可见窗口不能开始；未合成输入或发送物理快捷键 |
+| U02/U03/U06 + GUI/CLI 适用 | 旧 shared 副本未有更新选项；支持目录不能隔离 updater 的 UserDefaults | vendor 同步总部四份源；窗口和 `update options` 共用更新器，自动行为默认关闭，已有选择保留；隔离 updater 要专用测试 bundle/domain | 已实现、已验证、已构建：默认关闭、间隔拒绝、dry-run 无写、确认保存、新进程读回、配置往返与运行窗口开关跟随均通过；明暗设置图已审阅 |
+| U07 适用 | 旧产品未接共享忙碌保护 | GUI 检查 busy/未保存文件/窗口草稿/初次读取/偏好保存；真实 App 记录 PID + busy，CLI 同一记录拒绝安装且保留当前包；shared 原安装器不复制 | 已实现、已验证、已构建：GUI busy/未保存拒绝、PID 状态读回拒绝、CLI busy 拒绝且旧包无变化；正常隔离替换与冻结引擎返回完整 JSON 通过 |
 
-不适用范围：本轮不新增系统全局键、不更改登录项或运行服务，不处理其他平台和旧 SOP 欠项。冻结构建、真实输入/哈希、测试结果完成后写交接，不以已构建冒充已安装/发行。
+不适用范围：本轮不新增系统全局键、不更改登录项或运行服务，不处理其他平台和旧 SOP 欠项。所有本轮适用缺项已关闭；**已构建，未安装、未公证、未发行**。
+
+版本：0.3.6 (2026101401)，代码提交 `4c990b2320727c50866d4b66cac9063cd0384aa3`。冻结包 `build/local/app/MacKit.app`，原来源回执 `build/accept/completeness-20261014.json`；source SHA256 `cbc30370898d438f8f52fff549cab5eabdc449e76f874f109071c8003aad4f66`，主程序 SHA256 `a4f7e78a371ba39614c36c9f1aa7af5c3a30ceb8e1e7f2693a45eceb7681f989`。Developer ID 快签、runtime、时间戳、嵌套签名回读通过，不等于公证。
+
+证据：`local/completeness-20261014/result.json`、`agent-cli-tests.log`（20 项通过）、`lifecycle-final.log`（15 项通过）、`ui-result.json`（52 项通过、9 张图）、`ui/`（五页和配置/更新明暗图）、`grade.json`、`owner-before.json` / `owner-after.json`（177 项无变化）。隔离截图使用测试发行源，不访问本人 iCloud/GitHub；没有物理输入验收。当前真实安装仍为 0.3.6 (2026100901)，后续安装由单独任务接管。
