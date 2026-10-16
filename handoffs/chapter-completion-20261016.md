@@ -35,3 +35,9 @@ PYTHONDONTWRITEBYTECODE=1 /Users/tianli/Dev/.venv/bin/python local/chapter-compl
 ```
 
 此私有原 runner 沿原 SDK FIFO/锁、4 分钟准入等待、冻结共享副本，实际执行原 `build-app.sh`、3 项 AssembledBundleTests、Mini 原 `distribution_grade.py sign/check --stage signed`，成功才由 app_sop 生成 canonical build receipt。若再遇同一环境失败，不循环、不改闸，交回原调度。成功后按顺序复核 receipt/source/候选包，调用原 `distribution_grade.py notarize build/app/MacKit.app --timeout 5m --json`；公证超时只用原 submission-id 接续；重新保存装前基线后执行 `python3 scripts/install-app.py --source build/app/MacKit.app --receipt perf/build-receipt.json --output perf/install-receipt-0.3.7.json`，不得启动上屏 App。核安装哈希/签名/配置未变后运行 `chapter sop accept --app mackit --check product_basics --json` 和 `chapter basics --app mackit --json`，由固定引擎写正式原件；99 项真实检查及四项 fresh/passed 才能关单。无需发布 GitHub、网页、更新源或 App Store 审核。
+
+## 第三轮 · 并行构建准入与实装验收
+
+2026-10-16 18:15 +0800 接续，claims `7197 / chapter-task:8d046ba85692472385a59a2aaef4a125`。只续当前同源包构建、原安装器与 product_basics，完成后推送本仓本轮提交并回读远端；共享 devtools、Chapter 只读。当前 tracked/staged 干净，保留原三类未跟踪证据。`origin/main` 本地跟踪已包含 `9a926de`、`c6bc3a9`，推送前仍核真实远端，不改历史。
+
+已读取 devtools 新版真实接口：`with sim_lane.BuildSlot(label, wait=240)` 使用共享并行构建槽，内存压力低于 4 可准入，等待安静窗口的测量仍优先；不再自包 `lock_chain/acquire(None)`、load/foreign_builds 或 pressure>1 门。私有原 runner 按此接入，原构建、候选回归、签名与 app_sop receipt 事务不变。完成标准仍为实际同源安装、运行/CLI/签名/配置回读、固定验收四项 passed，预计本轮 30 分钟内完成；不公然发行、不送审、不扩大源码公开范围。
