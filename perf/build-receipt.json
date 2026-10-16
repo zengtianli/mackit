@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-10-16T18:19:29+08:00",
+  "built_at": "2026-10-16T18:57:24+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.mackit",
     "version": "0.3.7",
-    "build": "2026101601",
+    "build": "2026101602",
     "executable": "Contents/MacOS/MacKit",
-    "sha256": "86611ba16e2e2104ebfe3765b96d2a8a8e75d235a8f7eb38808137177e9dc001",
+    "sha256": "800969744a5c372e6a2db3ae00cf720a4b6139dc5c75af83a3cd5ea5b35936b9",
     "icon": {
       "path": "Contents/Resources/AppIcon.icns",
       "sha256": "b9fc6599fa7699befc9d53bf281afd66d5f44966a3eb05afb97e70f5b1f8d840"
@@ -29,22 +29,23 @@
       "LICENSE",
       "THIRD_PARTY.md"
     ],
-    "sha256": "e5d5064b25345b27358d9cdf931f7a3e9e9b40626487d97f55104185d7dec833",
-    "file_count": 185,
+    "sha256": "7ea5e3a855da8518645b1966b40b8af698aa1a16e8c58d7da6e5ece5a1d1d97d",
+    "file_count": 188,
     "files": {
       "macos/Sources/LaneSignal.swift": "e7e68ac41417ddd06e7049a7bd4e01a92d52305bc999cd6ddd323178c64a2ce8",
       "macos/Sources/AppConfiguration.swift": "9aeeb1bd2e7be98ea76f1ccc0eefd062caa4c698287295c9cd675195c4401c6f",
       "macos/Sources/EngineClient.swift": "af79b71c2953ab04a986abadd4b9e8cea2223263c01b90ed1e0dcc219d2d6376",
       "macos/Sources/AppLifecycleUI.swift": "6160059da9ba310c62b81ac0cc71d014b8a25f57054b03e82f4993cdfe229391",
-      "macos/Sources/AppModel.swift": "711318473e7e8df2d2871ce335861af8d1401f936406efaaa0739ea68b883793",
+      "macos/Sources/AppModel.swift": "86991a6b71198bea960e6aaddd4db21de6278e1f2238ca0d6ea7ad7588768754",
       "macos/Sources/AppLifecycleCLI.swift": "0f197936945a4825935dd9cb8bac2297480ddf0a29c34183fe6d4cef42f52178",
       "macos/Sources/AppLifecycle.swift": "fb3bb65554e539c61c6f30bf57c1343aa2eceed2968d4d8f3fd09920bf36c25d",
       "macos/Sources/WindowPage.swift": "a024cd8e2135ec8580c21194544d49ae2e96120aef506de0f0af51ddb516f4fb",
       "macos/Sources/Lifecycle.swift": "9c4a5c30a1bb8217ab78f926f7b7b52b24b06b505788290547773d8cc4b0323e",
-      "macos/Sources/Models.swift": "f938956d02fbcae8db5915732702de99fc3a09656d5dbeeac986e062ad29075d",
-      "macos/Sources/MacKitApp.swift": "30c44258c2a03ba9e0af32fae5b119b9360d1119852195f75ceb81b1365f774b",
-      "macos/Sources/UISelfTest.swift": "421bfd40a02b0288e99c14f94fac180923fb6620bfe51ec2de10f1f74038670c",
-      "macos/Sources/ContentView.swift": "08ab821def209eeefcd737965c418f82d1f3aa837d9956a7b718f77931ed6fb0",
+      "macos/Sources/Models.swift": "9d60566e95a00b28138c24233ebe1c09dd91d62804cb809e8755e900dacd0038",
+      "macos/Sources/MacKitApp.swift": "3fa9bfc96e863b0120aabc1b4af7413902103b27efff4eb67682b59b9ef685ff",
+      "macos/Sources/UISelfTest.swift": "553db5ba5ace8d1124dcc3df3219a4cf6011563780f71a97d98fa4d1eb0fc707",
+      "macos/Sources/ApplicationSettingsPage.swift": "723dce75bdfb74c989b09f47402b2c55fc4527375ae9b10a426a412c8423fcfb",
+      "macos/Sources/ContentView.swift": "6d19cdfcfdf1e853606a5f8de9d825dfaecd6be405383d0506b5a306334a5597",
       "macos/Info.plist": "ea894342ae971d05e4c821b2c8f283e1c97558efb755a7fa4a0a8a03d0ec41df",
       "icon/preview-64.png": "70bccd4ec41eafa5559cd02d24d4ac2b56de6338c64422ce9a747c9bcafebd34",
       "icon/AppIcon.iconset/icon_32x32@2x.png": "70bccd4ec41eafa5559cd02d24d4ac2b56de6338c64422ce9a747c9bcafebd34",
@@ -68,9 +69,10 @@
       "mackit/window.py": "3225519a84c4782bfae47a05c549a41b716039ab2eb42246feb877d07dfe117f",
       "mackit/karabiner.py": "7fb51e92d078d3b98204f702c8bd0f567e6540004b31cbf254456ae764987739",
       "mackit/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
-      "mackit/cli.py": "1f6ddf9da9456152b317acfa587d375450f034cd0f8f2474a0f6c91e35282f77",
+      "mackit/cli.py": "866f7d8373f64dac68567a234bbd4fe6a9a1de76070172064b0b0bf3e7f32a1b",
       "mackit/localkeys.py": "9ed732020c86ca9deb4190c90a091b6ca8d50a5ce2c47b95031e34eb28719374",
-      "mackit/gui.py": "c09f0ba220c965b5d48ceb55b2318708a818a96a7a703c286c4a326ffc8af8e5",
+      "mackit/gui.py": "42fc15e37b32f925a413dd9d1a742441def94f5a45bcea90da8d6cc2c3f11abf",
+      "mackit/application_settings.py": "d684369d8a7038ad58560dcc11b7620a85aafdba7cc89d1708ca7999d7ba10a3",
       "bin/mackit": "a99e4ed373b8ecbce25b121c9e7db195277b1555211041e1d15727c77d73ed5b",
       "components/nvim/init.lua": "14d38fec0fe6a6785273385e9697707665c7d974188aa106974a7a23f7340f46",
       "components/nvim/lsp/cssls.lua": "69dc81e5ca6ba3f2c9307134b2e901f65374934f4025d658632670661343ac93",
@@ -210,6 +212,7 @@
       "profiles/developer.json": "80d926a8e00985d9dce81d2d3cba4d4bbf3b472cbec348e9f852b7abab470ff4",
       "profiles/tianli.json": "2b5df26ece0f5976c91e9b13be0800e7b9829de2bc74039d687ed3a00f94cf88",
       "data/keys.json": "ab2e433e01d582cc2c9dbc1b84c92b829293c0f3a262523d07d64f5791ac7f06",
+      "data/application-settings.json": "4047d109838830379f49282abc9dc5c1636ce9738b9d4a206ea178f98f85a093",
       "VERSION": "2e376439ec341f14ae018b8aa4796b9336702e6a59d6c42b91f61d84baac9807",
       "scripts/build-app.sh": "4b7e72d1cb64fdc8174094302bdd25413b9c680e129fff53d2d68ca11df5d236",
       "scripts/build-release.py": "edb3998fd63f8ac11a8d391f980fb52d16c3dc1625485ed87a44cd8d0b2303af",
@@ -218,9 +221,9 @@
       "LICENSE": "32d956a78128aab2c92a84743d0762ad9ae831597a6099796526af7232dc25ad",
       "THIRD_PARTY.md": "d80a0f2dbdc2df240bd8f337a12ab78741ce42800cc332c231567d9e78e38beb"
     },
-    "commit": "e32e5c6f5abef336e3a51cd77d5523ef85b00e37",
+    "commit": "8803988d8cd32050832c3a236403f294c40fcbd6",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },
-  "build_command_sha256": "341bf2a33f4030008b8cd7f357670c0cca4cad535dc49573916da701a3572bd2"
+  "build_command_sha256": "9bd5277a070b9e900f49a4f4a75ca1d3443d36f308e5c8efb28ab2d572d5d048"
 }

@@ -21,3 +21,21 @@
 首个本机包 0.3.7 (2026101602) 已由原 BuildSlot 与 app_sop.build_receipt 实际生成，source commit `f37b1bb`、dirty=false；Developer ID 签名通过，冻结命令可只读识别本机三个 Office。真实冻结 UI 的 42 项/6 页通过，MacKit 本人偏好导出前后逐字节一致。包的三项 AssembledBundleTests 通过。随后完整测试曾错误把签过名的 bundle 内二进制当作 `MACKIT_NATIVE` 裸程序夹具使用，复制进不同测试 bundle 后被系统以信号 9 结束，导致 LifecycleCommandTests 失败；这与原交接已记录的签名复制限制相符。正确入口是 `MACKIT_NATIVE=build/native/MacKit`（原构建保留的裸程序）加 `MACKIT_APP=<真实装配包>`，不得放松检查。
 
 按既有 GUI/CLI 同源要求，补上应用设置页对恢复目录的事件监听；命令保存或恢复后，已开的页面自动重读，无轮询，不将通知里的旧值写回。对应生产离屏自检会实际从外部引擎调用改变/恢复语言并等待页面跟随。此项改变了 Swift 输入，须用后续新包重新验收，不沿用首包结论冒充。
+
+## 原版合入与本机交付
+
+已核原模型 PID 7197 退出、原 transcript 最终 chapter_end=0、Chapter 对任务 `8d046ba85692472385a59a2aaef4a125` 的 outcome=done，且只在 session_boundary 等待。经原 handoff_guard RPC 精确清理这一条已完成任务遗留的 `Apps/mackit` 租约；未结束 daemon、未取消其他队列任务。证据 `local/application-settings-20261016/completed-lease-cleanup.json`。随后本会话取得原版的明确文件/输出目录声明，以 fast-forward 合入 `f37b1bb`、`8803988`，原来的四类未跟踪 perf 证据保持原位。
+
+隔离副本缺少 10 张被忽略的生成 iconset 图片，声明输入为 178 项，原版为 188 项；共用文件逐项相同。为保证 canonical receipt 与原工程完全对应，原版再次通过现有 BuildSlot + build-app.sh --local + app_sop.build_receipt 实际构建，没有修改旧包的来源记录。原版实际输入 source SHA256 `7ea5e3a855da8518645b1966b40b8af698aa1a16e8c58d7da6e5ece5a1d1d97d`，源码提交 `8803988d8cd32050832c3a236403f294c40fcbd6`，dirty=false、188 项输入。
+
+最终本机包 0.3.7 (2026101602)，主程序 SHA256 `800969744a5c372e6a2db3ae00cf720a4b6139dc5c75af83a3cd5ea5b35936b9`。Developer ID 签名与严格验证通过。经原 `scripts/install-app.py --local` 安装至 `/Applications/MacKit.app`，旧版保留在 `build/installed-backup/20261016-185819/MacKit.app`。实际构建回执 `build/accept/application-languages.json`，安装成功与源码/实物核对后，将同一份真实回执原样保存在 `perf/build-receipt.json`；旧 canonical 的备份为本轮 local 目录里的 `previous-build-receipt.json`。
+
+验证结果：
+
+- 正确裸程序 + 装配包的完整回归：105 项全部通过、零跳过，原件 `local/application-settings-20261016/verified-tests.log`。
+- 最终安装版实际离屏自检：44 项全部通过、6 页截图，包括应用查找、Office 批量修改、跟随系统、恢复及外部命令保存/恢复后页面自动跟随。`never_visible_or_key=true`；未启动普通窗口、未产生输入事件。原件 `installed-ui-summary.json`、`frozen-ui/stdout.json` 与 `frozen-ui/native-ui-applications.png`。
+- 最终安装版另外执行原三项 AssembledBundleTests，3 项全部通过（48.049 秒）；原件 `installed-package-tests.log`。使用实际 `/Applications/MacKit.app` 的命令及隔离包/偏好域，不替换本人正在使用的设置。
+- 最终安装版冻结命令已读回版本 2026101602、三个真实 Office 的简体中文设置；所有写入/批量/no-op/跟随系统/多级恢复动作只在一次性 HOME 中实测。安装与测试前后，66 项 MacKit 配置文件/链接、MacKit 偏好及三个 Office 的完整偏好导出摘要一致。原件 `installed-verification.json`、`state-before.json`、`state-after.json`。
+- 本轮未改终端配置、按键、服务、登录项、系统语言或实际 Office 偏好。软件语言只作用于应用自带的界面翻译；仍需对应应用重新打开才加载。iCloud 与其他产品旧缺项不在本轮追加范围。
+
+源码同步沿 2026-10-08 已有本人授权（Chapter 现场回读 granted=true、scope 含 push、revoked_at=null），仅向现有自有仓正常推送本轮代码与交接；不新设公开仓、不 force、不发布新 Release/更新包、不部署网页、不送审。远端最终 SHA 与收尾状态以本轮 local 回执为准。
