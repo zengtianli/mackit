@@ -14,11 +14,11 @@ Version 0.3.5 renames the app to **MacKit** (display name MacKit · 配置助手
 
 ## Download the macOS app
 
-[MacKit 0.3.6 for Apple Silicon (DMG)](https://github.com/zengtianli/mackit/releases/download/v0.3.6/MacKit-0.3.6-arm64.dmg) · [Website and demo](https://mackit.tianli.cyou/)
+[MacKit 0.3.7 packages and checksums](https://github.com/zengtianli/mackit/releases/tag/v0.3.7) · [Website and demo](https://mackit.tianli.cyou/)
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.
 
-The local acceptance build is 0.3.6 (636); the public download remains 0.3.6 (0.3.6). Download size below refers to the public DMG, while runtime metrics identify the measured build.
+The current release is 0.3.7 (2026101601). The figures below are historical measurements of local acceptance build 0.3.6 (636), including its DMG size; they do not describe this release. Current package size and checksums are on the release page. Runtime sampling remains with the original scheduler.
 
 <!-- lightweight:start -->
 ## Resource use

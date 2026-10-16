@@ -32,8 +32,8 @@ if historical or local_measurement:
     label = '历史实测' if historical else '本地验收构建'
     scope = (f"<p>{label} {escape(perf['version'])} 的运行实测；当前公开发行 "
              f"v{version} ({escape(str(release.get('build', '')))})。"
-             "以下运行指标不代表当前公开发行；下载大小取公开 DMG。"
-             "当前安装版本的运行资源未测，本轮只整理站点，未重新采样。</p>")
+             "以下数字（含当时的安装包大小）不代表当前公开发行；当前 DMG 大小在下载入口列出。"
+             "当前版本运行资源待原调度采样，本轮未重新测量。</p>")
     # Keep the scope statement inside the one shared-rendered resource section.
     block = block.replace("<div class='section-title'>", "<div class='section-title'>" + scope, 1)
 
@@ -88,8 +88,8 @@ if historical or local_measurement:
     label = '历史实测' if historical else '本地验收构建'
     facts.update(measurement_scope=label, measurement_version=perf['version'],
                  release_download_bytes=package['bytes'])
-    facts['card_line'] = f"{label} {perf['version']} 实测（不代表当前公开发行 v{version}） · " + facts['card_line']
-    facts['card_text'] = product_facts.card_text(facts['card_line'])
+    # Keep the shared card line byte-for-byte consistent with the measurement source.
+    # The resource section and structured scope fields above explain historical/local measurements.
 product_facts.write(out, facts)
 
 # A digest manifest cannot hash itself; cover every other public file.

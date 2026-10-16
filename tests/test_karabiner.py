@@ -336,7 +336,7 @@ class CliTests(unittest.TestCase):
 
     def test_help_states_the_contract_and_usage_errors_answer_in_json(self):
         top = self.cli("--help").stdout
-        for text in ("读命令", "写命令", "--json", '{"ok": false, "error"', '"error": {"code"', "退出码", "仅在窗口中", "karabiner rule add|remove|enable|disable",
+        for text in ("查询命令", "写命令", "--json", '{"ok": false, "error"', '"error": {"code"', "退出码", "仅在窗口中", "karabiner rule add|remove|enable|disable",
                      "karabiner reload", "select", "already_current", "not_confirmed", "app.appBuild",
                      # every human entry of project.yaml's sop.agent_cli is named under 仅在窗口中
                      "switch pages", "使用帮助", "打开在线手册", "Karabiner installer", "install Homebrew", "Input Monitoring", "shortcut's source",

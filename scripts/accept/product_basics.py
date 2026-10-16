@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 APP = Path('/Applications/MacKit.app')
 PRODUCT = 'cyou.tianli.mackit'
 FEATURES = ('settings', 'shortcuts', 'icloud', 'updates')
-RECEIPT = ROOT / 'build/accept/completeness-20261014.json'
+RECEIPT = ROOT / 'perf/build-receipt.json'
 # Policy scenario names are summaries of actual assertions below; never independent constants claiming success.
 SCENARIOS = {
     'settings': {

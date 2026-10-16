@@ -14,11 +14,11 @@
 
 ## 下载 App（推荐）
 
-[下载 MacKit 0.3.6 · Apple Silicon DMG](https://github.com/zengtianli/mackit/releases/download/v0.3.6/MacKit-0.3.6-arm64.dmg) · [官网与演示](https://mackit.tianli.cyou/)
+[下载 MacKit 0.3.7 · 安装包与校验](https://github.com/zengtianli/mackit/releases/tag/v0.3.7) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
 
-本地验收构建为 0.3.6 (636)，公开下载仍为 0.3.6 (0.3.6)。下列下载大小取公开 DMG，运行指标以实测所列构建为准。
+当前发行版本为 0.3.7 (2026101601)。以下数字是 0.3.6 (636) 本地验收构建的历史记录，包含其当时的 DMG 大小，不代表当前版本；当前包大小和校验见发行页，运行资源待原调度采样。
 
 <!-- lightweight:start -->
 ## 资源占用
