@@ -45,3 +45,5 @@ claims `7197 / chapter-task:8d046ba85692472385a59a2aaef4a125`。私有原 runner
 `chapter sop accept --app mackit --check product_basics --json` 已返回 passed，正式原件 `perf/acceptance/run-6yatk3kd/product_basics.json`；新四项原件在 `perf/acceptance/product-basics-52008c5f8dc7419cab81f34f10e8568d/{settings,shortcuts,icloud,updates}.json`，29/20/29/21，共99项严格检查全部 true，包含14个必测场景，52项真实离屏UI检查/9张截图。固定引擎核 SHA 后写正式交付证据；174项生产摘要前后相同。同步结论仍严格为本机隔离文件链路，未测苹果跨设备传输。没有修改编译功能或降低验收约束。
 
 已装可执行文件实际离屏运行 PID 34680、路径 `/Applications/MacKit.app/Contents/MacOS/MacKit`、版本/构建 0.3.7 (2026101601)、冻结 CLI 0.3.7；私有支持/home/cloud/偏好域，窗口数0、未激活，探针已清理。装机前后204项配置/偏好、Profile tianli、选择及事务不变；签名/公证与系统实际图标固定验收通过。最终 `chapter basics --app mackit --json` 为 fresh/all_passed=true/problems=[]，四项均 passed。详细哈希、签名、公证、运行与推送回读见 `handoffs/chapter-completion-20261016.md` 第三轮完成回读；本轮只做源码推送，不发新 Release、不发更新源、不部署网页、不提交商店审核。
+
+交付提交 `4634d73` 已推至原 `origin/main`，SSH 与 GitHub refs API 均回读完整提交 `4634d7367cd2b5bfb59c3292fdfbc1489ab6dcf2`；包含原 `9a926de`、`c6bc3a9` 历史及本轮当前包 receipt。本条真实回读随交接另行普通推送，最终头见本机 `local/chapter-completion-20261016/final-remote-v3.json`；验收原件及安装回执保持本机未跟踪，没有夹带其他会话文件。
