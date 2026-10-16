@@ -29,9 +29,10 @@ APP="${MACKIT_APP_DIR:-$MACKIT_DIR/build/app}/MacKit.app"
 IDENTITY="${MACKIT_SIGN_IDENTITY:--}"
 mkdir -p build/native "${MACKIT_RELEASE_DIR:-dist/releases}"
 xcrun swiftc -swift-version 5 -O -parse-as-library -target "$ARCH-apple-macos14.0" -sdk "$(xcrun --sdk macosx --show-sdk-path)" macos/Sources/*.swift -o build/native/MacKit
-SIGN_ARGS=()
-if [ "$IDENTITY" != '-' ]; then SIGN_ARGS=(--codesign-identity "$IDENTITY"); fi
-"$PYTHON" -m PyInstaller --noconfirm --clean --onedir --name mackit --paths "$MACKIT_DIR" --distpath build/frozen --workpath build/pyinstaller --specpath build --target-arch "$ARCH" "${SIGN_ARGS[@]}" bin/mackit
+# Keep the array nonempty: macOS Bash 3.2 treats an empty array as unset under -u.
+PYINSTALLER_ARGS=(--noconfirm --clean --onedir --name mackit --paths "$MACKIT_DIR" --distpath build/frozen --workpath build/pyinstaller --specpath build --target-arch "$ARCH")
+if [ "$IDENTITY" != '-' ]; then PYINSTALLER_ARGS+=(--codesign-identity "$IDENTITY"); fi
+"$PYTHON" -m PyInstaller "${PYINSTALLER_ARGS[@]}" bin/mackit
 "$PYTHON" scripts/build-release.py
 "$PYTHON" scripts/assemble-app.py
 cp build/native/MacKit "$APP/Contents/MacOS/MacKit"
