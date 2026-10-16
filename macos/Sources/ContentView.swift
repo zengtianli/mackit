@@ -28,7 +28,7 @@ struct ContentView: View {
                 if !model.error.isEmpty { banner(model.error,icon:"exclamationmark.triangle.fill",color:.orange) }
                 if !model.message.isEmpty { banner(model.message,icon:"checkmark.circle.fill",color:accent) }
                 Group {
-                    switch model.page { case .install: install; case .keys: keys; case .files: files; case .health: health; case .window: WindowPage(accent:accent) }
+                    switch model.page { case .install: install; case .keys: keys; case .files: files; case .health: health; case .window: WindowPage(accent:accent); case .applications: ApplicationSettingsPage(accent:accent) }
                 }.frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading)
             }.frame(minWidth:630)
         }
@@ -46,7 +46,9 @@ struct ContentView: View {
             Button("恢复配置",role:.destructive) { model.restore() }
         } message: { Text("\(model.newest?.id ?? "")\n恢复最近一次仍有效的安装，保留软件本体与个人覆盖。若文件后来被其他程序替换，会先停止并提示。") }
         .onAppear { if model.snapshot == nil { model.refresh() } }
-        .onReceive(NotificationCenter.default.publisher(for:Notification.Name("MacKitFind"))) { _ in model.page = .keys; searchFocused = true }
+        .onReceive(NotificationCenter.default.publisher(for:Notification.Name("MacKitFind"))) { _ in
+            if model.page != .applications { model.page = .keys; searchFocused = true }
+        }
     }
     private func banner(_ text:String,icon:String,color:Color) -> some View {
         HStack(alignment:.top,spacing:10) { Image(systemName:icon).foregroundStyle(color); Text(text).textSelection(.enabled); Spacer() }.padding(12).frame(maxWidth:.infinity,alignment:.leading).background(color.opacity(0.08))

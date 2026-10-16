@@ -43,7 +43,7 @@ struct MacKitApp: App {
                     Button(page.rawValue) { model.page=page }.keyboardShortcut(KeyEquivalent(Character(String(index+1))))
                 }
                 Divider()
-                Button("搜索快捷键") { NotificationCenter.default.post(name:Notification.Name("MacKitFind"),object:nil) }.keyboardShortcut("f")
+                Button("搜索") { NotificationCenter.default.post(name:Notification.Name("MacKitFind"),object:nil) }.keyboardShortcut("f")
                 Button("打开在线手册") { model.open("https://mackit.tianli.cyou/keys.html") }
             }
         }

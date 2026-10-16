@@ -200,9 +200,12 @@ def inside_home(path,home):
 
 def dispatch(request,home):
     payload=cli.ROOT
-    root=source_root(home,payload)
     action=request.get("action","snapshot")
     if not isinstance(action,str):raise ValueError("未知操作")
+    if action.startswith("application"):
+        from . import application_settings
+        return application_settings.dispatch(request,home)
+    root=source_root(home,payload)
     if action=="snapshot":return inventory(home,payload,root)
     if action=="savePreferences":return save_portable_preferences(request,home)
     if action.startswith("window"):return window_action(action,request,home,payload,root)

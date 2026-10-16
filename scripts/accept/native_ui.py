@@ -63,11 +63,11 @@ def main():
             raise AssertionError(result.stdout + result.stderr)
         data = json.loads(result.stdout)
         assert data["ok"] and all(data["checks"].values()), data
-        assert len(data["screenshots"]) == 5
+        assert len(data["screenshots"]) == 6
         for name in data["screenshots"]:
             assert (OUT_DIR / name).stat().st_size > 10000
         data["artifact"] = "installed receipt-matched application" if installed else "source-built acceptance candidate"
-        finish("native_ui", f"原生界面进程内自检通过：{len(data['checks'])} 项断言、5 页离屏截图；未显示窗口或操作输入。", **data)
+        finish("native_ui", f"原生界面进程内自检通过：{len(data['checks'])} 项断言、6 页离屏截图；未显示窗口或操作输入。", **data)
 
 
 if __name__ == "__main__":

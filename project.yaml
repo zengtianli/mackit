@@ -15,7 +15,7 @@ compatibility:
     repair_entry: bin/mackit
     evidence_refs: [mac-pair/queue/20261007-0959-键盘分层在-mini-生效.reply.md]
 origin: own
-description: 原生 macOS App 与 CLI：安装配置、查询快捷键、编辑文件、窗口管理与备份恢复；App 各页都有供 Agent 调用的命令
+description: 原生 macOS App 与 CLI：应用语言、安装配置、查询快捷键、编辑文件、窗口管理与备份恢复；App 各页都有供 Agent 调用的命令
 bundle_id: cyou.tianli.mackit
 key_scripts:
 - bin/mackit
@@ -44,8 +44,16 @@ sop:
       command: mackit status
     - name: 工具栏「刷新」（⌘R）
       command: mackit status
-    - name: 切换五个页面（侧栏、MacKit 菜单 ⌘1–⌘5）
+    - name: 切换六个页面（侧栏、MacKit 菜单 ⌘1–⌘6）
       human: 只在窗口里有意义；每页的内容各有读命令
+    - name: 应用设置页的软件搜索、支持语言与当前语言
+      command: mackit apps list
+    - name: 应用设置页选择界面语言或跟随系统
+      command: mackit apps language set
+    - name: Office 一起改成简体中文
+      command: mackit apps language office
+    - name: 恢复上次语言修改
+      command: mackit apps language restore
     - name: 工具栏「使用帮助」
       human: 只在窗口里有意义（打开主页）
     - name: 菜单「打开在线手册」
@@ -56,7 +64,7 @@ sop:
       human: 只在窗口里有意义（窗口自己那次操作的进度与结果）；命令的结果在各自输出的 message、error 和退出码里
     - name: 退出时的「操作进行中 / 继续等待」提示
       human: 只在窗口里有意义；命令在前台跑到自己退出，没有可拦的退出
-    - name: 菜单「搜索快捷键」（⌘F）
+    - name: 菜单「搜索」（⌘F，应用设置页搜索软件，其他页搜索快捷键）
       command: mackit keys
     - name: 使用预设
       command: mackit select
@@ -182,6 +190,7 @@ sop:
   - macos/Sources/Models.swift
   - macos/Sources/MacKitApp.swift
   - macos/Sources/WindowPage.swift
+  - macos/Sources/ApplicationSettingsPage.swift
   - macos/Sources/AppModel.swift
   - macos/Sources/EngineClient.swift
   - macos/Sources/UISelfTest.swift

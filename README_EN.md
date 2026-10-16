@@ -14,6 +14,20 @@ Version 0.3.5 renames the app to **MacKit** (display name MacKit · 配置助手
 
 ## Download the macOS app
 
+The development build adds **Application Settings** (⌘6): search installed apps, choose a bundled display language, or switch Word, Excel and PowerPoint to Simplified Chinese together. Reopen each app to apply its language. Follow-system and restore-last-change are supported; batches preflight every app, roll back failed writes and refuse to overwrite later external changes. This feature is not yet in the public package linked below.
+
+```sh
+mackit apps list Office --json
+mackit apps language set com.microsoft.Word zh-Hans --json
+mackit apps language set com.microsoft.Word system --json
+mackit apps language office --json
+mackit apps language restore --json
+```
+
+The GUI and CLI share one engine and change only the selected apps' language preferences. Recovery records are under `~/.local/state/mackit/application-languages/`. An isolated `--home` discovers only its own `Applications/` and keeps all test preferences inside that directory.
+
+Bundled copy and language names live in `data/application-settings.json`; optional `copy` and `languages` overrides in `~/.config/mackit/application-settings.json` are read at runtime, with malformed data falling back to bundled values.
+
 [MacKit 0.3.7 packages and checksums](https://github.com/zengtianli/mackit/releases/tag/v0.3.7) · [Website and demo](https://mackit.tianli.cyou/)
 
 Requires macOS 14+ and Apple Silicon. The app includes its runtime: Python and Git are not prerequisites to launch it. Developer ID signed and notarized by Apple.

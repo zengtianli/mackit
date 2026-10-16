@@ -25,6 +25,7 @@ import SwiftUI
     @Published var window: WindowSnapshot?
     @Published var windowDraft = WindowDraft()
     @Published var windowSaved = WindowDraft()
+    @Published var applications: ApplicationSnapshot?
     let client: EngineClient
     let demo: Bool
     let readOnly: Bool
@@ -94,6 +95,7 @@ import SwiftUI
         if reset { profile = value.profile; selected = Set(value.selected); invalidate() }
     }
     func refresh() {
+        if page == .applications { loadApplications(); return }
         run("读取配置状态…") { try await self.refreshSnapshot(reset: true) }
     }
     func prepare() {

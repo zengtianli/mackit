@@ -31,10 +31,10 @@ struct FileResponse: Decodable { let path: String; let content: String; let dige
 struct MessageResponse: Decodable { let message: String }
 struct DependenciesResponse: Decodable { let dependencies: [Dependency] }
 enum Page: String, CaseIterable, Identifiable {
-    case install = "安装配置", keys = "快捷键", files = "配置文件", health = "检查与恢复", window = "窗口"
+    case install = "安装配置", keys = "快捷键", files = "配置文件", health = "检查与恢复", window = "窗口", applications = "应用设置"
     var id: String { rawValue }
     var icon: String {
-        switch self { case .install: "shippingbox"; case .keys: "command"; case .window: "rectangle.split.2x2"; case .files: "doc.text"; case .health: "clock.arrow.circlepath" }
+        switch self { case .install: "shippingbox"; case .keys: "command"; case .window: "rectangle.split.2x2"; case .files: "doc.text"; case .health: "clock.arrow.circlepath"; case .applications: "app.badge.checkmark" }
     }
 }
 

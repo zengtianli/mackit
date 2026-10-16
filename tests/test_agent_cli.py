@@ -50,7 +50,7 @@ class AgentCliTests(unittest.TestCase):
         top = self.cli("--help").stdout
         self.assertNotIn("SUPPRESS", top)
         self.assertNotIn("gui", top.split("COMMAND", 1)[1].split("options", 1)[0].split())
-        for name in ("plan", "apply", "doctor", "deps", "status", "restore", "link", "keys", "file", "window", "edit"):
+        for name in ("plan", "apply", "doctor", "deps", "status", "restore", "link", "keys", "file", "window", "edit", "apps"):
             self.assertIn(name, top)
         for args in (["file", "write"], ["window", "hotkey", "add"], ["window", "rule", "add"], ["window", "service"], ["deps"], ["keys"]):
             self.cli(*args, "--help")

@@ -671,7 +671,7 @@ class Failure(ValueError):
  """A refused or unconfirmed operation with a stable code, and facts to report: they join the --json answer."""
  def __init__(self,message,code="refused",**extra):super().__init__(message);self.code=code;self.extra=extra
 # Commands written under the shared convention answer {"error": {"code", "message"}}; the older ones keep the string their readers parse.
-CODED_ERRORS=("karabiner","select")
+CODED_ERRORS=("karabiner","select","apps")
 def error_code(exc):
  if getattr(exc,"code",None):return exc.code
  if str(exc)==NOT_PREPARED:return "not_prepared"
@@ -694,13 +694,13 @@ class Parser(argparse.ArgumentParser):
 HELP_EPILOG="""\
 查询命令 Query commands (update check records local history):
   status · plan · doctor · deps (without --install) · keys · file list · file read · window status ·
-  karabiner status · karabiner rule list · karabiner rule show · edit (no id, or --print)
+  karabiner status · karabiner rule list · karabiner rule show · edit (no id, or --print) · apps list
   From the App's 配置与更新… window (the App itself answers; shapes and codes: mackit config --help):
 @LIFECYCLE_READS@
 写命令 Write commands:
   prepare · select · apply · restore · link · deps --install · file write ·
   window save · window set · window hotkey add|remove · window rule add|remove · window service ·
-  karabiner rule add|remove|enable|disable · karabiner reload · action · update
+  karabiner rule add|remove|enable|disable · karabiner reload · action · update · apps language set|office|restore
   Saves check a digest (window status / file read / karabiner rule list --json), keep a copy of what
   they replace, and print where it is. apply and restore are one recorded transaction each.
   From the App's 配置与更新… window (sync, import and update install need --yes; import backs up what
@@ -710,7 +710,7 @@ HELP_EPILOG="""\
 --json 输出形状 Output: one object on stdout.
   success  {"ok": true, ...command fields...}
   failure  {"ok": false, "error": "<reason>"}   (usage errors: "usage: ...")
-           karabiner and select: {"ok": false, "error": {"code": "<stable code>", "message": "<reason>"}}
+           karabiner, select and apps: {"ok": false, "error": {"code": "<stable code>", "message": "<reason>"}}
            (codes: usage, not_found, exists, ambiguous, stale_digest, invalid_rule, shell_command,
            invalid_json, not_prepared, preset_locked, isolated_home, not_confirmed, not_running, ...;
            karabiner reload adds "reload")
@@ -752,7 +752,7 @@ HELP_EPILOG="""\
   action returns the configured program's own exit code.
 
 仅在窗口中 Window only (no command; the facts are in the read commands):
-  switch pages (sidebar, ⌘1-⌘5)
+  switch pages (sidebar, ⌘1-⌘6)
   toolbar 使用帮助 and menu 打开在线手册 (open web pages)
   Homebrew website and Karabiner installer links
   install Homebrew with the system installer (administrator password; URL: deps --json)
@@ -792,6 +792,18 @@ def run(argv,payload):
  s.add_argument("--json",action="store_true",help="Machine-readable result")
  s=subs.add_parser("select",help="Remember the preset and components the App's 安装配置 page shows (installs nothing)");selector(s)
  s.add_argument("--json",action="store_true",help="Machine-readable result")
+ s=subs.add_parser("apps",help="应用设置：查看软件支持的界面语言、单独设置、Office 批量中文与恢复")
+ a=s.add_subparsers(dest="apps_command",required=True)
+ t=a.add_parser("list",help="查看已安装应用及其界面语言（只读）");t.add_argument("query",nargs="?",default="");t.add_argument("--json",action="store_true")
+ t=a.add_parser("language",help="设置界面语言；重新打开应用后生效")
+ l=t.add_subparsers(dest="language_command",required=True)
+ u=l.add_parser("set",help="为一个应用设置自带语言；system 恢复跟随系统")
+ u.add_argument("app",help="应用 bundle ID（apps list 可查）");u.add_argument("language",help="语言代码，如 zh-Hans、en 或 system")
+ u.add_argument("--digest",help="拒绝覆盖 apps list --json 后发生的语言设置变化");u.add_argument("--json",action="store_true")
+ u=l.add_parser("office",help="一起设置已安装的 Word、Excel、PowerPoint；默认简体中文")
+ u.add_argument("--language",default="zh-Hans");u.add_argument("--json",action="store_true")
+ u=l.add_parser("restore",help="恢复最近一次语言修改，拒绝覆盖之后的外部改动")
+ u.add_argument("transaction",nargs="?");u.add_argument("--json",action="store_true")
  s=subs.add_parser("plan",help="Preview what apply would link, back up or generate (read-only)");selector(s)
  s.add_argument("--json",action="store_true",help="Machine-readable plan, including the token apply --token checks")
  s=subs.add_parser("apply",help="Back up and install the selected configuration as one restorable transaction; a running Karabiner is told to re-read when its file changed, and its log is checked (result: karabiner)");selector(s)
@@ -873,6 +885,21 @@ def run(argv,payload):
    return gui_main(home)
   if args.command=="config":return lifecycle_command(["--home",str(home),"config",*args.words])
   os.environ["PATH"]=tool_path()
+  if args.command=="apps":
+   from mackit import application_settings as apps
+   if args.apps_command=="list":
+    value=apps.snapshot(home,args.query)
+    text="\n".join(f'{r["name"]} · {r["id"]} · {r["selected"]} · {r["status"]}' for r in value["apps"]) or "没有找到匹配的应用。"
+    emit(args,{"ok":True,"applications":value},text)
+   elif args.language_command=="restore":
+    value=apps.restore(home,args.transaction);emit(args,{"ok":True,**value},value["message"])
+   else:
+    if args.language_command=="office":
+     rows=apps.snapshot(home,"Office")["apps"]
+     changes=[{"id":r["id"],"language":args.language,"digest":r["digest"]} for r in rows if r["office"]]
+    else:changes=[{"id":args.app,"language":args.language,"digest":args.digest}]
+    value=apps.change(home,changes);emit(args,{"ok":True,**value},value["message"])
+   return 0
   # These go through the App's bridge before any source switch, so they resolve the source exactly as the App does.
   if args.command=="window":return window_command(args,home) or 0
   if args.command=="file":return file_command(args,home) or 0

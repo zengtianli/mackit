@@ -14,6 +14,20 @@
 
 ## 下载 App（推荐）
 
+开发版新增「应用设置」（⌘6）：搜索本机软件，查看软件自带的界面语言，单独选择或让 Word、Excel、PowerPoint 一起使用简体中文。设置保存后重新打开对应应用生效；支持跟随系统与恢复上次修改，批量失败会恢复原设置，外部改动会阻止覆盖。此功能尚未包含在下方公开安装包中。
+
+```sh
+mackit apps list Office --json                  # 软件、可选语言、当前设置与状态
+mackit apps language set com.microsoft.Word zh-Hans --json
+mackit apps language set com.microsoft.Word system --json
+mackit apps language office --json              # 已安装的三个 Office 软件一起改成中文
+mackit apps language restore --json             # 恢复最近一次语言修改
+```
+
+GUI 和命令共用同一引擎，只改变所选软件的语言偏好，保留其他设置。恢复记录位于 `~/.local/state/mackit/application-languages/`。隔离 `--home` 仅识别该目录下 `Applications/` 中的应用，所有测试偏好都留在隔离目录。
+
+页面说明与语言名称的内置数据在 `data/application-settings.json`；可用 `~/.config/mackit/application-settings.json` 的 `copy`、`languages` 字段按键覆盖，读取时生效，文件损坏回落到内置值。
+
 [下载 MacKit 0.3.7 · 安装包与校验](https://github.com/zengtianli/mackit/releases/tag/v0.3.7) · [官网与演示](https://mackit.tianli.cyou/)
 
 需要 macOS 14+、Apple Silicon（M 系列）。App 内置运行环境，无需先安装 Python 或 Git。使用 Developer ID 签名并经 Apple 公证。
@@ -43,7 +57,7 @@ App 提供快捷键搜索、配置文件编辑（保存前备份）、依赖检�
 
 App 现名 **MacKit**（显示名 MacKit · 配置助手，bundle ID `cyou.tianli.mackit` 不变）；0.3.4 及更早版本安装名为 Tianli MacKit。从旧版升级：把新 App 拖入应用程序后运行一次 `"/Applications/MacKit.app/Contents/Resources/core/bin/mackit" link`，再把旧的 Tianli MacKit 移到废纸篓；`mackit doctor` 会指出仍指向旧 App 的失效链接。
 
-App 快捷键：⌘1–5 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
+App 快捷键：开发版 ⌘1–6 切页、⌘F 搜索、⌘R 刷新、⌘S 保存、⌘Return 预览。App 当前提供 arm64 安装包，Intel 用户可使用下方 CLI。
 
 [App 操作与恢复说明](docs/macos-app.md) · [构建 App](docs/build-app.md)
 

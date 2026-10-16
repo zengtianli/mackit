@@ -134,6 +134,36 @@ import SwiftUI
                 checks["window_conflict_hint"] = found.contains { $0.id == held.id } && found.allSatisfy { $0.clash == key && $0.component != "yabai" }
                 model.profile = shown
             } else { checks["window_conflict_hint"] = false }
+            // Disposable app bundles exercise the production language page and engine.
+            for (bundle, name) in [("com.microsoft.Word", "Word"), ("com.microsoft.Excel", "Excel"), ("com.microsoft.Powerpoint", "PowerPoint")] {
+                let contents = home.appendingPathComponent("Applications/\(name).app/Contents")
+                for language in ["en", "zh_CN"] {
+                    try FileManager.default.createDirectory(at:contents.appendingPathComponent("Resources/\(language).lproj"), withIntermediateDirectories:true)
+                }
+                let info = try PropertyListSerialization.data(fromPropertyList:["CFBundleIdentifier":bundle, "CFBundleName":name], format:.xml, options:0)
+                try info.write(to:contents.appendingPathComponent("Info.plist"))
+            }
+            model.loadApplications()
+            try await idle(model)
+            checks["applications_discovery_isolated"] = model.applications?.isolated == true && model.applications?.apps.count == 3
+            checks["applications_goal_search"] = model.applications?.apps.allSatisfy { $0.matches("Office") } == true
+            model.officeInChinese()
+            try await idle(model)
+            checks["applications_batch_saved"] = model.applications?.apps.allSatisfy { $0.selected == "zh-Hans" } == true
+            checks["applications_readback_status"] = model.applications?.apps.allSatisfy { $0.status.contains("下次打开") } == true
+            model.restoreApplicationLanguages()
+            try await idle(model)
+            checks["applications_restore_original"] = model.applications?.apps.allSatisfy { $0.selected == "system" } == true
+            model.officeInChinese()
+            try await idle(model)
+            if let word = model.applications?.apps.first(where: { $0.id == "com.microsoft.Word" }) {
+                model.setApplicationLanguages([["id":word.id,"language":"system","digest":word.digest]])
+                try await idle(model)
+                checks["applications_follow_system"] = model.applications?.apps.first(where: { $0.id == word.id })?.selected == "system"
+                model.restoreApplicationLanguages()
+                try await idle(model)
+                checks["applications_restore_previous_language"] = model.applications?.apps.first(where: { $0.id == word.id })?.selected == "zh-Hans"
+            } else { checks["applications_follow_system"] = false }
             let delegate = UISelfTest()
             let window = NSWindow(contentRect: NSRect(x: -20000, y: -20000, width: 1080, height: 790),
                                   styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
@@ -141,7 +171,7 @@ import SwiftUI
             window.delegate = delegate
             window.appearance = NSAppearance(named: .aqua)
             window.contentView = NSHostingView(rootView: ContentView().environmentObject(model))
-            for (name, page) in [("install", Page.install), ("keys", .keys), ("files", .files), ("health", .health), ("window", .window)] {
+            for (name, page) in [("install", Page.install), ("keys", .keys), ("files", .files), ("health", .health), ("window", .window), ("applications", .applications)] {
                 model.page = page
                 try await Task.sleep(for: .milliseconds(150))
                 try await idle(model)
@@ -186,7 +216,7 @@ import SwiftUI
         } catch { failure = error.localizedDescription }
         let passed = failure.isEmpty && !checks.isEmpty && checks.values.allSatisfy { $0 }
         let result: [String: Any] = ["ok": passed, "checks": checks, "screenshots": images, "image_stats": imageStats, "error": failure,
-            "scope": "Production SwiftUI views and AppModel actions with the real Python engine in a temporary home; five offscreen renders, refresh, selection, search, preview, file draft, window settings, close and clean quit. No input events, activation, installation or service changes."]
+            "scope": "Production SwiftUI views and AppModel actions with the real Python engine in a temporary home; six offscreen page renders, application discovery/language batch/follow-system/restore, refresh, selection, search, preview, file draft, window settings, close and clean quit. No input events, activation, installation or service changes."]
         if let data = try? JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]) {
             print(String(decoding: data, as: UTF8.self))
         }
