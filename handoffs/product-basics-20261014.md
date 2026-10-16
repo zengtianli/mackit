@@ -37,3 +37,11 @@ Oct14 的通过结论只属于上文原包/原输入。当前 VERSION 为 0.3.7�
 本轮 claims `45829 / chapter-task:95d338c02fce45d3ad17a3fd5bb7d1f1`。定位并修复上一轮原构建入口的 macOS Bash 3.2 空数组 nounset 错误，源码提交 `9a926de`；语法及真实无签名/指定签名参数检查通过。原 SDK FIFO 准入后被负载门拒绝（50.8 ≥ 12），runner 已退出 75 并释放自身锁/票，没有编译、签名、公证、安装，也没有修改或伪造正式验收证据。现装、Profile 与 204 项配置/偏好摘要保持不变。
 
 16:02 固定只读 `chapter basics --app mackit --json` 仍为 fresh/failed，all_passed=false。必须待原环境队列提供同源构建并沿原安装器装入，再运行唯一固定 `chapter sop accept --app mackit --check product_basics --json`；不重复已知相同输入必失败的验收。准入原件、摘要、具体接手命令和后续条件见 `handoffs/chapter-completion-20261016.md` 的第二轮实际结果。仍明确 iCloud 本机隔离文件链路与苹果跨设备传输边界；不得以换旧 receipt、放松身份守卫、改必测场景或手写证据收敛。
+
+## 2026-10-16 第三轮完成（当前已通过）
+
+claims `7197 / chapter-task:8d046ba85692472385a59a2aaef4a125`。私有原 runner 消费共享 `sim_lane.BuildSlot` 后真实构建 0.3.7 (2026101601)，3 项打包回归及登记的 95 项当前代码测试全部通过；沿 Mini 原 Developer ID 签名/公证和原安装器实装同一份包。canonical receipt `perf/build-receipt.json` 绑定源码提交 `e32e5c6`、185 个实际源输入、source SHA256 `e5d5064b25345b27358d9cdf931f7a3e9e9b40626487d97f55104185d7dec833`；已装/候选主程序 SHA256 同为 `86611ba16e2e2104ebfe3765b96d2a8a8e75d235a8f7eb38808137177e9dc001`。原已装包可从 `build/installed-backup/20261016-182431/MacKit.app` 回溯。
+
+`chapter sop accept --app mackit --check product_basics --json` 已返回 passed，正式原件 `perf/acceptance/run-6yatk3kd/product_basics.json`；新四项原件在 `perf/acceptance/product-basics-52008c5f8dc7419cab81f34f10e8568d/{settings,shortcuts,icloud,updates}.json`，29/20/29/21，共99项严格检查全部 true，包含14个必测场景，52项真实离屏UI检查/9张截图。固定引擎核 SHA 后写正式交付证据；174项生产摘要前后相同。同步结论仍严格为本机隔离文件链路，未测苹果跨设备传输。没有修改编译功能或降低验收约束。
+
+已装可执行文件实际离屏运行 PID 34680、路径 `/Applications/MacKit.app/Contents/MacOS/MacKit`、版本/构建 0.3.7 (2026101601)、冻结 CLI 0.3.7；私有支持/home/cloud/偏好域，窗口数0、未激活，探针已清理。装机前后204项配置/偏好、Profile tianli、选择及事务不变；签名/公证与系统实际图标固定验收通过。最终 `chapter basics --app mackit --json` 为 fresh/all_passed=true/problems=[]，四项均 passed。详细哈希、签名、公证、运行与推送回读见 `handoffs/chapter-completion-20261016.md` 第三轮完成回读；本轮只做源码推送，不发新 Release、不发更新源、不部署网页、不提交商店审核。
