@@ -184,6 +184,22 @@ import SwiftUI
                 imageStats[path.lastPathComponent] = stats
             }
             checks["never_visible_or_key"] = !window.isVisible && !window.isKeyWindow && !NSApp.isActive
+            // The page is still mounted. An external engine call must update its displayed model.
+            if let word = model.applications?.apps.first(where: { $0.id == "com.microsoft.Word" }) {
+                _ = try await model.client.call(["action":"applicationLanguage", "changes":[["id":word.id,"language":"en","digest":word.digest]]], as:MessageResponse.self)
+                for _ in 0..<200 {
+                    if model.applications?.apps.first(where: { $0.id == word.id })?.selected == "en" && !model.busy { break }
+                    try await Task.sleep(for:.milliseconds(50))
+                }
+                checks["applications_follow_external_command"] = model.applications?.apps.first(where: { $0.id == word.id })?.selected == "en"
+                guard let transaction = model.applications?.latestTransaction else { throw EngineError.message("Missing language restore record") }
+                _ = try await model.client.call(["action":"applicationRestore","transaction":transaction], as:MessageResponse.self)
+                for _ in 0..<200 {
+                    if model.applications?.apps.first(where: { $0.id == word.id })?.selected == "zh-Hans" && !model.busy { break }
+                    try await Task.sleep(for:.milliseconds(50))
+                }
+                checks["applications_follow_external_restore"] = model.applications?.apps.first(where: { $0.id == word.id })?.selected == "zh-Hans"
+            }
             if Lifecycle.isolated, case .success(let store) = Lifecycle.store(home: home.path) {
                 guard Lifecycle.hostBundle.bundleIdentifier == ProcessInfo.processInfo.environment[Lifecycle.suiteVariable],
                       Lifecycle.hostBundle.bundleIdentifier?.hasPrefix(Lifecycle.suitePrefix) == true else {

@@ -17,3 +17,7 @@
 专项测试 10 项通过；首次完整回归 104 项，101 通过、3 项因未装配包跳过（后续须验证真实冻结包）。当前 Swift 源编译成功，生产 AppModel + 源码引擎在一次性 HOME 中完成 Office 批量修改、跟随系统、恢复原值等动作，42 项自检及 6 页离屏渲染通过。`never_visible_or_key=true`，没有界面激活或合成输入。图与原件在临时副本 `local/application-settings-20261016/`；应用设置页已目视检查，侧栏选中行的离屏黑块是原工程已记录的合成限制，不据此宣称实屏选择样式已测。
 
 生产只读列表已识别 Mini 上三个 Office 的自带中文与本会话先前已保存的 `zh-Hans-CN`。标准化为 `zh-Hans` 展示，保存相同语言为 no-op，保留原数组；目前未通过本轮代码修改本人实际 Office 偏好。
+
+首个本机包 0.3.7 (2026101602) 已由原 BuildSlot 与 app_sop.build_receipt 实际生成，source commit `f37b1bb`、dirty=false；Developer ID 签名通过，冻结命令可只读识别本机三个 Office。真实冻结 UI 的 42 项/6 页通过，MacKit 本人偏好导出前后逐字节一致。包的三项 AssembledBundleTests 通过。随后完整测试曾错误把签过名的 bundle 内二进制当作 `MACKIT_NATIVE` 裸程序夹具使用，复制进不同测试 bundle 后被系统以信号 9 结束，导致 LifecycleCommandTests 失败；这与原交接已记录的签名复制限制相符。正确入口是 `MACKIT_NATIVE=build/native/MacKit`（原构建保留的裸程序）加 `MACKIT_APP=<真实装配包>`，不得放松检查。
+
+按既有 GUI/CLI 同源要求，补上应用设置页对恢复目录的事件监听；命令保存或恢复后，已开的页面自动重读，无轮询，不将通知里的旧值写回。对应生产离屏自检会实际从外部引擎调用改变/恢复语言并等待页面跟随。此项改变了 Swift 输入，须用后续新包重新验收，不沿用首包结论冒充。

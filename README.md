@@ -24,7 +24,7 @@ mackit apps language office --json              # 已安装的三个 Office 软�
 mackit apps language restore --json             # 恢复最近一次语言修改
 ```
 
-GUI 和命令共用同一引擎，只改变所选软件的语言偏好，保留其他设置。恢复记录位于 `~/.local/state/mackit/application-languages/`。隔离 `--home` 仅识别该目录下 `Applications/` 中的应用，所有测试偏好都留在隔离目录。
+GUI 和命令共用同一引擎，只改变所选软件的语言偏好，保留其他设置。打开的应用设置页通过目录变更通知跟随命令的保存和恢复，无轮询。恢复记录位于 `~/.local/state/mackit/application-languages/`。隔离 `--home` 仅识别该目录下 `Applications/` 中的应用，所有测试偏好都留在隔离目录。
 
 页面说明与语言名称的内置数据在 `data/application-settings.json`；可用 `~/.config/mackit/application-settings.json` 的 `copy`、`languages` 字段按键覆盖，读取时生效，文件损坏回落到内置值。
 

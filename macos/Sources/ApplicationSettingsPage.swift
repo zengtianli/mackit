@@ -1,4 +1,5 @@
 import AppKit
+import Darwin
 import SwiftUI
 
 struct ApplicationLanguage: Decodable, Identifiable { let id: String; let label: String }
@@ -16,6 +17,38 @@ struct ApplicationSnapshot: Decodable {
     let isolated: Bool; let latestTransaction: String
 }
 struct ApplicationResponse: Decodable { let applications: ApplicationSnapshot }
+
+/// Watch the existing recovery directory; commands and the page follow the same disk state.
+/// No polling, global input events or writes are needed to observe it.
+@MainActor final class ApplicationSettingsObserver: ObservableObject {
+    @Published var revision = 0
+    private var source: DispatchSourceFileSystemObject?
+    func start(home: String) {
+        stop()
+        let base = URL(fileURLWithPath:home).resolvingSymlinksInPath()
+        var target = base.appendingPathComponent(".local/state/mackit/application-languages")
+        while !FileManager.default.fileExists(atPath:target.path), target.path != base.path {
+            target.deleteLastPathComponent()
+        }
+        let resolved = target.resolvingSymlinksInPath()
+        guard resolved.path == base.path || resolved.path.hasPrefix(base.path+"/") else { return }
+        let descriptor = Darwin.open(target.path, O_EVTONLY)
+        guard descriptor >= 0 else { return }
+        let events = DispatchSource.makeFileSystemObjectSource(fileDescriptor:descriptor, eventMask:[.write,.rename,.delete], queue:.main)
+        events.setEventHandler { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.source != nil else { return }
+                self.revision += 1
+                self.start(home:home)
+            }
+        }
+        events.setCancelHandler { Darwin.close(descriptor) }
+        source = events
+        events.resume()
+    }
+    func stop() { source?.cancel(); source = nil }
+    deinit { source?.cancel() }
+}
 
 extension AppModel {
     func loadApplications() {
@@ -51,6 +84,8 @@ struct ApplicationSettingsPage: View {
     @EnvironmentObject var model: AppModel
     let accent: Color
     @State private var query = ""
+    @State private var refreshPending = false
+    @StateObject private var observer = ApplicationSettingsObserver()
     @FocusState private var searchFocused: Bool
     private var rows: [ApplicationRow] { (model.applications?.apps ?? []).filter { $0.matches(query) } }
     private var office: [ApplicationRow] { (model.applications?.apps ?? []).filter(\.office) }
@@ -117,9 +152,16 @@ struct ApplicationSettingsPage: View {
         .task {
             for _ in 0..<600 {
                 if Task.isCancelled { return }
-                if !model.busy { if model.applications == nil { model.loadApplications() }; return }
+                if !model.busy { observer.start(home:model.client.home); model.loadApplications(); return }
                 try? await Task.sleep(for:.milliseconds(50))
             }
+        }
+        .onDisappear { observer.stop() }
+        .onReceive(observer.$revision.dropFirst()) { _ in
+            if model.busy { refreshPending = true } else { model.loadApplications() }
+        }
+        .onChange(of:model.busy) { _, busy in
+            if !busy && refreshPending { refreshPending = false; model.loadApplications() }
         }
         .onReceive(NotificationCenter.default.publisher(for:Notification.Name("MacKitFind"))) { _ in searchFocused = true }
     }

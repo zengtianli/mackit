@@ -24,7 +24,7 @@ mackit apps language office --json
 mackit apps language restore --json
 ```
 
-The GUI and CLI share one engine and change only the selected apps' language preferences. Recovery records are under `~/.local/state/mackit/application-languages/`. An isolated `--home` discovers only its own `Applications/` and keeps all test preferences inside that directory.
+The GUI and CLI share one engine and change only the selected apps' language preferences. An open Application Settings page follows command saves and restores through filesystem events, without polling. Recovery records are under `~/.local/state/mackit/application-languages/`. An isolated `--home` discovers only its own `Applications/` and keeps all test preferences inside that directory.
 
 Bundled copy and language names live in `data/application-settings.json`; optional `copy` and `languages` overrides in `~/.config/mackit/application-settings.json` are read at runtime, with malformed data falling back to bundled values.
 
