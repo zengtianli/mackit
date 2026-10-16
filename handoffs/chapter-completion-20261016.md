@@ -17,3 +17,21 @@
 原件回读：`perf/acceptance/product-basics-c533c74536ca42d0893747f121652187/` 的 34 项失败发生于安装/源码/receipt 身份守卫，未执行功能 fixture。已装为 0.3.6 (2026101401)，当前 VERSION 为 0.3.7，canonical receipt 仍为 0.3.6 (636)。上一轮原构建实际在 `scripts/build-app.sh` 的空 `SIGN_ARGS` 数组展开失败（macOS Bash 3.2、nounset），没有新 receipt，没有安装。旧进程已结束，现装保留。
 
 本轮先将 PyInstaller 参数数组改为始终非空，保留可选签名参数和原入口；验证后经原 SDK FIFO/锁构建当前源、实际 assembled 回归、Mini Developer ID 签名与公证，再由原安装器保留配置安装，最后固定 product_basics 验收。仅在真实结果返回后填写完成，不以换旧 receipt 或放松身份校验获得通过。
+
+### 第二轮实际结果 · 2026-10-16 16:03 +0800
+
+源码修复已提交 `9a926debaabf89f43c29b5733ebec421a046d685`，仅原构建脚本和本轮交接；`/bin/bash -n` 通过，实际 macOS Bash 的 nounset 参数回归覆盖 ad-hoc 与带空格 Developer ID 身份，两者均通过，路径参数空格保留。脚本 SHA256 为 `4b7e72d1cb64fdc8174094302bdd25413b9c680e129fff53d2d68ca11df5d236`。业务源未改；上一轮 95 项逻辑/真实 CLI 测试通过证据继续保留，不重复无变化业务测试。
+
+原 SDK FIFO 排队后拿到锁，随后原采样门拒绝：`负载 50.8 ≥ 12; foreign builds=[]; memory pressure=1`。本轮没有启动 swiftc/PyInstaller，没有新候选包/receipt，没有签名、公证或装机，也没有重新执行已知输入不匹配的固定验收。原 runner 以 75 退出、已释放自己持有的锁和票，没有遗留后台构建；不动其他人的锁或任务。准入原件 `local/chapter-completion-20261016/build-result-v2.json`，SHA256 `3b69039c9050c1be19ed92393eae2649545eb51fc100b4c0b575b63bb5e124eb`；对应 stderr 在 `build-runner-v2.log`。
+
+16:02 的 `chapter basics --app mackit --json` 回读为 fresh、all_passed=false、status=failed，四项登记均 implemented、problems=[]；正式结果仍是原 34 项身份守卫失败，没有冒充四项功能已复验。只读回执 `local/chapter-completion-20261016/basics-readback-v2.json`（SHA256 `ab4efc4418ff7b93bff6aad339edf061dacfd4caeb670dca7157972a55000c6c`）。正式 delivery-evidence 及旧验收原件不手改、不提交。
+
+装前/收尾摘要比对 `install-state-before.json` / `install-state-after.json`：204 项配置/偏好无变化，Profile `tianli`，selection/transactions 均相同，前后 running=[]；现装保留 0.3.6 (2026101401)，主程序 SHA256 `a4f7e78a371ba39614c36c9f1aa7af5c3a30ceb8e1e7f2693a45eceb7681f989`。之前的基线另存 `install-baseline-previous/`，没有覆盖丢弃。
+
+本轮未达到 product_basics 完成谓词，剩余仅是本项的同源包构建/装机和正式验收，交回 Chapter 原环境队列自动接续；不追加旧网页、公开发行和性能欠项为本轮条件。原队列在负载满足并取得下一轮 claims 后，从仓库执行：
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 /Users/tianli/Dev/.venv/bin/python local/chapter-completion-20261016/release-build.py
+```
+
+此私有原 runner 沿原 SDK FIFO/锁、4 分钟准入等待、冻结共享副本，实际执行原 `build-app.sh`、3 项 AssembledBundleTests、Mini 原 `distribution_grade.py sign/check --stage signed`，成功才由 app_sop 生成 canonical build receipt。若再遇同一环境失败，不循环、不改闸，交回原调度。成功后按顺序复核 receipt/source/候选包，调用原 `distribution_grade.py notarize build/app/MacKit.app --timeout 5m --json`；公证超时只用原 submission-id 接续；重新保存装前基线后执行 `python3 scripts/install-app.py --source build/app/MacKit.app --receipt perf/build-receipt.json --output perf/install-receipt-0.3.7.json`，不得启动上屏 App。核安装哈希/签名/配置未变后运行 `chapter sop accept --app mackit --check product_basics --json` 和 `chapter basics --app mackit --json`，由固定引擎写正式原件；99 项真实检查及四项 fresh/passed 才能关单。无需发布 GitHub、网页、更新源或 App Store 审核。

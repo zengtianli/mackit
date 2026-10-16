@@ -29,3 +29,11 @@
 前两次正式失败原件已保留：`run-42ne6zxn` 中验收脚本错误使用参考产品的 `sync now`，MacKit 实际只提供 on/off，已改为真实开关触发同步；`run-hn1llvg2` 中 85 个细项均通过但缺 Chapter 的固定场景键，已用细项布尔汇总补齐，再实际重跑通过。未放松 Chapter 校验器、未把命令 presence 当功能验收，也未修改共享代码。
 
 完成谓词已满足。当前没有发现需要修改编译源码的实际能力缺陷；苹果跨设备传输不属于本轮隔离验收结论。本轮只本地提交 `project.yaml`、`scripts/accept/product_basics.py` 与本 handoff，不构建、安装、公证、发布或推送，不处理其他旧 SOP。复验入口：`cd /Users/tianli/Apps/mackit && chapter sop accept --app mackit --check product_basics --json`。Chapter claim 保留给派出者释放。
+
+## 2026-10-16 第二轮接续（当前尚未通过）
+
+Oct14 的通过结论只属于上文原包/原输入。当前 VERSION 为 0.3.7，而现装仍为 0.3.6 (2026101401)，canonical `perf/build-receipt.json` 仍为 0.3.6 (636)；新失败原件 `perf/acceptance/product-basics-c533c74536ca42d0893747f121652187/` 在 installed/source/receipt 身份守卫退出，未执行四项 fixture，不能据此声称四项功能实际失效或通过。
+
+本轮 claims `45829 / chapter-task:95d338c02fce45d3ad17a3fd5bb7d1f1`。定位并修复上一轮原构建入口的 macOS Bash 3.2 空数组 nounset 错误，源码提交 `9a926de`；语法及真实无签名/指定签名参数检查通过。原 SDK FIFO 准入后被负载门拒绝（50.8 ≥ 12），runner 已退出 75 并释放自身锁/票，没有编译、签名、公证、安装，也没有修改或伪造正式验收证据。现装、Profile 与 204 项配置/偏好摘要保持不变。
+
+16:02 固定只读 `chapter basics --app mackit --json` 仍为 fresh/failed，all_passed=false。必须待原环境队列提供同源构建并沿原安装器装入，再运行唯一固定 `chapter sop accept --app mackit --check product_basics --json`；不重复已知相同输入必失败的验收。准入原件、摘要、具体接手命令和后续条件见 `handoffs/chapter-completion-20261016.md` 的第二轮实际结果。仍明确 iCloud 本机隔离文件链路与苹果跨设备传输边界；不得以换旧 receipt、放松身份守卫、改必测场景或手写证据收敛。
